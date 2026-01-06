@@ -1,5 +1,7 @@
 import pygame
 from typing import List, Tuple
+
+from vect_hunt.worlds import World
 from vect_hunt.utils import hex_to_rgb
 
 """
@@ -78,20 +80,20 @@ class Renderer:
         # Bordure plus foncée
         pygame.draw.circle(self.screen, hex_to_rgb("#963232"), pos, radius, 2)
 
-    def draw_entities(self, entities: List[dict]) -> None:
+    def draw_targets(self, targets: List[dict]) -> None:
         """
-        Dessine toutes les entités de la liste.
+        Dessine toutes les cibles de la liste.
 
         Parameters
         ----------
-        entities : List[dict]
-            Liste de dictionnaires contenant les informations des entités.
+        targets : List[dict]
+            Liste de dictionnaires contenant les informations des cibles.
             Chaque dict doit avoir: 'position', 'radius' (optionnel), 'color' (optionnel)
         """
-        for entity in entities:
-            position = entity.get('position', (0, 0))
-            radius = entity.get('radius', 10)
-            color = entity.get('color', "#FF6464")
+        for target in targets:
+            position = target.get('position', (0, 0))
+            radius = target.get('radius', 10)
+            color = target.get('color', "#FF6464")
             self.draw_entity(position, radius, color)
 
     def render(self, world : World) -> None:
@@ -104,8 +106,9 @@ class Renderer:
             L'état actuel du monde du jeu, contenant les informations du joueur et des entités.
         """
         self.draw_background()
-        self.draw_entities(world.entities)
-        self.draw_player(world.player.position)
+        # TODO : Implementer le dessin des entités et du joueur
+        #self.draw_entities(world.targets)
+        #self.draw_player(world.player.position)
         pygame.display.flip()
 
     def set_background_color(self, color: str = "#414141") -> None:

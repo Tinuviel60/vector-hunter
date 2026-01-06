@@ -1,5 +1,7 @@
 
 from typing import TYPE_CHECKING
+
+from vect_hunt.worlds import World
 from vect_hunt.rendering import Renderer
 
 if TYPE_CHECKING:
@@ -25,7 +27,7 @@ class Game:
         Initialise les composants du jeu.
         """
         # TODO: Initialize game components, load assets, etc.
-        pass
+        self.world = World()
 
         # On affecte un renderer au jeu
     
@@ -56,7 +58,7 @@ class Game:
         Rendu graphique du jeu.
         """
 
-        self.renderer.render(self) 
+        self.renderer.render(self.world) 
             
 
             
