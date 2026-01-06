@@ -1,0 +1,32 @@
+{
+    "python.defaultInterpreterPath": "venv/bin/python",
+    "python.languageServer": "Pylance",
+    "python.analysis.typeCheckingMode": "basic",
+    "python.analysis.autoSearchPaths": true,
+    "python.analysis.useLibraryCodeForTypes": true,
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "python.envFile": "${workspaceFolder}/.env",
+    "files.exclude": {
+        "**/__pycache__": true
+    },
+    "editor.rulers": [
+    88
+    ],
+    "VsCodeTaskButtons.showCounter": true,
+    "VsCodeTaskButtons.tasks": [
+        {
+            "label": "$(check) Check Code Quality",
+            "task": "Build – Code Quality (check only)",
+            "tooltip": "Run Black, Isort, and Flake8 to verify code quality"
+        },
+        {
+            "label": "$(tools) Apply Code Quality",
+            "task": "Build – Code Quality (apply format)",
+            "tooltip": "Apply Black and Isort formatting, then run Flake8"
+        }
+    ]
+}

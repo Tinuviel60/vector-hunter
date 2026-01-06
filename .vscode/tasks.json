@@ -1,0 +1,72 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Black (check)",
+            "type": "shell",
+            "command": "mkdir -p logs/code_quality/black_logs && .venv/bin/python -m black --verbose --diff sources/ tests/ | tee logs/code_quality/black_logs/black_check.log",
+            "problemMatcher": [],
+            "group": "test"
+        },
+        {
+            "label": "Black (apply)",
+            "type": "shell",
+            "command": ".venv/bin/python -m black --verbose sources/ tests/",
+            "problemMatcher": [],
+            "group": "test"
+        },
+        {
+            "label": "Isort (check)",
+            "type": "shell",
+            "command": "mkdir -p logs/code_quality/isort_logs && .venv/bin/python -m isort --check-only --diff --verbose sources/ tests/ | tee logs/code_quality/isort_logs/isort_check.log",
+            "problemMatcher": [],
+            "group": "test"
+        },
+        {
+            "label": "Isort (apply)",
+            "type": "shell",
+            "command": "mkdir -p logs/code_quality/isort_logs && .venv/bin/python -m isort --verbose sources/ tests/ | tee logs/code_quality/isort_logs/isort_check.log",
+            "problemMatcher": [],
+            "group": "test"
+        },
+        {
+            "label": "Flake8 (lint)",
+            "type": "shell",
+            "command": "mkdir -p logs/code_quality/flake8_logs && .venv/bin/python -m flake8 sources/ tests/ --max-line-length=88 --statistics --count --show-source | tee logs/code_quality/flake8_logs/flake8_check.log",
+            "problemMatcher": [],
+            "group": "test"
+        },
+
+        // =========================
+        // BUILD – CHECK ONLY
+        // =========================
+        {
+            "label": "Build – Code Quality (check only)",
+            "dependsOn": [
+                "Black (check)",
+                "Isort (check)",
+                "Flake8 (lint)"
+            ],
+            "dependsOrder": "sequence",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+
+        // =========================
+        // BUILD – APPLY FORMAT
+        // =========================
+        {
+            "label": "Build – Code Quality (apply format)",
+            "dependsOn": [
+                "Black (check)",
+                "Black (apply)",
+                "Isort (apply)",
+                "Flake8 (lint)"
+            ],
+            "dependsOrder": "sequence",
+            "group": "build"
+        }
+    ]
+}

@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "PROJECT-NAME"
+version = "0.1.0"
+description = ""
+authors = [
+    { name = "Your Name" }
+]
+
+[tool.setuptools]
+package-dir = {"" = "sources"}
+
+[tool.setuptools.packages.find]
+where = ["sources"]
