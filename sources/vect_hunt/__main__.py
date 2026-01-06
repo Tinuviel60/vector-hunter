@@ -52,6 +52,7 @@ def main() -> None:
 
 
     game = Game()
+    game.initiate_rendering(screen)
 
     running = True
     accumulator = 0.0  # Accumulateur de temps réel

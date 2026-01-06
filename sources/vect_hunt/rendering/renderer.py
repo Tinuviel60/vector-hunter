@@ -31,7 +31,7 @@ class Renderer:
         """
         Efface l'écran avec la couleur de fond.
         """
-        self.screen.fill(self.background_color)
+        self.screen.fill(hex_to_rgb(self.background_color))
 
     def draw_background(self) -> None:
         """
