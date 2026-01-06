@@ -7,7 +7,7 @@ name = "vector-hunter"
 version = "0.1.0"
 description = ""
 authors = [
-    { name = "Your Name" }
+    { name = "tinuviel60" }
 ]
 
 [tool.setuptools]

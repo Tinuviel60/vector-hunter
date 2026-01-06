@@ -1,16 +1,21 @@
 
-from vect_hunt.rendering import Render
+from typing import TYPE_CHECKING
+from vect_hunt.rendering import Renderer
 
+if TYPE_CHECKING:
+    import pygame
+    
 class Game:
     """
     Main game class that handles initialization, update loop, and rendering.
     """
     
-    def __init__(self) -> None:
+    def __init__(self):
         """
         Initialize le jeu pour la partie.
 
         """
+        self.start_render:bool = False
         self.initialize()
         
 
@@ -23,8 +28,19 @@ class Game:
         pass
 
         # On affecte un renderer au jeu
-        self.renderer = Renderer()
-        
+    
+    def initiate_rendering(self, screen:  pygame.Surface) -> None:
+        """
+        Démarre le rendu graphique du jeu.
+
+        Parameters:
+        -----------
+        screen : pygame.Surface
+            La surface Pygame où le jeu sera rendu.
+        """
+        self.renderer = Renderer(screen)
+        self.start_render = True
+
     def update(self, delta_time: float) -> None:
         """
         Met à jour la logique du jeu.
@@ -40,7 +56,7 @@ class Game:
         Rendu graphique du jeu.
         """
 
-        self.renderer.render()
+        self.renderer.render(self) 
             
 
             

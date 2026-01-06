@@ -51,7 +51,7 @@ def main() -> None:
     clock = pygame.time.Clock()
 
 
-    game = Game(screen)
+    game = Game()
 
     running = True
     accumulator = 0.0  # Accumulateur de temps réel
