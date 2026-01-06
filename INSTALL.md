@@ -1,6 +1,6 @@
 # Installation
 
-Ce document explique comment installer et lancer le projet **PROJECT-NAME**
+Ce document explique comment installer et lancer le projet **vector-hunter**
 dans sa forme actuelle.  
 Il s’adresse à un utilisateur souhaitant exécuter la simulation, pas
 nécessairement contribuer au développement.
@@ -37,7 +37,7 @@ pip install -e .
 Le projet est exécutable comme un module Python :
 
 ```
-python -m PROJECT_MODULE
+python -m vect_hunt
 ```
 La simulation s’exécute alors dans le terminal ou dans la fenêtre graphique
 selon la configuration actuelle du projet.

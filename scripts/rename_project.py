@@ -7,16 +7,16 @@ Renomme :
 - le nom du module Python
 
 Placeholders :
-- PROJECT-NAME
-- PROJECT_MODULE
+- vector-hunter
+- vect_hunt
 """
 
 from pathlib import Path
 import re
 import sys
 
-OLD_PROJECT = "PROJECT-NAME"
-OLD_MODULE = "PROJECT_MODULE"
+OLD_PROJECT = "vector-hunter"
+OLD_MODULE = "vect_hunt"
 
 EXCLUDED_DIRS = {
     "venv",

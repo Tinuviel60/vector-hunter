@@ -1,6 +1,6 @@
 # Workflow de développement
 
-Ce document décrit la manière dont le projet **PROJECT-NAME** est développé.
+Ce document décrit la manière dont le projet **vector-hunter** est développé.
 Il ne s’agit pas d’une obligation pour les contributeurs, mais d’un aperçu
 du workflow actuel.
 
