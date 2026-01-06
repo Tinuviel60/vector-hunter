@@ -3,7 +3,6 @@ import logging
 import pygame
 
 from vect_hunt.game import Game
-from vect_hunt.rendering import Render
 from .logging_config import setup_logging
 
 logger = logging.getLogger(__name__)
@@ -39,7 +38,7 @@ setup_logging(
     enable_console=True,
 )
 
-def main():
+def main() -> None:
     """
     Fonction principale de l'application. 
     Initialise Pygame, crée la fenêtre,
@@ -75,7 +74,7 @@ def main():
 
         # Rendu graphique
         game.render()
-        
+
         # Utiliser pour stopper la boucle lors du profiling
         if PROFILING:
             global TICK_LIMIT
