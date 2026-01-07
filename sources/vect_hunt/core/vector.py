@@ -68,6 +68,17 @@ class Vector2D:
         self._x /= mag
         self._y /= mag
 
+    def normal(self) -> "Vector2D":
+        """
+        Calcule le vecteur normal (perpendiculaire) à ce vecteur.
+
+        Returns
+        -------
+        Vector2D
+            Le vecteur normal.
+        """
+        return Vector2D(-self._y, self._x)
+
     def dot(self, other: "Vector2D") -> float:
         """
         Calcule le produit scalaire entre ce vecteur et un autre.

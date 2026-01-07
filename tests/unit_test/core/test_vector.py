@@ -84,6 +84,22 @@ def test_vector_normalize(x, y, expected_magnitude):
     assert math.isclose(v.magnitude(), expected_magnitude)
 
 
+@pytest.mark.parametrize(
+    "x, y, expected_x, expected_y",
+    [
+        (1, 0, 0, 1),
+        (0, 1, -1, 0),
+        (-1, 0, 0, -1),
+        (0, -1, 1, 0),
+        (3, 4, -4, 3),
+    ],
+)
+def test_vector_normal(x, y, expected_x, expected_y):
+    v = Vector2D(x, y)
+    n = v.normal()
+    assert n == Vector2D(expected_x, expected_y)
+
+
 # --------------------
 # Produit scalaire
 # --------------------
