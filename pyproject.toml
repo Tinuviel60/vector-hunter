@@ -10,8 +10,18 @@ authors = [
     { name = "tinuviel60" }
 ]
 
+dependencies = [
+    "pygame>=2.5",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "black",
+]
+
 [tool.setuptools]
-package-dir = {"" = "sources"}
+package-dir = { "" = "sources" }
 
 [tool.setuptools.packages.find]
 where = ["sources"]
