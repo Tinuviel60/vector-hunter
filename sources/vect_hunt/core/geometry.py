@@ -1,6 +1,6 @@
-import math
 from typing import List, Tuple
-from vect_hunt.core import Position2D, Vector2D
+from .position import Position2D
+from .vector import Vector2D
 
 """
 Module contenant les fonctions géométriques pour les calculs de collision.
@@ -51,6 +51,7 @@ def get_polygon_normals(corners: List[Position2D]) -> List[Vector2D]:
         normals.append(normalized_normal)
 
     return normals
+
 
 def project_polygon_on_axis(
     corners: List[Position2D], axis: Vector2D

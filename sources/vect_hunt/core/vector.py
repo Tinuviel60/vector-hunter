@@ -168,6 +168,23 @@ class Vector2D:
         """
         return (self._x, self._y)
 
+    @staticmethod
+    def from_direction(direction: float) -> "Vector2D":
+        """
+        Crée un vecteur unitaire à partir d'une direction (angle en radians).
+
+        Parameters
+        ----------
+        direction : float
+            L'angle en radians.
+
+        Returns
+        -------
+        Vector2D
+            Le vecteur unitaire correspondant à l'angle donné.
+        """
+        return Vector2D(math.cos(direction), math.sin(direction))
+
     def __add__(self, other: "Vector2D") -> "Vector2D":
         """
         Additionne deux vecteurs.

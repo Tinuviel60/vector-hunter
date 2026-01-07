@@ -29,7 +29,6 @@ class Transform:
         """
         self.position = position
         self.rotation = rotation
-        
 
     def translate(self, dx: float, dy: float) -> None:
         """
@@ -93,7 +92,7 @@ class Transform:
         """
 
         return Vector2D.from_direction(self.rotation)
-    
+
     def right(self) -> Vector2D:
         """
         Retourne le vecteur directionnel perpendiculaire à l'orientation
@@ -106,7 +105,7 @@ class Transform:
         """
 
         return Vector2D.from_direction(self.rotation + math.pi / 2)
-    
+
     def behind(self) -> Vector2D:
         """
         Retourne le vecteur directionnel opposé à l'orientation
@@ -119,7 +118,7 @@ class Transform:
         """
 
         return Vector2D.from_direction(self.rotation + math.pi)
-    
+
     def left(self) -> Vector2D:
         """
         Retourne le vecteur directionnel perpendiculaire à l'orientation
