@@ -39,11 +39,11 @@ class Vector2D:
         float
             La magnitude du vecteur.
         """
-        return math.sqrt(self._x ** 2 + self._y ** 2)
+        return math.hypot(self._x, self._y)
     
-    def normalize(self) -> 'Vector2D':
+    def normalized(self) -> 'Vector2D':
         """
-        Normalise le vecteur (le rend de longueur 1).
+        Renvoie le vecteur normalisé (le rend de longueur 1).
 
         Returns
         -------
@@ -55,7 +55,48 @@ class Vector2D:
             return Vector2D(0, 0)
         return Vector2D(self._x / mag, self._y / mag)
     
-    def set_x(self, x: float) -> None:
+    def normalize(self) -> None:
+        """
+        Normalise le vecteur (le rend de longueur 1).
+        """
+        mag = self.magnitude()
+        if mag == 0:
+            self._x = 0.0
+            self._y = 0.0
+            return
+        self._x /= mag
+        self._y /= mag
+
+    def dot(self, other: 'Vector2D') -> float:
+        """
+        Calcule le produit scalaire entre ce vecteur et un autre.
+
+        Parameters
+        ----------
+        other : Vector2D
+            Le vecteur avec lequel calculer le produit scalaire.
+
+        Returns
+        -------
+        float
+            Le produit scalaire des deux vecteurs.
+        """
+        return self._x * other._x + self._y * other._y
+
+    @property
+    def x(self) -> float:
+        """
+        Obtient la composante x du vecteur.
+
+        Returns
+        -------
+        float
+            La composante x du vecteur.
+        """
+        return self._x
+    
+    @x.setter
+    def x(self, x: float) -> None:
         """
         Définit la composante x du vecteur.
 
@@ -66,7 +107,20 @@ class Vector2D:
         """
         self._x = x
     
-    def set_y(self, y: float) -> None:
+    @property
+    def y(self) -> float:
+        """
+        Obtient la composante y du vecteur.
+
+        Returns
+        -------
+        float
+            La composante y du vecteur.
+        """
+        return self._y
+    
+    @y.setter
+    def y(self, y: float) -> None:
         """
         Définit la composante y du vecteur.
 
@@ -150,7 +204,7 @@ class Vector2D:
         """
         return Vector2D(self._x * scalar, self._y * scalar)
     
-    def __div__(self, scalar: float) -> 'Vector2D':
+    def __truediv__(self, scalar: float) -> 'Vector2D':
         """
         Divise le vecteur par un scalaire.
 
@@ -178,3 +232,20 @@ class Vector2D:
             La représentation en chaîne du vecteur.
         """
         return f"Vector2D(x={self._x}, y={self._y})"
+    
+    def __eq__(self, other: "Vector2D") -> bool:
+        """
+        Vérifie l'égalité entre deux vecteurs.
+
+        Parameters
+        ----------
+        other : object
+            Le vecteur à comparer.
+
+        Returns
+        -------
+        bool
+            True si les vecteurs sont égaux, False sinon.
+        """
+
+        return math.isclose(self._x, other._x) and math.isclose(self._y, other._y)
