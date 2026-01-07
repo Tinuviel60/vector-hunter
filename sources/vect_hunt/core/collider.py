@@ -1,14 +1,15 @@
-from vect_hunt.core import Position2D
+from .position import Position2D
+from .transform import Transform
 import math
-from typing import Tuple, List
-from vect_hunt.core import geometry
-
+from typing import Tuple
+from vect_hunt.core import geometry 
 
 class Collider:
-    def __init__(self, solid: bool = True):
+    def __init__(self, transform: Transform = Transform(), solid: bool = True):
         """
         Classe de base pour les colliders.
         """
+        self.transform = transform
         self.solid = solid
         self.aabb = self.calculate_aabb()
 
@@ -90,21 +91,17 @@ class BoxCollider(Collider):
         height : float
             La hauteur du BoxCollider.
         orientation : float
-            L'orientation du BoxCollider en degrés. Sera stockée en radians. Par défaut à 0.
+            L'orientation du BoxCollider en radians. Par défaut à 0.
         """
-        self.center = center
         self.width = width
         self.height = height
 
-        self.orientation = math.radians(orientation)
-        self.cos_orientation = math.cos(self.orientation)
-        self.sin_orientation = math.sin(self.orientation)
+        transform = Transform(position=center, rotation=orientation)
+        super().__init__(transform, solid)
 
         self.corners = self.calculate_corners()
-
-        # Appeler super().__init__() après avoir initialisé les attributs nécessaires
-        # car calculate_aabb() dépend de self.corners
-        super().__init__(solid)
+        self.cos_orientation = math.cos(self.transform.rotation)
+        self.sin_orientation = math.sin(self.transform.rotation)
 
     def get_area(self):
         """
@@ -146,9 +143,7 @@ class BoxCollider(Collider):
         for corner in corners:
             rotated_x = corner.x * cos_angle - corner.y * sin_angle
             rotated_y = corner.x * sin_angle + corner.y * cos_angle
-            rotated_corners.append(
-                Position2D(rotated_x + self.center.x, rotated_y + self.center.y)
-            )
+            rotated_corners.append( Position2D(rotated_x + self.transform.position.x, rotated_y + self.transform.position.y))
 
         return rotated_corners
 
@@ -225,12 +220,12 @@ class BoxCollider(Collider):
             Le point le plus proche sur le box.
         """
         # Transforme le point dans le repère local du box
-        local_x = point.x - self.center.x
-        local_y = point.y - self.center.y
+        local_x = point.x - self.transform.position.x
+        local_y = point.y - self.transform.position.y
 
         # Rotation inverse pour passer dans le repère du box
-        cos_angle = math.cos(-self.orientation)
-        sin_angle = math.sin(-self.orientation)
+        cos_angle = math.cos(-self.transform.rotation)
+        sin_angle = math.sin(-self.transform.rotation)
 
         rotated_x = local_x * cos_angle - local_y * sin_angle
         rotated_y = local_x * sin_angle + local_y * cos_angle
@@ -243,12 +238,11 @@ class BoxCollider(Collider):
         clamped_y = max(-half_height, min(half_height, rotated_y))
 
         # Rotation directe pour revenir au repère global
-        cos_angle = math.cos(self.orientation)
-        sin_angle = math.sin(self.orientation)
+        cos_angle = math.cos(self.transform.rotation)
+        sin_angle = math.sin(self.transform.rotation)
 
-        world_x = clamped_x * cos_angle - clamped_y * sin_angle + self.center.x
-        world_y = clamped_x * sin_angle + clamped_y * cos_angle + self.center.y
-
+        world_x = clamped_x * cos_angle - clamped_y * sin_angle + self.transform.position.x
+        world_y = clamped_x * sin_angle + clamped_y * cos_angle + self.transform.position.y
         return Position2D(world_x, world_y)
 
     def _collides_with_circle(self, circle: "CircleCollider") -> bool:
@@ -265,8 +259,8 @@ class BoxCollider(Collider):
         bool
             True si le BoxCollider et le CircleCollider entrent en collision, False sinon.
         """
-        closest_point = self.get_closest_point_on_box(circle.center)
-        distance_squared = geometry.distance_squared(circle.center, closest_point)
+        closest_point = self.get_closest_point_on_box(circle.transform.position)
+        distance_squared = geometry.distance_squared(circle.transform.position, closest_point)
         return distance_squared <= (circle.radius**2)
 
     def collides_with(self, other: "Collider") -> bool:
@@ -311,10 +305,11 @@ class CircleCollider(Collider):
         radius : float
             Le rayon du CircleCollider.
         """
-        super().__init__(solid)
 
-        self.center = center
+        transform = Transform(center)
         self.radius = radius
+
+        super().__init__(transform, solid)
 
         self.aabb = self.calculate_aabb()
 
@@ -338,10 +333,10 @@ class CircleCollider(Collider):
         (Position2D, Position2D)
             Un tuple contenant le coin inférieur gauche et le coin supérieur droit de l'AABB.
         """
-        min_x = self.center.x - self.radius
-        max_x = self.center.x + self.radius
-        min_y = self.center.y - self.radius
-        max_y = self.center.y + self.radius
+        min_x = self.transform.position.x - self.radius
+        max_x = self.transform.position.x + self.radius
+        min_y = self.transform.position.y - self.radius
+        max_y = self.transform.position.y + self.radius
 
         return (Position2D(min_x, min_y), Position2D(max_x, max_y))
 
@@ -359,7 +354,7 @@ class CircleCollider(Collider):
         bool
             True si les CircleColliders entrent en collision, False sinon.
         """
-        distance_squared = geometry.distance_squared(self.center, other.center)
+        distance_squared = geometry.distance_squared(self.transform.position, other.transform.position)
         radius_sum = self.radius + other.radius
         return distance_squared <= (radius_sum**2)
 
@@ -377,8 +372,8 @@ class CircleCollider(Collider):
         bool
             True si le CircleCollider et le BoxCollider entrent en collision, False sinon.
         """
-        closest_point = box.get_closest_point_on_box(self.center)
-        distance_squared = geometry.distance_squared(self.center, closest_point)
+        closest_point = box.get_closest_point_on_box(self.transform.position)
+        distance_squared = geometry.distance_squared(self.transform.position, closest_point)
         return distance_squared <= (self.radius**2)
 
     def collides_with(self, other: "Collider") -> bool:
