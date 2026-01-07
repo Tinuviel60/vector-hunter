@@ -1,6 +1,7 @@
 import math
 from .vector import Vector2D
 
+
 class Position2D:
     """
     Répresente une position 2D.
@@ -31,7 +32,7 @@ class Position2D:
             La composante x de la position.
         """
         return self._x
-    
+
     @x.setter
     def x(self, x: float) -> None:
         """
@@ -43,7 +44,7 @@ class Position2D:
             La nouvelle valeur de la composante x.
         """
         self._x = x
-    
+
     @property
     def y(self) -> float:
         """
@@ -55,7 +56,7 @@ class Position2D:
             La composante y de la position.
         """
         return self._y
-    
+
     @y.setter
     def y(self, y: float) -> None:
         """
@@ -92,8 +93,8 @@ class Position2D:
             Un tuple contenant les composantes (x, y) de la position.
         """
         return (self._x, self._y)
-    
-    def distance_to(self, other: 'Position2D') -> float:
+
+    def distance_to(self, other: "Position2D") -> float:
         """
         Calcule la distance entre cette position et une autre.
 
@@ -123,7 +124,7 @@ class Position2D:
         self._x += vector.x
         self._y += vector.y
 
-    def translated(self, vector: Vector2D) -> 'Position2D':
+    def translated(self, vector: Vector2D) -> "Position2D":
         """
         Retourne une nouvelle position traduite par un vecteur.
 
@@ -139,7 +140,7 @@ class Position2D:
         """
         return Position2D(self._x + vector.x, self._y + vector.y)
 
-    def __eq__(self, other: 'Position2D') -> bool:
+    def __eq__(self, other: "Position2D") -> bool:
         """
         Vérifie si deux positions sont égales.
 

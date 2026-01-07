@@ -38,9 +38,10 @@ setup_logging(
     enable_console=True,
 )
 
+
 def main() -> None:
     """
-    Fonction principale de l'application. 
+    Fonction principale de l'application.
     Initialise Pygame, crée la fenêtre,
     et lance la boucle principale du jeu.
     """
@@ -49,7 +50,6 @@ def main() -> None:
     screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
     pygame.display.set_caption("Vector Hunter")
     clock = pygame.time.Clock()
-
 
     game = Game()
     game.initiate_rendering(screen)
@@ -65,8 +65,14 @@ def main() -> None:
         accumulator += frame_time
 
         if accumulator > SIM_DT * 4:
-            logger.warning("Temps d'execution trop long, limitation de l'accumulateur | accumulator=%f | frame_time=%f", accumulator, frame_time)
-            accumulator = SIM_DT * 4  # Limiter l'accumulateur pour éviter les spirales de la mort
+            logger.warning(
+                "Temps d'execution trop long, limitation de l'accumulateur | accumulator=%f | frame_time=%f",
+                accumulator,
+                frame_time,
+            )
+            accumulator = (
+                SIM_DT * 4
+            )  # Limiter l'accumulateur pour éviter les spirales de la mort
 
         while accumulator >= SIM_DT:
             # Mettre à jour la simulation avec un pas de temps fixe

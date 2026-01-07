@@ -7,10 +7,12 @@ from vect_hunt.core import Vector2D
 # Création & accès
 # --------------------
 
+
 def test_vector_default_initialization():
     v = Vector2D()
     assert v.x == 0.0
     assert v.y == 0.0
+
 
 @pytest.mark.parametrize(
     "x, y",
@@ -32,17 +34,12 @@ def test_vector_custom_initialization(x, y):
 # --------------------
 @pytest.mark.parametrize(
     "x, y, expected_magnitude",
-    [
-        (0, 0, 0.0),
-        (-3, -4, 5.0),
-        (3, 4, 5.0),
-        (5, 12, 13.0),
-        (8, 15, 17.0)
-    ],
+    [(0, 0, 0.0), (-3, -4, 5.0), (3, 4, 5.0), (5, 12, 13.0), (8, 15, 17.0)],
 )
 def test_vector_magnitude(x, y, expected_magnitude):
     v = Vector2D(x, y)
     assert math.isclose(v.magnitude(), expected_magnitude)
+
 
 @pytest.mark.parametrize(
     "x, y, expected_orientation",
@@ -53,24 +50,20 @@ def test_vector_magnitude(x, y, expected_magnitude):
         (-1.0, 0.0, math.pi),
         (0.0, -1.0, -math.pi / 2),
         (1.0, 1.0, math.pi / 4),
-        (-1.0, 1.0, 3 * math.pi / 4)
+        (-1.0, 1.0, 3 * math.pi / 4),
     ],
 )
 def test_vector_orientation(x, y, expected_orientation):
     v = Vector2D(x, y)
     assert math.isclose(v.orientation(), expected_orientation)
 
+
 # --------------------
 # Normalisation
 # --------------------
 @pytest.mark.parametrize(
     "x, y, expected_magnitude, expected_old_magnitude",
-    [
-        (0, 0, 0.0, 0.0),
-        (3, 4, 1.0, 5.0),
-        (5, 12, 1.0, 13.0),
-        (8, 15, 1.0, 17.0)
-    ],
+    [(0, 0, 0.0, 0.0), (3, 4, 1.0, 5.0), (5, 12, 1.0, 13.0), (8, 15, 1.0, 17.0)],
 )
 def test_vector_normalized(x, y, expected_magnitude, expected_old_magnitude):
     v = Vector2D(x, y)
@@ -80,19 +73,16 @@ def test_vector_normalized(x, y, expected_magnitude, expected_old_magnitude):
     assert math.isclose(vn.magnitude(), expected_magnitude)
     assert math.isclose(v.magnitude(), expected_old_magnitude)
 
+
 @pytest.mark.parametrize(
     "x, y, expected_magnitude",
-    [
-        (0, 0, 0.0),
-        (3, 4, 1.0),
-        (5, 12, 1.0),
-        (8, 15, 1.0)
-    ],
+    [(0, 0, 0.0), (3, 4, 1.0), (5, 12, 1.0), (8, 15, 1.0)],
 )
 def test_vector_normalize(x, y, expected_magnitude):
     v = Vector2D(x, y)
     v.normalize()
     assert math.isclose(v.magnitude(), expected_magnitude)
+
 
 # --------------------
 # Produit scalaire

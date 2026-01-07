@@ -9,6 +9,7 @@ Module de rendu pour le jeu Vector Hunter.
 Contient la classe Renderer qui gère l'affichage graphique du jeu.
 """
 
+
 class Renderer:
     """
     Classe responsable du rendu graphique du jeu.
@@ -41,9 +42,9 @@ class Renderer:
         """
         self.clear()
 
-
-    def draw_player(self, position: Tuple[float, float], radius: int = 15, 
-                   color: str = "#64C8FF") -> None:
+    def draw_player(
+        self, position: Tuple[float, float], radius: int = 15, color: str = "#64C8FF"
+    ) -> None:
         """
         Dessine le joueur sous forme de cercle.
 
@@ -61,8 +62,9 @@ class Renderer:
         # Bordure plus foncée
         pygame.draw.circle(self.screen, (50, 100, 150), pos, radius, 2)
 
-    def draw_entity(self, position: Tuple[float, float], radius: int = 10,
-                   color: str = "#FF6464") -> None:
+    def draw_entity(
+        self, position: Tuple[float, float], radius: int = 10, color: str = "#FF6464"
+    ) -> None:
         """
         Dessine une entité sous forme de cercle.
 
@@ -91,12 +93,12 @@ class Renderer:
             Chaque dict doit avoir: 'position', 'radius' (optionnel), 'color' (optionnel)
         """
         for target in targets:
-            position = target.get('position', (0, 0))
-            radius = target.get('radius', 10)
-            color = target.get('color', "#FF6464")
+            position = target.get("position", (0, 0))
+            radius = target.get("radius", 10)
+            color = target.get("color", "#FF6464")
             self.draw_entity(position, radius, color)
 
-    def render(self, world : World) -> None:
+    def render(self, world: World) -> None:
         """
         Rend une frame complète du jeu.
 
@@ -107,8 +109,8 @@ class Renderer:
         """
         self.draw_background()
         # TODO : Implementer le dessin des entités et du joueur
-        #self.draw_entities(world.targets)
-        #self.draw_player(world.player.position)
+        # self.draw_entities(world.targets)
+        # self.draw_player(world.player.position)
         pygame.display.flip()
 
     def set_background_color(self, color: str = "#414141") -> None:

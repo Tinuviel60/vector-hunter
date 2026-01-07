@@ -1,5 +1,6 @@
 from typing import List
 
+
 class World:
     """
     Répresente le monde du jeu, contenant les cibles et le joueur.
@@ -9,7 +10,7 @@ class World:
         """
         Initialise un monde de jeu vide.
         """
-        self.targets: List[object] = [] # TODO Define a proper target class
+        self.targets: List[object] = []  # TODO Define a proper target class
         self.player = object()  # TODO Define a proper player class
 
     def add_target(self, target: object) -> None:

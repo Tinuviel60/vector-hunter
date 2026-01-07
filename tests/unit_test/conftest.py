@@ -3,10 +3,8 @@ from unittest.mock import Mock
 import pytest
 
 
-
 # Data fixtures
 #######################################################################################
-
 
 
 # mock fixtures

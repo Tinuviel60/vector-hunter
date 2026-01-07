@@ -9,10 +9,12 @@ from vect_hunt.core import Vector2D
 # Création & accès
 # --------------------
 
+
 def test_position_default_initialization():
     p = Position2D()
     assert p.x == 0.0
     assert p.y == 0.0
+
 
 @pytest.mark.parametrize(
     "x, y",
@@ -65,6 +67,7 @@ def test_distance_to(x1, y1, x2, y2, expected_distance):
     p2 = Position2D(x2, y2)
     assert p1.distance_to(p2) == expected_distance
 
+
 # --------------------
 # Translation
 # --------------------
@@ -85,6 +88,7 @@ def test_translate(x1, y1, x2, y2, expected_x, expected_y):
 
     assert p.x == expected_x
     assert p.y == expected_y
+
 
 # --------------------
 # Égalité
