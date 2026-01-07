@@ -1,0 +1,410 @@
+--- /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/core/geometry.py	2026-01-07 22:10:01.157158+00:00
++++ /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/core/geometry.py	2026-01-07 22:10:01.466840+00:00
+@@ -3,10 +3,11 @@
+ from vect_hunt.core import Position2D, Vector2D
+ 
+ """
+ Module contenant les fonctions géométriques pour les calculs de collision.
+ """
++
+ 
+ def get_polygon_normals(corners: List[Position2D]) -> List[Vector2D]:
+     """
+     Calcule les normales unitaires aux arêtes d'un polygone.
+ 
+@@ -50,11 +51,13 @@
+         normals.append(normalized_normal)
+ 
+     return normals
+ 
+ 
+-def project_polygon_on_axis(corners: List[Position2D], axis: Vector2D) -> Tuple[float, float]:
++def project_polygon_on_axis(
++    corners: List[Position2D], axis: Vector2D
++) -> Tuple[float, float]:
+     """
+     Projette les coins d'un polygone sur un axe et retourne l'intervalle [min, max].
+ 
+     La projection d'un point sur un axe est calculée via le produit scalaire.
+     Cette fonction est utilisée dans l'algorithme SAT pour détecter si deux
+@@ -78,12 +81,12 @@
+     >>> corners = [Position2D(0, 0), Position2D(2, 0), Position2D(2, 1), Position2D(0, 1)]
+     >>> axis = Vector2D(1, 0)  # Axe horizontal
+     >>> project_polygon_on_axis(corners, axis)
+     (0.0, 2.0)
+     """
+-    min_proj = float('inf')
+-    max_proj = float('-inf')
++    min_proj = float("inf")
++    max_proj = float("-inf")
+ 
+     for corner in corners:
+         # Convertit Position2D en Vector2D pour utiliser dot()
+         corner_vector = Vector2D(corner.x, corner.y)
+ 
+@@ -123,10 +126,11 @@
+     >>> intervals_overlap(0, 1, 2, 3)
+     False
+     """
+     return max1 >= min2 and max2 >= min1
+ 
++
+ def distance_squared(p1: Position2D, p2: Position2D) -> float:
+     """
+     Calcule la distance au carré entre deux points.
+ 
+     Utilise la distance au carré plutôt que la distance réelle pour éviter
+--- /home/Tinuviel60/Documents/Development/Python/vector-hunter/tests/unit_test/core/test_vector.py	2026-01-07 21:45:35.524527+00:00
++++ /home/Tinuviel60/Documents/Development/Python/vector-hunter/tests/unit_test/core/test_vector.py	2026-01-07 22:10:01.549166+00:00
+@@ -81,25 +81,26 @@
+ def test_vector_normalize(x, y, expected_magnitude):
+     v = Vector2D(x, y)
+     v.normalize()
+     assert math.isclose(v.magnitude(), expected_magnitude)
+ 
++
+ @pytest.mark.parametrize(
+     "x, y, expected_x, expected_y",
+     [
+         (1, 0, 0, 1),
+         (0, 1, -1, 0),
+         (-1, 0, 0, -1),
+         (0, -1, 1, 0),
+         (3, 4, -4, 3),
+     ],
+ )
+-
+ def test_vector_normal(x, y, expected_x, expected_y):
+     v = Vector2D(x, y)
+     n = v.normal()
+     assert n == Vector2D(expected_x, expected_y)
++
+ 
+ # --------------------
+ # Produit scalaire
+ # --------------------
+ @pytest.mark.parametrize(
+--- /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/core/collider.py	2026-01-07 22:08:31.181244+00:00
++++ /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/core/collider.py	2026-01-07 22:10:01.557184+00:00
+@@ -1,10 +1,11 @@
+ from vect_hunt.core import Position2D
+ import math
+ from typing import Tuple, List
+ from vect_hunt.core import geometry
+ 
++
+ class Collider:
+     def __init__(self, solid: bool = True):
+         """
+         Classe de base pour les colliders.
+         """
+@@ -19,11 +20,11 @@
+         -------
+         Tuple[Position2D, Position2D]
+             Un tuple contenant le coin inférieur gauche et le coin supérieur droit de l'AABB.
+         """
+         return (Position2D(0, 0), Position2D(0, 0))
+-    
++
+     def aabb_intersects(self, other: "Collider") -> bool:
+         """
+         Vérifie si l'AABB de ce collider intersecte avec celle d'un autre collider.
+ 
+         Parameters
+@@ -37,17 +38,21 @@
+             True si les AABB s'intersectent, False sinon.
+         """
+         a_min, a_max = self.aabb
+         b_min, b_max = other.aabb
+ 
+-        return (a_min.x <= b_max.x and a_max.x >= b_min.x and
+-                a_min.y <= b_max.y and a_max.y >= b_min.y)
+-    
++        return (
++            a_min.x <= b_max.x
++            and a_max.x >= b_min.x
++            and a_min.y <= b_max.y
++            and a_max.y >= b_min.y
++        )
++
+     def collides_with(self, other: "Collider") -> bool:
+         """
+         Vérifie si ce collider entre en collision avec un autre collider.
+-        Vérifie d'abord que les AABB s'intersectent, puis renvoie vers la 
++        Vérifie d'abord que les AABB s'intersectent, puis renvoie vers la
+         méthode spécifique de collision selon le type de collider.
+ 
+         Parameters
+         ----------
+         other : Collider
+@@ -56,14 +61,24 @@
+         Returns
+         -------
+         bool
+             True si les colliders entrent en collision, False sinon.
+         """
+-        raise NotImplementedError("Cette méthode doit être implémentée dans les sous-classes.")
++        raise NotImplementedError(
++            "Cette méthode doit être implémentée dans les sous-classes."
++        )
++
+ 
+ class BoxCollider(Collider):
+-    def __init__(self, center: Position2D, width: float, height: float, orientation: float = 0.0, solid: bool = True):
++    def __init__(
++        self,
++        center: Position2D,
++        width: float,
++        height: float,
++        orientation: float = 0.0,
++        solid: bool = True,
++    ):
+         """
+         Initialise un BoxCollider avec une largeur, une hauteur et une orientation.
+         Utiliser dans les systèmes de collision pour définir des zones rectangulaires.
+ 
+         Parameters
+@@ -84,11 +99,11 @@
+         self.orientation = math.radians(orientation)
+         self.cos_orientation = math.cos(self.orientation)
+         self.sin_orientation = math.sin(self.orientation)
+ 
+         self.corners = self.calculate_corners()
+-        
++
+         # Appeler super().__init__() après avoir initialisé les attributs nécessaires
+         # car calculate_aabb() dépend de self.corners
+         super().__init__(solid)
+ 
+     def get_area(self):
+@@ -99,11 +114,11 @@
+         -------
+         float
+             L'aire du rectangle.
+         """
+         return self.width * self.height
+-    
++
+     def calculate_corners(self):
+         """
+         Calcule les coordonnées des coins du BoxCollider.
+ 
+         Returns
+@@ -115,49 +130,51 @@
+         half_width = self.width / 2
+         half_height = self.height / 2
+ 
+         # Calcul des coins avant rotation
+         corners = [
+-            Position2D(-half_width, half_height),   # top-left
+-            Position2D(half_width, half_height),    # top-right
+-            Position2D(half_width, -half_height),   # bottom-right
+-            Position2D(-half_width, -half_height)   # bottom-left
++            Position2D(-half_width, half_height),  # top-left
++            Position2D(half_width, half_height),  # top-right
++            Position2D(half_width, -half_height),  # bottom-right
++            Position2D(-half_width, -half_height),  # bottom-left
+         ]
+ 
+         # Rotation des coins autour du centre
+         rotated_corners = []
+         cos_angle = self.cos_orientation
+         sin_angle = self.sin_orientation
+ 
+         for corner in corners:
+             rotated_x = corner.x * cos_angle - corner.y * sin_angle
+             rotated_y = corner.x * sin_angle + corner.y * cos_angle
+-            rotated_corners.append(Position2D(rotated_x + self.center.x, rotated_y + self.center.y))
++            rotated_corners.append(
++                Position2D(rotated_x + self.center.x, rotated_y + self.center.y)
++            )
+ 
+         return rotated_corners
+-    
++
+     def calculate_aabb(self) -> Tuple[Position2D, Position2D]:
+         """
+         Calcule l'AABB (Axis-Aligned Bounding Box) du BoxCollider.
+ 
+         Returns
+         -------
+         Tuple[Position2D, Position2D]
+-            Un tuple contenant le coin inférieur gauche et 
++            Un tuple contenant le coin inférieur gauche et
+             le coin supérieur droit de l'AABB.
+         """
+ 
+         min_x = min(corner.x for corner in self.corners)
+         max_x = max(corner.x for corner in self.corners)
+         min_y = min(corner.y for corner in self.corners)
+         max_y = max(corner.y for corner in self.corners)
+ 
+         return (Position2D(min_x, min_y), Position2D(max_x, max_y))
+-    
++
+     def _collides_with_box(self, other: "BoxCollider") -> bool:
+         """
+-        Vérifie la collision entre deux BoxColliders en utilisant 
++        Vérifie la collision entre deux BoxColliders en utilisant
+         la méthode de séparation des axes (SAT).
+ 
+         Parameters
+         ----------
+         other : BoxCollider
+@@ -172,25 +189,27 @@
+         # Obtenir les coins des deux BoxColliders
+         corners1 = self.corners
+         corners2 = other.corners
+ 
+         # Obtenir les axes de projection (normales des arêtes)
+-        axes = geometry.get_polygon_normals(corners1) + geometry.get_polygon_normals(corners2)
++        axes = geometry.get_polygon_normals(corners1) + geometry.get_polygon_normals(
++            corners2
++        )
+ 
+         # Vérifier la projection sur chaque axe
+         for axis in axes:
+             min1, max1 = geometry.project_polygon_on_axis(corners1, axis)
+             min2, max2 = geometry.project_polygon_on_axis(corners2, axis)
+ 
+             if geometry.intervals_overlap(min1, max1, min2, max2) is False:
+                 return False  # Séparation trouvée
+ 
+         return True  # Pas de séparation trouvée, collision détectée
+-    
++
+     def get_closest_point_on_box(self, point: Position2D) -> Position2D:
+         """
+-        Trouve le point le plus proche sur un BoxCollider orienté 
++        Trouve le point le plus proche sur un BoxCollider orienté
+         à partir d'un point donné.
+ 
+         Cette fonction transforme le point dans le repère local du box, trouve le
+         point le plus proche dans ce repère, puis le retransforme dans le repère global.
+         Utilisée pour la détection de collision Circle-Box.
+@@ -229,11 +248,11 @@
+ 
+         world_x = clamped_x * cos_angle - clamped_y * sin_angle + self.center.x
+         world_y = clamped_x * sin_angle + clamped_y * cos_angle + self.center.y
+ 
+         return Position2D(world_x, world_y)
+-    
++
+     def _collides_with_circle(self, circle: "CircleCollider") -> bool:
+         """
+         Vérifie la collision entre un BoxCollider et un CircleCollider.
+ 
+         Parameters
+@@ -246,16 +265,16 @@
+         bool
+             True si le BoxCollider et le CircleCollider entrent en collision, False sinon.
+         """
+         closest_point = self.get_closest_point_on_box(circle.center)
+         distance_squared = geometry.distance_squared(circle.center, closest_point)
+-        return distance_squared <= (circle.radius ** 2)
+-    
++        return distance_squared <= (circle.radius**2)
++
+     def collides_with(self, other: "Collider") -> bool:
+         """
+         Vérifie si ce collider entre en collision avec un autre collider.
+-        Vérifie d'abord que les AABB s'intersectent, puis renvoie vers la 
++        Vérifie d'abord que les AABB s'intersectent, puis renvoie vers la
+         méthode spécifique de collision selon le type de collider.
+ 
+         Parameters
+         ----------
+         other : Collider
+@@ -272,13 +291,15 @@
+         if isinstance(other, BoxCollider):
+             return self._collides_with_box(other)
+         elif isinstance(other, CircleCollider):
+             return self._collides_with_circle(other)
+         else:
+-            raise TypeError("Type de collider non supporté pour la détection de collision.")
+-    
+-    
++            raise TypeError(
++                "Type de collider non supporté pour la détection de collision."
++            )
++
++
+ class CircleCollider(Collider):
+     def __init__(self, center: Position2D, radius: float, solid: bool = True):
+         """
+         Initialise un CircleCollider avec un rayon.
+         Utiliser dans les systèmes de collision pour définir des zones circulaires.
+@@ -304,12 +325,12 @@
+         Returns
+         -------
+         float
+             L'aire du cercle.
+         """
+-        return math.pi * (self.radius ** 2)
+-    
++        return math.pi * (self.radius**2)
++
+     def calculate_aabb(self):
+         """
+         Calcule l'AABB (Axis-Aligned Bounding Box) du CircleCollider.
+ 
+         Returns
+@@ -321,11 +342,11 @@
+         max_x = self.center.x + self.radius
+         min_y = self.center.y - self.radius
+         max_y = self.center.y + self.radius
+ 
+         return (Position2D(min_x, min_y), Position2D(max_x, max_y))
+-    
++
+     def _collides_with_circle(self, other: "CircleCollider") -> bool:
+         """
+         Vérifie la collision entre deux CircleColliders.
+ 
+         Parameters
+@@ -338,12 +359,12 @@
+         bool
+             True si les CircleColliders entrent en collision, False sinon.
+         """
+         distance_squared = geometry.distance_squared(self.center, other.center)
+         radius_sum = self.radius + other.radius
+-        return distance_squared <= (radius_sum ** 2)
+-    
++        return distance_squared <= (radius_sum**2)
++
+     def _collides_with_box(self, box: "BoxCollider") -> bool:
+         """
+         Vérifie la collision entre un CircleCollider et un BoxCollider.
+ 
+         Parameters
+@@ -356,16 +377,16 @@
+         bool
+             True si le CircleCollider et le BoxCollider entrent en collision, False sinon.
+         """
+         closest_point = box.get_closest_point_on_box(self.center)
+         distance_squared = geometry.distance_squared(self.center, closest_point)
+-        return distance_squared <= (self.radius ** 2)
+-    
++        return distance_squared <= (self.radius**2)
++
+     def collides_with(self, other: "Collider") -> bool:
+         """
+         Vérifie si ce collider entre en collision avec un autre collider.
+-        Vérifie d'abord que les AABB s'intersectent, puis renvoie vers la 
++        Vérifie d'abord que les AABB s'intersectent, puis renvoie vers la
+         méthode spécifique de collision selon le type de collider.
+ 
+         Parameters
+         ----------
+         other : Collider
+@@ -382,6 +403,8 @@
+         if isinstance(other, CircleCollider):
+             return self._collides_with_circle(other)
+         elif isinstance(other, BoxCollider):
+             return self._collides_with_box(other)
+         else:
+-            raise TypeError("Type de collider non supporté pour la détection de collision.")
+\ No newline at end of file
++            raise TypeError(
++                "Type de collider non supporté pour la détection de collision."
++            )
