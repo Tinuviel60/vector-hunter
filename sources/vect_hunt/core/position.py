@@ -109,38 +109,35 @@ class Position2D:
         """
         dx = self._x - other._x
         dy = self._y - other._y
-        return math.sqrt(dx * dx + dy * dy)
-    
-    def __add__(self, other: Vector2D) -> 'Position2D':
+        return math.hypot(dx, dy)
+
+    def translate(self, vector: Vector2D) -> None:
         """
-        Ajoute un vecteur à cette position.
+        Translate cette position en utilisant un vecteur.
 
         Parameters
         ----------
-        other : Vector2D
-            Le vecteur à ajouter.
-        
+        vector : Vector2D
+            Le vecteur de translation.
+        """
+        self._x += vector.x
+        self._y += vector.y
+
+    def translated(self, vector: Vector2D) -> 'Position2D':
+        """
+        Retourne une nouvelle position traduite par un vecteur.
+
+        Parameters
+        ----------
+        vector : Vector2D
+            Le vecteur de translation.
+
         Returns
         -------
         Position2D
-            La nouvelle position résultant de l'addition.
+            La nouvelle position traduite.
         """
-        return Position2D(self._x + other._x, self._y + other._y)
-    
-    def __sub__(self, other):
-        """
-        Soustrait soit une position, soit un vecteur à cette position.
-
-        - Position - Position -> Vector2D
-        - Position - Vector2D -> Position2D
-        """
-        if isinstance(other, Position2D):
-            return Vector2D(self._x - other._x, self._y - other._y)
-
-        if isinstance(other, Vector2D):
-            return Position2D(self._x - other._x, self._y - other._y)
-
-        raise TypeError("Unsupported operand for Position2D subtraction")
+        return Position2D(self._x + vector.x, self._y + vector.y)
 
     def __eq__(self, other: 'Position2D') -> bool:
         """

@@ -204,6 +204,22 @@ class Vector2D:
         """
         return Vector2D(self._x * scalar, self._y * scalar)
     
+    def __rmul__(self, scalar: float) -> 'Vector2D':
+        """
+        Multiplie le vecteur par un scalaire (opération à droite).
+
+        Parameters
+        ----------
+        scalar : float
+            Le scalaire par lequel multiplier le vecteur.
+
+        Returns
+        -------
+        Vector2D
+            Le vecteur résultant de la multiplication.
+        """
+        return self.__mul__(scalar)
+    
     def __truediv__(self, scalar: float) -> 'Vector2D':
         """
         Divise le vecteur par un scalaire.
