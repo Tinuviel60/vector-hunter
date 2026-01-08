@@ -57,6 +57,7 @@ def test_vector_orientation(x, y, expected_orientation):
     v = Vector2D(x, y)
     assert math.isclose(v.orientation(), expected_orientation)
 
+
 @pytest.mark.parametrize(
     "direction, x_expected, y_expected",
     [
@@ -73,6 +74,7 @@ def test_vector_from_direction(direction, x_expected, y_expected):
     tol = 1e-9
     assert math.isclose(v.x, x_expected, abs_tol=tol)
     assert math.isclose(v.y, y_expected, abs_tol=tol)
+
 
 # --------------------
 # Normalisation

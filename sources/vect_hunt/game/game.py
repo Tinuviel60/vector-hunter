@@ -86,10 +86,11 @@ class Game:
             Rotation initiale de l'objet en degrés.
         """
         transform = Transform(position, rotation)
-        collider = CircleCollider()
-        collider2 = BoxCollider(Vector2D(0, 0))
-
         gameObject = GameObject(name, transform)
+
+        collider = CircleCollider(gameObject)
+        collider2 = BoxCollider(gameObject)
+
         gameObject.add_collider(collider)
         gameObject.add_collider(collider2)
 

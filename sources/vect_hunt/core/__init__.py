@@ -2,6 +2,8 @@ from .vector import Vector2D
 from .position import Position2D
 from .transform import Transform
 from .collider import Collider, CircleCollider, BoxCollider
+from .tag import Tag
+from .geometry import Geometry
 
 __all__ = [
     "Vector2D",
@@ -10,4 +12,6 @@ __all__ = [
     "CircleCollider",
     "BoxCollider",
     "Transform",
+    "Tag",
+    "Geometry",
 ]

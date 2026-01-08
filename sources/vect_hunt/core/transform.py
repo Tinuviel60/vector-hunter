@@ -29,12 +29,11 @@ class Transform:
         self.position = position
         self.rotation = rotation
 
-
     @property
     def rotation(self) -> float:
         """
         Retourne la rotation en radians.
-        
+
         Returns
         -------
         float
@@ -47,7 +46,7 @@ class Transform:
         """
         Définit la rotation en radians.
         La valeur est normalisée entre -π et π.
-        
+
         Parameters
         ----------
         value : float
