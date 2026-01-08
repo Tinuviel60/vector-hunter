@@ -1,6 +1,5 @@
-from typing import List, Optional
-from vect_hunt.core.transform import Transform
-from vect_hunt.core.collider import Collider
+from typing import List
+from vect_hunt.core import Collider, Tag, Vector2D, Transform
 
 
 class GameObject:
@@ -24,7 +23,9 @@ class GameObject:
         Indique si l'objet est actif dans le monde.
     """
 
-    def __init__(self, name: str, transform: Transform = Transform()):
+    def __init__(
+        self, name: str, transform: Transform = Transform(), tags: Tag = Tag.NONE
+    ):
         """
         Initialise un GameObject.
 
@@ -40,6 +41,7 @@ class GameObject:
         self.transform = transform if transform is not None else Transform()
         self.colliders: List[Collider] = []
         self.active = True
+        self.tags = tags
 
     def add_collider(self, collider: Collider) -> None:
         """
@@ -64,6 +66,7 @@ class GameObject:
         if collider in self.colliders:
             self.colliders.remove(collider)
 
+    # TODO : donner un vecteur directement ?
     def move(self, dx: float, dy: float) -> None:
         """
         Déplace le GameObject dans l'espace en modifiant son Transform.
@@ -75,7 +78,7 @@ class GameObject:
         dy : float
             Déplacement sur l'axe Y.
         """
-        self.transform.translate(dx, dy)
+        self.transform.translate(Vector2D(dx, dy))
 
     def rotate(self, delta: float) -> None:
         """
@@ -102,3 +105,48 @@ class GameObject:
         dx = x - self.transform.position.x
         dy = y - self.transform.position.y
         self.move(dx, dy)
+
+    def add_tag(self, tag: Tag) -> None:
+        """
+        Ajoute un tag à ce GameObject.
+
+        Parameters
+        ----------
+        tag : Tag
+            Le tag à ajouter.
+        """
+        self.tags |= tag  # Bitwise OR pour ajouter le tag
+
+    def remove_tag(self, tag: Tag) -> None:
+        """
+        Retire un tag de ce GameObject.
+        """
+        self.tags &= ~tag  # Bitwise AND avec NOT pour retirer le tag
+
+    def has_tag(self, tag: Tag) -> bool:
+        """
+        Vérifie si ce GameObject possède un tag donné.
+        """
+        return bool(self.tags & tag)
+
+    def list_tags(self) -> list[Tag]:
+        """
+        Retourne tous les tags actifs de ce GameObject sous forme de liste.
+        """
+        return [t for t in Tag if t != Tag.NONE and self.has_tag(t)]
+
+    # TODO : Créer unee liste de gameobject qui ont déclenché une collision cette frame ?
+    # NOTE : voir si garde cela ici
+    def on_collision(self, other: "GameObject") -> None:
+        """
+        Appelé quand ce GameObject entre en collision physique.
+        """
+        raise NotImplementedError("Méthode on_collision non implémentée.")
+
+    # TODO : Créer unee liste de gameobject qui ont déclenché un trigger cette frame ?
+    # NOTE : voir si garde cela ici
+    def on_trigger(self, other: "GameObject") -> None:
+        """
+        Appelé quand ce GameObject entre dans un trigger.
+        """
+        raise NotImplementedError("Méthode on_trigger non implémentée.")

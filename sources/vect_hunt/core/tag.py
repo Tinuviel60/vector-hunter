@@ -1,5 +1,6 @@
 from enum import IntFlag, auto
 
+
 class Tag(IntFlag):
     """
     Représente un tag unique pour un GameObject.
@@ -22,6 +23,7 @@ class Tag(IntFlag):
     PICKUP : Tag
         Tag pour les objets ramassables.
     """
+
     NONE = 0
     # Les vrais tags sont définis avec `auto()`
     PLAYER = auto()
@@ -30,4 +32,3 @@ class Tag(IntFlag):
     WALL = auto()
     PICKUP = auto()
     # Ajoutez ici vos autres tags jusqu'à 32 max
-

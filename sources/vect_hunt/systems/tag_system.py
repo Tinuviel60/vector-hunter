@@ -47,7 +47,7 @@ class TagSystem:
         """
         # On teste si tag2 est présent dans le masque autorisé de tag1
         return bool(CAN_COLLIDE.get(tag1, Tag.NONE) & tag2)
-    
+
     # NOTE : Exemple d'interraction via les tags, non implémentée dans le moteur
     @staticmethod
     def can_destroy(tag1: Tag, tag2: Tag) -> bool:
@@ -67,7 +67,7 @@ class TagSystem:
             True si l'objet avec tag1 peut détruire l'objet avec tag2.
         """
         return bool(CAN_DESTROY.get(tag1, Tag.NONE) & tag2)
-    
+
     # NOTE : Exemple d'interraction via les tags, non implémentée dans le moteur
     @staticmethod
     def can_pickup(tag1: Tag, tag2: Tag) -> bool:
