@@ -17,6 +17,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "pytest",
+    "pytest-cov",
     "black",
 ]
 
@@ -25,3 +26,12 @@ package-dir = { "" = "sources" }
 
 [tool.setuptools.packages.find]
 where = ["sources"]
+
+[tool.pytest.ini_options]
+addopts = "--cov=vect_hunt --cov-report=html:reports/coverage --cov-report=term-missing"
+testpaths = ["tests"]
+
+[tool.coverage.run]
+omit = [
+    "*/__init__.py",
+]
