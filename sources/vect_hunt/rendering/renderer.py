@@ -1,6 +1,7 @@
 import pygame
 from typing import List, Tuple
 
+from vect_hunt.objects import GameObject
 from vect_hunt.worlds import World
 from vect_hunt.utils import hex_to_rgb
 
@@ -29,6 +30,12 @@ class Renderer:
         self.width = screen.get_width()
         self.height = screen.get_height()
         self.background_color = "#414141"  # Gris par défaut
+
+        self.draw_colliders = True  # Option pour dessiner les colliders (debug)
+        self.print_names = True  # Option pour afficher les noms des entités (debug)
+        self.print_fps = False  # Option pour afficher les FPS (debug)
+
+        self.font = pygame.font.SysFont("Arial", 12)
 
     def clear(self) -> None:
         """
@@ -82,21 +89,50 @@ class Renderer:
         # Bordure plus foncée
         pygame.draw.circle(self.screen, hex_to_rgb("#963232"), pos, radius, 2)
 
-    def draw_targets(self, targets: List[dict]) -> None:
+    def draw_game_objects(self, game_objects: dict[str, GameObject]) -> None:
         """
         Dessine toutes les cibles de la liste.
 
         Parameters
         ----------
-        targets : List[dict]
-            Liste de dictionnaires contenant les informations des cibles.
-            Chaque dict doit avoir: 'position', 'radius' (optionnel), 'color' (optionnel)
+        game_objects : dict[str, GameObject]
+            Objet du jeu à dessiner.
         """
-        for target in targets:
-            position = target.get("position", (0, 0))
-            radius = target.get("radius", 10)
-            color = target.get("color", "#FF6464")
-            self.draw_entity(position, radius, color)
+        for name, game_object in game_objects.items():
+            position = game_object.transform.position
+            radius = 10
+            color = "#FF6464"
+            #self.draw_entity(position, radius, color)
+
+            if self.print_names:
+                text_surface = self.font.render(name, True, (255, 255, 255))
+                text_rect = text_surface.get_rect(center=(int(position.x), int(position.y) - radius - 10))
+                self.screen.blit(text_surface, text_rect)
+            if self.draw_colliders:
+                for collider in game_object.colliders:
+                    self.draw_collider(collider, game_object.transform)
+
+    def draw_collider(self, collider, transform):
+        geom = collider.get_geometry()
+        
+        if geom["type"] == "circle":
+            center = (transform.position + geom["center"]).to_tuple()
+            pygame.draw.circle(
+                self.screen,
+                (0, 255, 0),
+                center,
+                int(geom["radius"]),
+                1,
+            )
+
+        elif geom["type"] == "polygon":
+            points = [(p + transform.position).to_tuple() for p in geom["points"]]
+            pygame.draw.polygon(
+                self.screen,
+                (0, 255, 0),
+                points,
+                1,
+            )
 
     def render(self, world: World) -> None:
         """
@@ -108,6 +144,7 @@ class Renderer:
             L'état actuel du monde du jeu, contenant les informations du joueur et des entités.
         """
         self.draw_background()
+        self.draw_game_objects(world.gameObjects)
         # TODO : Implementer le dessin des entités et du joueur
         # self.draw_entities(world.targets)
         # self.draw_player(world.player.position)

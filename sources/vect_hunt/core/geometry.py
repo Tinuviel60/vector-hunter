@@ -1,5 +1,4 @@
 from typing import List, Tuple
-from .position import Position2D
 from .vector import Vector2D
 
 """
@@ -7,7 +6,7 @@ Module contenant les fonctions géométriques pour les calculs de collision.
 """
 
 
-def get_polygon_normals(corners: List[Position2D]) -> List[Vector2D]:
+def get_polygon_normals(corners: List[Vector2D]) -> List[Vector2D]:
     """
     Calcule les normales unitaires aux arêtes d'un polygone.
 
@@ -17,20 +16,13 @@ def get_polygon_normals(corners: List[Position2D]) -> List[Vector2D]:
 
     Parameters
     ----------
-    corners : List[Position2D]
+    corners : List[Vector2D]
         Liste des coins du polygone dans l'ordre (sens horaire ou anti-horaire).
 
     Returns
     -------
     List[Vector2D]
         Liste des vecteurs normaux unitaires aux arêtes du polygone.
-
-    Examples
-    --------
-    >>> corners = [Position2D(0, 0), Position2D(1, 0), Position2D(1, 1), Position2D(0, 1)]
-    >>> normals = get_polygon_normals(corners)
-    >>> len(normals)
-    4
     """
     normals = []
     num_corners = len(corners)
@@ -54,7 +46,7 @@ def get_polygon_normals(corners: List[Position2D]) -> List[Vector2D]:
 
 
 def project_polygon_on_axis(
-    corners: List[Position2D], axis: Vector2D
+    corners: List[Vector2D], axis: Vector2D
 ) -> Tuple[float, float]:
     """
     Projette les coins d'un polygone sur un axe et retourne l'intervalle [min, max].
@@ -65,7 +57,7 @@ def project_polygon_on_axis(
 
     Parameters
     ----------
-    corners : List[Position2D]
+    corners : List[Vector2D]
         Liste des coins du polygone.
     axis : Vector2D
         L'axe de projection (doit être un vecteur unitaire).
@@ -75,30 +67,20 @@ def project_polygon_on_axis(
     Tuple[float, float]
         Un tuple (min_projection, max_projection) représentant l'intervalle
         de projection du polygone sur l'axe.
-
-    Examples
-    --------
-    >>> corners = [Position2D(0, 0), Position2D(2, 0), Position2D(2, 1), Position2D(0, 1)]
-    >>> axis = Vector2D(1, 0)  # Axe horizontal
-    >>> project_polygon_on_axis(corners, axis)
-    (0.0, 2.0)
     """
     min_proj = float("inf")
     max_proj = float("-inf")
 
     for corner in corners:
-        # Convertit Position2D en Vector2D pour utiliser dot()
-        corner_vector = Vector2D(corner.x, corner.y)
-
         # Calcule la projection via le produit scalaire
-        projection = corner_vector.dot(axis)
+        projection = corner.dot(axis)
 
         min_proj = min(min_proj, projection)
         max_proj = max(max_proj, projection)
 
     return (min_proj, max_proj)
 
-
+#TODO : intervals_overlap --> Move inside numeric.py? 
 def intervals_overlap(min1: float, max1: float, min2: float, max2: float) -> bool:
     """
     Vérifie si deux intervalles [min1, max1] et [min2, max2] se chevauchent.
@@ -127,34 +109,3 @@ def intervals_overlap(min1: float, max1: float, min2: float, max2: float) -> boo
     False
     """
     return max1 >= min2 and max2 >= min1
-
-
-def distance_squared(p1: Position2D, p2: Position2D) -> float:
-    """
-    Calcule la distance au carré entre deux points.
-
-    Utilise la distance au carré plutôt que la distance réelle pour éviter
-    l'opération coûteuse de racine carrée. Idéal pour les comparaisons de distances.
-
-    Parameters
-    ----------
-    p1 : Position2D
-        Le premier point.
-    p2 : Position2D
-        Le deuxième point.
-
-    Returns
-    -------
-    float
-        La distance au carré entre les deux points.
-
-    Examples
-    --------
-    >>> p1 = Position2D(0, 0)
-    >>> p2 = Position2D(3, 4)
-    >>> distance_squared(p1, p2)
-    25.0
-    """
-    dx = p2.x - p1.x
-    dy = p2.y - p1.y
-    return dx * dx + dy * dy

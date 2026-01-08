@@ -1,4 +1,3 @@
-from .position import Position2D
 from .vector import Vector2D
 import math
 
@@ -15,13 +14,13 @@ class Transform:
     (collisions, rendu, physique).
     """
 
-    def __init__(self, position: Position2D = Position2D(0, 0), rotation: float = 0):
+    def __init__(self, position: Vector2D = Vector2D(0, 0), rotation: float = 0):
         """
         Initialise un Transform.
 
         Parameters
         ----------
-        position : Position2D
+        position : Vector2D
             Position initiale dans le monde. Si None, la position
             est initialisée à (0, 0).
         rotation : float

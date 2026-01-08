@@ -2,9 +2,11 @@ from typing import TYPE_CHECKING
 
 from vect_hunt.worlds import World
 from vect_hunt.rendering import Renderer
+from vect_hunt.objects import GameObject
+from vect_hunt.core import *
 
-if TYPE_CHECKING:
-    import pygame
+
+import pygame
 
 
 class Game:
@@ -18,7 +20,14 @@ class Game:
 
         """
         self.start_render: bool = False
+
+        self.gameObjects: dict[str, GameObject] = {}
         self.initialize()
+
+        self.initialize_game_objects(position = Vector2D(20, 20))
+        self.initialize_game_objects(position = Vector2D(20, -20))
+        self.initialize_game_objects(position = Vector2D(-20, -20))
+        self.initialize_game_objects(position = Vector2D(-20, 20))
 
     def initialize(self) -> None:
         """
@@ -57,3 +66,25 @@ class Game:
         """
 
         self.renderer.render(self.world)
+
+    def initialize_game_objects(self, name: str = "Object", position: Vector2D = Vector2D(0, 0), rotation: float = 0.0):
+        """
+        Initialise et ajoute un GameObject simple au monde.
+
+        Parameters
+        ----------
+        name : str
+            Nom de l'objet.
+        position : Vector2D
+            Position initiale de l'objet.
+        rotation : float
+            Rotation initiale de l'objet en degrés.
+        """
+        collider = CircleCollider()
+        transform = Transform(position, rotation)
+
+        gameObject = GameObject(name, transform)
+        gameObject.add_collider(collider)
+
+        self.world.add_game_object(gameObject)
+        
