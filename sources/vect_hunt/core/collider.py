@@ -88,8 +88,8 @@ class BoxCollider(Collider):
     def __init__(
         self,
         center: Vector2D = Vector2D(0, 0),
-        width: float = 1.0,
-        height: float = 1.0,
+        width: float = 10.0,
+        height: float = 10.0,
         orientation: float = 0.0,
         solid: bool = True,
     ):
@@ -112,11 +112,15 @@ class BoxCollider(Collider):
         self.height = height
 
         transform = Transform(position=center, rotation=orientation)
-        super().__init__(transform, solid)
 
+        # Initialiser les attributs nécessaires AVANT d'appeler super()
+        self.transform = transform
+        self.cos_orientation = math.cos(orientation)
+        self.sin_orientation = math.sin(orientation)
         self.corners: list[Vector2D] = self.calculate_corners()
-        self.cos_orientation = math.cos(self.transform.rotation)
-        self.sin_orientation = math.sin(self.transform.rotation)
+
+        # Maintenant on peut appeler super() qui va calculer l'AABB
+        super().__init__(transform, solid)
 
     def get_area(self):
         """
@@ -143,11 +147,13 @@ class BoxCollider(Collider):
         half_height = self.height / 2
 
         # Calcul des coins avant rotation
+        # Note: Les coins vont exactement à +/- half_width et +/- half_height
+        # pour que le box corresponde visuellement au cercle inscrit
         corners = [
-            Vector2D(-half_width, half_height),  # top-left
-            Vector2D(half_width, half_height),  # top-right
-            Vector2D(half_width, -half_height),  # bottom-right
-            Vector2D(-half_width, -half_height),  # bottom-left
+            Vector2D(-half_width, -half_height),  # top-left (pygame Y inversé)
+            Vector2D(half_width, -half_height),  # top-right
+            Vector2D(half_width, half_height),  # bottom-right
+            Vector2D(-half_width, half_height),  # bottom-left
         ]
 
         # Rotation des coins autour du centre
@@ -286,7 +292,7 @@ class BoxCollider(Collider):
         closest_point = self.get_closest_point_on_box(circle.transform.position)
         delta = circle.transform.position - closest_point
 
-        return delta.magnitude_squared() <= (circle.radius ** 2)
+        return delta.magnitude_squared() <= (circle.radius**2)
 
     def get_geometry(self) -> dict:
         """
@@ -333,7 +339,9 @@ class BoxCollider(Collider):
 
 
 class CircleCollider(Collider):
-    def __init__(self, center: Vector2D = Vector2D(0, 0), radius: float = 1.0, solid: bool = True):
+    def __init__(
+        self, center: Vector2D = Vector2D(0, 0), radius: float = 5.0, solid: bool = True
+    ):
         """
         Initialise un CircleCollider avec un rayon.
         Utiliser dans les systèmes de collision pour définir des zones circulaires.
@@ -397,7 +405,7 @@ class CircleCollider(Collider):
         delta = self.transform.position - other.transform.position
 
         radius_sum = self.radius + other.radius
-        return delta.magnitude_squared() <= (radius_sum ** 2)
+        return delta.magnitude_squared() <= (radius_sum**2)
 
     def _collides_with_box(self, box: "BoxCollider") -> bool:
         """
@@ -416,7 +424,7 @@ class CircleCollider(Collider):
         closest_point = box.get_closest_point_on_box(self.transform.position)
         delta = self.transform.position - closest_point
 
-        return delta.magnitude_squared() <= (self.radius ** 2)
+        return delta.magnitude_squared() <= (self.radius**2)
 
     def get_geometry(self) -> dict:
         """
@@ -432,7 +440,7 @@ class CircleCollider(Collider):
             "center": self.transform.position,
             "radius": self.radius,
         }
-    
+
     def collides_with(self, other: "Collider") -> bool:
         """
         Vérifie si ce collider entre en collision avec un autre collider.

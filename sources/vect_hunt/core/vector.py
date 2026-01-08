@@ -41,7 +41,7 @@ class Vector2D:
             La magnitude du vecteur.
         """
         return math.hypot(self._x, self._y)
-    
+
     def magnitude_squared(self) -> float:
         """
         Calcule le carré de la magnitude du vecteur.
@@ -52,7 +52,6 @@ class Vector2D:
             Le carré de la longueur du vecteur.
         """
         return self._x * self._x + self._y * self._y
-
 
     def normalized(self) -> "Vector2D":
         """

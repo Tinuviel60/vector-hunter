@@ -1,0 +1,262 @@
+--- /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/objects/__init__.py	2026-01-08 11:08:33.330852+00:00
++++ /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/objects/__init__.py	2026-01-08 17:56:01.706818+00:00
+@@ -1,3 +1,3 @@
+ from .game_object import GameObject
+ 
+-__all__ = ["GameObject"]
+\ No newline at end of file
++__all__ = ["GameObject"]
+--- /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/core/__init__.py	2026-01-08 11:17:02.703960+00:00
++++ /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/core/__init__.py	2026-01-08 17:56:01.711530+00:00
+@@ -1,6 +1,13 @@
+ from .vector import Vector2D
+ from .position import Position2D
+ from .transform import Transform
+ from .collider import Collider, CircleCollider, BoxCollider
+ 
+-__all__ = ["Vector2D", "Position2D", "Collider", "CircleCollider", "BoxCollider", "Transform"]
++__all__ = [
++    "Vector2D",
++    "Position2D",
++    "Collider",
++    "CircleCollider",
++    "BoxCollider",
++    "Transform",
++]
+--- /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/game/game.py	2026-01-08 17:54:03.811100+00:00
++++ /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/game/game.py	2026-01-08 17:56:01.740633+00:00
+@@ -22,14 +22,14 @@
+         self.start_render: bool = False
+ 
+         self.gameObjects: dict[str, GameObject] = {}
+         self.initialize()
+ 
+-        self.initialize_game_objects("Object1", position = Vector2D(200, 200))
+-        self.initialize_game_objects("Object2", position = Vector2D(400, 200))
+-        self.initialize_game_objects("Object3", position = Vector2D(200, 400))
+-        self.initialize_game_objects("Object4", position = Vector2D(400, 400))
++        self.initialize_game_objects("Object1", position=Vector2D(200, 200))
++        self.initialize_game_objects("Object2", position=Vector2D(400, 200))
++        self.initialize_game_objects("Object3", position=Vector2D(200, 400))
++        self.initialize_game_objects("Object4", position=Vector2D(400, 400))
+ 
+     def initialize(self) -> None:
+         """
+         Initialise les composants du jeu.
+         """
+@@ -65,11 +65,16 @@
+         Rendu graphique du jeu.
+         """
+ 
+         self.renderer.render(self.world)
+ 
+-    def initialize_game_objects(self, name: str = "Object", position: Vector2D = Vector2D(0, 0), rotation: float = 0.0):
++    def initialize_game_objects(
++        self,
++        name: str = "Object",
++        position: Vector2D = Vector2D(0, 0),
++        rotation: float = 0.0,
++    ):
+         """
+         Initialise et ajoute un GameObject simple au monde.
+ 
+         Parameters
+         ----------
+@@ -87,6 +92,5 @@
+         gameObject = GameObject(name, transform)
+         gameObject.add_collider(collider)
+         gameObject.add_collider(collider2)
+ 
+         self.world.add_game_object(gameObject)
+-        
+\ No newline at end of file
+--- /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/core/geometry.py	2026-01-08 17:31:21.810280+00:00
++++ /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/core/geometry.py	2026-01-08 17:56:01.741310+00:00
+@@ -78,11 +78,12 @@
+         min_proj = min(min_proj, projection)
+         max_proj = max(max_proj, projection)
+ 
+     return (min_proj, max_proj)
+ 
+-#TODO : intervals_overlap --> Move inside numeric.py? 
++
++# TODO : intervals_overlap --> Move inside numeric.py?
+ def intervals_overlap(min1: float, max1: float, min2: float, max2: float) -> bool:
+     """
+     Vérifie si deux intervalles [min1, max1] et [min2, max2] se chevauchent.
+ 
+     Parameters
+--- /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/worlds/world.py	2026-01-08 11:25:28.393855+00:00
++++ /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/worlds/world.py	2026-01-08 17:56:01.750420+00:00
+@@ -82,6 +82,6 @@
+         original_name = name
+         id = 1
+         while name in self.gameObjects:
+             name = f"{original_name}_{id}"
+             id += 1
+-        return name
+\ No newline at end of file
++        return name
+--- /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/core/vector.py	2026-01-08 17:27:59.066047+00:00
++++ /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/core/vector.py	2026-01-08 17:56:01.788451+00:00
+@@ -39,22 +39,21 @@
+         -------
+         float
+             La magnitude du vecteur.
+         """
+         return math.hypot(self._x, self._y)
+-    
++
+     def magnitude_squared(self) -> float:
+         """
+         Calcule le carré de la magnitude du vecteur.
+ 
+         Returns
+         -------
+         float
+             Le carré de la longueur du vecteur.
+         """
+         return self._x * self._x + self._y * self._y
+-
+ 
+     def normalized(self) -> "Vector2D":
+         """
+         Renvoie le vecteur normalisé (le rend de longueur 1).
+ 
+--- /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/rendering/renderer.py	2026-01-08 17:42:35.098910+00:00
++++ /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/rendering/renderer.py	2026-01-08 17:56:01.808819+00:00
+@@ -100,23 +100,25 @@
+         """
+         for name, game_object in game_objects.items():
+             position = game_object.transform.position
+             radius = 10
+             color = "#FF6464"
+-            #self.draw_entity(position, radius, color)
++            # self.draw_entity(position, radius, color)
+ 
+             if self.print_names:
+                 text_surface = self.font.render(name, True, (255, 255, 255))
+-                text_rect = text_surface.get_rect(center=(int(position.x), int(position.y) - radius - 10))
++                text_rect = text_surface.get_rect(
++                    center=(int(position.x), int(position.y) - radius - 10)
++                )
+                 self.screen.blit(text_surface, text_rect)
+             if self.draw_colliders:
+                 for collider in game_object.colliders:
+                     self.draw_collider(collider, game_object.transform)
+ 
+     def draw_collider(self, collider, transform):
+         geom = collider.get_geometry()
+-        
++
+         if geom["type"] == "circle":
+             # Pour les cercles, center est local (0,0), on ajoute la position du GameObject
+             center_vec = transform.position + collider.transform.position
+             center = (int(center_vec.x), int(center_vec.y))
+             pygame.draw.circle(
+--- /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/core/collider.py	2026-01-08 17:54:00.785128+00:00
++++ /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/core/collider.py	2026-01-08 17:56:01.881191+00:00
+@@ -110,17 +110,17 @@
+         """
+         self.width = width
+         self.height = height
+ 
+         transform = Transform(position=center, rotation=orientation)
+-        
++
+         # Initialiser les attributs nécessaires AVANT d'appeler super()
+         self.transform = transform
+         self.cos_orientation = math.cos(orientation)
+         self.sin_orientation = math.sin(orientation)
+         self.corners: list[Vector2D] = self.calculate_corners()
+-        
++
+         # Maintenant on peut appeler super() qui va calculer l'AABB
+         super().__init__(transform, solid)
+ 
+     def get_area(self):
+         """
+@@ -149,13 +149,13 @@
+         # Calcul des coins avant rotation
+         # Note: Les coins vont exactement à +/- half_width et +/- half_height
+         # pour que le box corresponde visuellement au cercle inscrit
+         corners = [
+             Vector2D(-half_width, -half_height),  # top-left (pygame Y inversé)
+-            Vector2D(half_width, -half_height),   # top-right
+-            Vector2D(half_width, half_height),    # bottom-right
+-            Vector2D(-half_width, half_height),   # bottom-left
++            Vector2D(half_width, -half_height),  # top-right
++            Vector2D(half_width, half_height),  # bottom-right
++            Vector2D(-half_width, half_height),  # bottom-left
+         ]
+ 
+         # Rotation des coins autour du centre
+         rotated_corners = []
+         cos_angle = self.cos_orientation
+@@ -290,11 +290,11 @@
+             True si le BoxCollider et le CircleCollider entrent en collision, False sinon.
+         """
+         closest_point = self.get_closest_point_on_box(circle.transform.position)
+         delta = circle.transform.position - closest_point
+ 
+-        return delta.magnitude_squared() <= (circle.radius ** 2)
++        return delta.magnitude_squared() <= (circle.radius**2)
+ 
+     def get_geometry(self) -> dict:
+         """
+         Retourne la géométrie spécifique du BoxCollider.
+ 
+@@ -337,11 +337,13 @@
+                 "Type de collider non supporté pour la détection de collision."
+             )
+ 
+ 
+ class CircleCollider(Collider):
+-    def __init__(self, center: Vector2D = Vector2D(0, 0), radius: float = 5.0, solid: bool = True):
++    def __init__(
++        self, center: Vector2D = Vector2D(0, 0), radius: float = 5.0, solid: bool = True
++    ):
+         """
+         Initialise un CircleCollider avec un rayon.
+         Utiliser dans les systèmes de collision pour définir des zones circulaires.
+ 
+         Parameters
+@@ -401,11 +403,11 @@
+             True si les CircleColliders entrent en collision, False sinon.
+         """
+         delta = self.transform.position - other.transform.position
+ 
+         radius_sum = self.radius + other.radius
+-        return delta.magnitude_squared() <= (radius_sum ** 2)
++        return delta.magnitude_squared() <= (radius_sum**2)
+ 
+     def _collides_with_box(self, box: "BoxCollider") -> bool:
+         """
+         Vérifie la collision entre un CircleCollider et un BoxCollider.
+ 
+@@ -420,11 +422,11 @@
+             True si le CircleCollider et le BoxCollider entrent en collision, False sinon.
+         """
+         closest_point = box.get_closest_point_on_box(self.transform.position)
+         delta = self.transform.position - closest_point
+ 
+-        return delta.magnitude_squared() <= (self.radius ** 2)
++        return delta.magnitude_squared() <= (self.radius**2)
+ 
+     def get_geometry(self) -> dict:
+         """
+         Retourne la géométrie spécifique du CircleCollider.
+ 
+@@ -436,11 +438,11 @@
+         return {
+             "type": "circle",
+             "center": self.transform.position,
+             "radius": self.radius,
+         }
+-    
++
+     def collides_with(self, other: "Collider") -> bool:
+         """
+         Vérifie si ce collider entre en collision avec un autre collider.
+         Vérifie d'abord que les AABB s'intersectent, puis renvoie vers la
+         méthode spécifique de collision selon le type de collider.

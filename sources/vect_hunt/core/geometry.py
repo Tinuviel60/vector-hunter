@@ -80,7 +80,8 @@ def project_polygon_on_axis(
 
     return (min_proj, max_proj)
 
-#TODO : intervals_overlap --> Move inside numeric.py? 
+
+# TODO : intervals_overlap --> Move inside numeric.py?
 def intervals_overlap(min1: float, max1: float, min2: float, max2: float) -> bool:
     """
     Vérifie si deux intervalles [min1, max1] et [min2, max2] se chevauchent.

@@ -58,6 +58,11 @@ def main() -> None:
     accumulator = 0.0  # Accumulateur de temps réel
 
     while running:
+        # Gestion des événements
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
         # Temps réel écoulé depuis la dernière frame (en secondes)
         frame_time = clock.tick(FPS) / 1000.0
 

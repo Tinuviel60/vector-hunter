@@ -14,7 +14,7 @@ class Transform:
     (collisions, rendu, physique).
     """
 
-    def __init__(self, position: Vector2D = Vector2D(0, 0), rotation: float = 0):
+    def __init__(self, position: Vector2D = Vector2D(), rotation: float = 0):
         """
         Initialise un Transform.
 
@@ -29,7 +29,33 @@ class Transform:
         self.position = position
         self.rotation = rotation
 
-    def translate(self, dx: float, dy: float) -> None:
+
+    @property
+    def rotation(self) -> float:
+        """
+        Retourne la rotation en radians.
+        
+        Returns
+        -------
+        float
+            Rotation en radians.
+        """
+        return self._rotation
+
+    @rotation.setter
+    def rotation(self, value: float) -> None:
+        """
+        Définit la rotation en radians.
+        La valeur est normalisée entre -π et π.
+        
+        Parameters
+        ----------
+        value : float
+            Nouvelle rotation en radians.
+        """
+        self._rotation = (value + math.pi) % (2 * math.pi) - math.pi
+
+    def translate(self, position: Vector2D) -> None:
         """
         Déplace le Transform dans l'espace.
 
@@ -37,13 +63,10 @@ class Transform:
 
         Parameters
         ----------
-        dx : float
-            Déplacement sur l'axe X.
-        dy : float
-            Déplacement sur l'axe Y.
+        position : Vector2D
+            Nouvelle position.
         """
-        self.position.x += dx
-        self.position.y += dy
+        self.position = position
 
     def move(self, direction: Vector2D) -> None:
         """
@@ -54,8 +77,7 @@ class Transform:
         direction : Vector2D
             Vecteur représentant le déplacement à appliquer.
         """
-        self.position.x += direction.x
-        self.position.y += direction.y
+        self.position += direction
 
     def rotate(self, delta: float) -> None:
         """

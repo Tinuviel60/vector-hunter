@@ -102,11 +102,13 @@ class Renderer:
             position = game_object.transform.position
             radius = 10
             color = "#FF6464"
-            #self.draw_entity(position, radius, color)
+            # self.draw_entity(position, radius, color)
 
             if self.print_names:
                 text_surface = self.font.render(name, True, (255, 255, 255))
-                text_rect = text_surface.get_rect(center=(int(position.x), int(position.y) - radius - 10))
+                text_rect = text_surface.get_rect(
+                    center=(int(position.x), int(position.y) - radius - 10)
+                )
                 self.screen.blit(text_surface, text_rect)
             if self.draw_colliders:
                 for collider in game_object.colliders:
@@ -114,9 +116,11 @@ class Renderer:
 
     def draw_collider(self, collider, transform):
         geom = collider.get_geometry()
-        
+
         if geom["type"] == "circle":
-            center = (transform.position + geom["center"]).to_tuple()
+            # Pour les cercles, center est local (0,0), on ajoute la position du GameObject
+            center_vec = transform.position + collider.transform.position
+            center = (int(center_vec.x), int(center_vec.y))
             pygame.draw.circle(
                 self.screen,
                 (0, 255, 0),
@@ -126,7 +130,11 @@ class Renderer:
             )
 
         elif geom["type"] == "polygon":
-            points = [(p + transform.position).to_tuple() for p in geom["points"]]
+            # Pour les polygones, les points incluent déjà la position absolue
+            points = [
+                (int((p + transform.position).x), int((p + transform.position).y))
+                for p in geom["points"]
+            ]
             pygame.draw.polygon(
                 self.screen,
                 (0, 255, 0),

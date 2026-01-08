@@ -24,10 +24,10 @@ class Game:
         self.gameObjects: dict[str, GameObject] = {}
         self.initialize()
 
-        self.initialize_game_objects(position = Vector2D(20, 20))
-        self.initialize_game_objects(position = Vector2D(20, -20))
-        self.initialize_game_objects(position = Vector2D(-20, -20))
-        self.initialize_game_objects(position = Vector2D(-20, 20))
+        self.initialize_game_objects("Object1", position=Vector2D(200, 200))
+        self.initialize_game_objects("Object2", position=Vector2D(400, 200))
+        self.initialize_game_objects("Object3", position=Vector2D(200, 400))
+        self.initialize_game_objects("Object4", position=Vector2D(400, 400))
 
     def initialize(self) -> None:
         """
@@ -67,7 +67,12 @@ class Game:
 
         self.renderer.render(self.world)
 
-    def initialize_game_objects(self, name: str = "Object", position: Vector2D = Vector2D(0, 0), rotation: float = 0.0):
+    def initialize_game_objects(
+        self,
+        name: str = "Object",
+        position: Vector2D = Vector2D(0, 0),
+        rotation: float = 0.0,
+    ):
         """
         Initialise et ajoute un GameObject simple au monde.
 
@@ -80,11 +85,12 @@ class Game:
         rotation : float
             Rotation initiale de l'objet en degrés.
         """
-        collider = CircleCollider()
         transform = Transform(position, rotation)
+        collider = CircleCollider()
+        collider2 = BoxCollider(Vector2D(0, 0))
 
         gameObject = GameObject(name, transform)
         gameObject.add_collider(collider)
+        gameObject.add_collider(collider2)
 
         self.world.add_game_object(gameObject)
-        
