@@ -12,6 +12,7 @@ authors = [
 
 dependencies = [
     "pygame>=2.5",
+    "matplotlib"
 ]
 
 [project.optional-dependencies]

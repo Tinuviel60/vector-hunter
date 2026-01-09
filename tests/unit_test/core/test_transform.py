@@ -12,7 +12,7 @@ def test_transform_default_initialization():
     transform = Transform()
     assert transform.position.x == 0.0
     assert transform.position.y == 0.0
-    assert transform.rotation == 0.0
+    assert transform.rotation.to_angle() == 0.0
 
 
 @pytest.mark.parametrize(
@@ -29,7 +29,7 @@ def test_transform_custom_initialization(x, y, rotation):
     assert transform.position == Vector2D(x, y)
     assert transform.position.x == x
     assert transform.position.y == y
-    assert transform.rotation == rotation
+    assert transform.rotation.to_angle() == rotation
 
 
 # --------------------
@@ -86,7 +86,8 @@ def test_transform_translate(x, y, new_x, new_y):
 def test_transform_rotate(orientation, delta, expected_orientation):
     transform = Transform(rotation=orientation)
     transform.rotate(delta)
-    assert math.isclose(transform.rotation, expected_orientation)
+    assert math.isclose(transform.rotation.to_angle(), expected_orientation, rel_tol=1e-9)
+
 
 
 @pytest.mark.parametrize(
@@ -102,4 +103,4 @@ def test_transform_rotate(orientation, delta, expected_orientation):
 def test_transform_set_rotation(rotation, expected_rotation):
     transform = Transform()
     transform.set_rotation(rotation)
-    assert math.isclose(transform.rotation, expected_rotation)
+    assert math.isclose(transform.rotation.to_angle(), expected_rotation, rel_tol=1e-9)

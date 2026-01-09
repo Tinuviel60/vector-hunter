@@ -4,6 +4,7 @@ from .transform import Transform
 from .collider import Collider, CircleCollider, BoxCollider
 from .tag import Tag
 from .geometry import Geometry
+from .rotation import Rotation
 
 __all__ = [
     "Vector2D",
@@ -14,4 +15,5 @@ __all__ = [
     "Transform",
     "Tag",
     "Geometry",
+    "Rotation",
 ]

@@ -1,4 +1,8 @@
 import math
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .rotation import Rotation
 
 
 class Vector2D:
@@ -180,21 +184,26 @@ class Vector2D:
         return (self._x, self._y)
 
     @staticmethod
-    def from_direction(direction: float) -> "Vector2D":
+    def from_direction(direction: "Rotation") -> "Vector2D":
         """
-        Crée un vecteur unitaire à partir d'une direction (angle en radians).
+        Crée un vecteur unitaire à partir d'une direction (rotation).
+
+        Utilise la première colonne de la matrice de rotation, qui correspond
+        à l'axe X transformé (direction de la rotation).
 
         Parameters
         ----------
-        direction : float
-            L'angle en radians.
+        direction : Rotation
+            La rotation à partir de laquelle créer le vecteur unitaire.
 
         Returns
         -------
         Vector2D
-            Le vecteur unitaire correspondant à l'angle donné.
+            Vecteur unitaire correspondant à la direction de rotation.
         """
-        return Vector2D(math.cos(direction), math.sin(direction))
+        # Applique la rotation au vecteur unitaire (1,0)
+        v = Vector2D(1.0, 0.0)
+        return direction.apply(v)
 
     def __add__(self, other: "Vector2D") -> "Vector2D":
         """
@@ -305,3 +314,51 @@ class Vector2D:
         """
 
         return math.isclose(self._x, other._x) and math.isclose(self._y, other._y)
+
+    @staticmethod
+    def top() -> "Vector2D":
+        """
+        Retourne le vecteur unitaire pointant vers le haut (0, 1).
+
+        Returns
+        -------
+        Vector2D
+            Vecteur unitaire (0, 1).
+        """
+        return Vector2D(0.0, 1.0)
+    
+    @staticmethod
+    def bottom() -> "Vector2D":
+        """
+        Retourne le vecteur unitaire pointant vers le bas (0, -1).
+
+        Returns
+        -------
+        Vector2D
+            Vecteur unitaire (0, -1).
+        """
+        return Vector2D(0.0, -1.0)
+    
+    @staticmethod
+    def left() -> "Vector2D":
+        """
+        Retourne le vecteur unitaire pointant vers la gauche (-1, 0).
+
+        Returns
+        -------
+        Vector2D
+            Vecteur unitaire (-1, 0).
+        """
+        return Vector2D(-1.0, 0.0)
+    
+    @staticmethod
+    def right() -> "Vector2D":
+        """
+        Retourne le vecteur unitaire pointant vers la droite (1, 0).
+
+        Returns
+        -------
+        Vector2D
+            Vecteur unitaire (1, 0).
+        """
+        return Vector2D(1.0, 0.0)

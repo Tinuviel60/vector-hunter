@@ -1,4 +1,5 @@
 from .vector import Vector2D
+from .rotation import Rotation
 import math
 
 
@@ -14,7 +15,7 @@ class Transform:
     (collisions, rendu, physique).
     """
 
-    def __init__(self, position: Vector2D = Vector2D(), rotation: float = 0):
+    def __init__(self, position: Vector2D = Vector2D(), rotation: float = 0.0):
         """
         Initialise un Transform.
 
@@ -26,33 +27,8 @@ class Transform:
         rotation : float
             Orientation en radians. 0 correspond à aucune rotation.
         """
-        self.position = position
-        self.rotation = rotation
-
-    @property
-    def rotation(self) -> float:
-        """
-        Retourne la rotation en radians.
-
-        Returns
-        -------
-        float
-            Rotation en radians.
-        """
-        return self._rotation
-
-    @rotation.setter
-    def rotation(self, value: float) -> None:
-        """
-        Définit la rotation en radians.
-        La valeur est normalisée entre -π et π.
-
-        Parameters
-        ----------
-        value : float
-            Nouvelle rotation en radians.
-        """
-        self._rotation = (value + math.pi) % (2 * math.pi) - math.pi
+        self.position: Vector2D = position
+        self.rotation: Rotation = Rotation(rotation)
 
     def translate(self, position: Vector2D) -> None:
         """
@@ -87,7 +63,8 @@ class Transform:
         delta : float
             Angle en radians à ajouter à la rotation actuelle.
         """
-        self.rotation += delta
+        rotation_delta = Rotation(delta)
+        self.rotation = self.rotation.compose(rotation_delta)
 
     def set_rotation(self, rotation: float) -> None:
         """
@@ -98,7 +75,7 @@ class Transform:
         rotation : float
             Angle en radians.
         """
-        self.rotation = rotation
+        self.rotation = Rotation(rotation)
 
     def forward(self) -> Vector2D:
         """
@@ -111,7 +88,7 @@ class Transform:
             Vecteur unitaire pointant dans la direction de la rotation.
         """
 
-        return Vector2D.from_direction(self.rotation)
+        return self.rotation.apply(Vector2D.top())
 
     def right(self) -> Vector2D:
         """
@@ -124,7 +101,7 @@ class Transform:
             Vecteur unitaire pointant vers la droite par rapport à la rotation.
         """
 
-        return Vector2D.from_direction(self.rotation + math.pi / 2)
+        return self.rotation.apply(Vector2D.right())
 
     def behind(self) -> Vector2D:
         """
@@ -137,7 +114,7 @@ class Transform:
             Vecteur unitaire pointant vers l'arrière par rapport à la rotation.
         """
 
-        return Vector2D.from_direction(self.rotation + math.pi)
+        return self.rotation.apply(Vector2D.bottom())
 
     def left(self) -> Vector2D:
         """
@@ -150,4 +127,4 @@ class Transform:
             Vecteur unitaire pointant vers la gauche par rapport à la rotation.
         """
 
-        return Vector2D.from_direction(self.rotation - math.pi / 2)
+        return self.rotation.apply(Vector2D.left())

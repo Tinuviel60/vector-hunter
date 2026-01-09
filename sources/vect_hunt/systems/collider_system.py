@@ -243,20 +243,13 @@ class ColliderSystem:
         """
         world_corners = []
 
-        # TODO : Renvoyer cos et sin depuis rotation parent.rotation.cos() et parent.rotation.sin()
-        # TODO : Passer par une matrice de transformation ?
-        cos_a = math.cos(parent.rotation)
-        sin_a = math.sin(parent.rotation)
-
         for corner in corners:
             # rotation par le parent
-            rotated_x = corner.x * cos_a - corner.y * sin_a
-            rotated_y = corner.x * sin_a + corner.y * cos_a
+            corner_rotated = parent.rotation.apply(corner)
             # translation locale
 
-            world_corner = Vector2D(
-                rotated_x + parent.position.x, rotated_y + parent.position.y
-            )
+            world_corner = parent.position + corner_rotated
+
             world_corners.append(world_corner)
             # Appliquer rotation du parent
 
@@ -269,75 +262,60 @@ class ColliderSystem:
         Trouve le point le plus proche sur un BoxCollider orienté
         à partir d'un point donné.
 
-        Cette fonction transforme le point dans le repère local du box, trouve le
-        point le plus proche dans ce repère, puis le retransforme dans le repère global.
-        Utilisée pour la détection de collision Circle-Box.
+        La méthode :
+            1. Passe le point dans le repère parent.
+            2. Passe dans le repère local du BoxCollider.
+            3. Clamp pour rester à l'intérieur du box.
+            4. Reconvertit le point en coordonnées mondiales.
 
         Parameters
         ----------
+        box : BoxCollider
+            Le BoxCollider concerné.
         point : Vector2D
             Le point à partir duquel trouver le point le plus proche.
 
         Returns
         -------
         Vector2D
-            Le point le plus proche sur le box.
+            Le point le plus proche sur le box en coordonnées mondiales.
         """
-        parent = box.parent.transform
+        parent_tr = box.parent.transform
         box_tr = box.transform
 
         # ----------------------------
-        # On passe le point en local du parent
+        # On passe le point en coordonnées locales du parent
         # ----------------------------
-        dx = point.x - parent.position.x
-        dy = point.y - parent.position.y
-
-        cos_p = math.cos(-parent.rotation)
-        sin_p = math.sin(-parent.rotation)
-
-        px = dx * cos_p - dy * sin_p
-        py = dx * sin_p + dy * cos_p
+        delta_to_parent = point - parent_tr.position
+        point_local_parent = parent_tr.rotation.inverse().apply(delta_to_parent)
 
         # ----------------------------
-        # On passe le point en local box
+        # On passe le point en coordonnées locales du box
         # ----------------------------
-        px -= box_tr.position.x
-        py -= box_tr.position.y
-
-        cos_b = math.cos(-box_tr.rotation)
-        sin_b = math.sin(-box_tr.rotation)
-
-        local_x = px * cos_b - py * sin_b
-        local_y = px * sin_b + py * cos_b
+        point_relative_to_box = point_local_parent - box_tr.position
+        point_local_box = box_tr.rotation.inverse().apply(point_relative_to_box)
 
         # ----------------------------
-        # On pose le point dans la box locale
+        # Clamp pour rester à l'intérieur du box
         # ----------------------------
         half_w = box.width / 2
         half_h = box.height / 2
-
-        clamped_x = max(-half_w, min(half_w, local_x))
-        clamped_y = max(-half_h, min(half_h, local_y))
-
-        # ----------------------------
-        # On repasse le point de la boite en parent local
-        # ----------------------------
-        cos_b = math.cos(box_tr.rotation)
-        sin_b = math.sin(box_tr.rotation)
-
-        px = clamped_x * cos_b - clamped_y * sin_b + box_tr.position.x
-        py = clamped_x * sin_b + clamped_y * cos_b + box_tr.position.y
+        clamped_x = max(-half_w, min(half_w, point_local_box.x))
+        clamped_y = max(-half_h, min(half_h, point_local_box.y))
+        point_clamped_local_box = Vector2D(clamped_x, clamped_y)
 
         # ----------------------------
-        # On passe le point en mondial
+        # Repasser en coordonnées parent
         # ----------------------------
-        cos_p = math.cos(parent.rotation)
-        sin_p = math.sin(parent.rotation)
+        point_in_parent_space = box_tr.rotation.apply(point_clamped_local_box) + box_tr.position
 
-        world_x = px * cos_p - py * sin_p + parent.position.x
-        world_y = px * sin_p + py * cos_p + parent.position.y
+        # ----------------------------
+        # Repasser en coordonnées mondiales
+        # ----------------------------
+        point_world = parent_tr.rotation.apply(point_in_parent_space) + parent_tr.position
 
-        return Vector2D(world_x, world_y)
+        return point_world
+
 
     # --------------------
     # Détection globale

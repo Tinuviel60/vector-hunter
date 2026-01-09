@@ -1,6 +1,7 @@
 import math
 import pytest
 from vect_hunt.core import Vector2D
+from vect_hunt.core.rotation import Rotation
 
 
 # --------------------
@@ -57,9 +58,9 @@ def test_vector_orientation(x, y, expected_orientation):
     v = Vector2D(x, y)
     assert math.isclose(v.orientation(), expected_orientation)
 
-
+# TODO : Test d'integration pour from_direction, à migrer en temps voulu
 @pytest.mark.parametrize(
-    "direction, x_expected, y_expected",
+    "angle, x_expected, y_expected",
     [
         (0.0, 1.0, 0.0),
         (math.pi / 2, 0.0, 1.0),
@@ -68,8 +69,9 @@ def test_vector_orientation(x, y, expected_orientation):
         (math.pi / 4, math.sqrt(2) / 2, math.sqrt(2) / 2),
     ],
 )
-def test_vector_from_direction(direction, x_expected, y_expected):
-    v = Vector2D.from_direction(direction)
+def test_vector_from_direction(angle, x_expected, y_expected):
+    rotation = Rotation(angle)
+    v = Vector2D.from_direction(rotation)
     # tolérance flottante raisonnable
     tol = 1e-9
     assert math.isclose(v.x, x_expected, abs_tol=tol)
