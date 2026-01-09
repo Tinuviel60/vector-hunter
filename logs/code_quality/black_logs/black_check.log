@@ -1,380 +1,163 @@
---- /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/core/tag.py	2026-01-08 21:06:58.887041+00:00
-+++ /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/core/tag.py	2026-01-08 22:15:52.045392+00:00
-@@ -1,6 +1,7 @@
- from enum import IntFlag, auto
-+
+--- /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/worlds/world.py	2026-01-09 11:33:22.946702+00:00
++++ /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/worlds/world.py	2026-01-09 21:56:48.549729+00:00
+@@ -17,11 +17,13 @@
+         self.targets: dict[str, GameObject] = {}  # TODO Define a proper target class
+         self.player = object()  # TODO Define a proper player class
  
- class Tag(IntFlag):
-     """
-     Représente un tag unique pour un GameObject.
+         self.game_objects: dict[str, GameObject] = {}
  
-@@ -20,14 +21,14 @@
-     WALL : Tag
-         Tag pour les murs.
-     PICKUP : Tag
-         Tag pour les objets ramassables.
-     """
-+
-     NONE = 0
-     # Les vrais tags sont définis avec `auto()`
-     PLAYER = auto()
-     ENEMY = auto()
-     PROJECTILE = auto()
-     WALL = auto()
-     PICKUP = auto()
-     # Ajoutez ici vos autres tags jusqu'à 32 max
--
---- /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/systems/tag_system.py	2026-01-08 21:08:31.546600+00:00
-+++ /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/systems/tag_system.py	2026-01-08 22:15:52.073655+00:00
-@@ -45,11 +45,11 @@
-         bool
-             True si les objets peuvent interagir.
-         """
-         # On teste si tag2 est présent dans le masque autorisé de tag1
-         return bool(CAN_COLLIDE.get(tag1, Tag.NONE) & tag2)
--    
-+
-     # NOTE : Exemple d'interraction via les tags, non implémentée dans le moteur
-     @staticmethod
-     def can_destroy(tag1: Tag, tag2: Tag) -> bool:
-         """
-         Vérifie si un objet avec tag1 peut détruire un objet avec tag2.
-@@ -65,11 +65,11 @@
-         -------
-         bool
-             True si l'objet avec tag1 peut détruire l'objet avec tag2.
-         """
-         return bool(CAN_DESTROY.get(tag1, Tag.NONE) & tag2)
--    
-+
-     # NOTE : Exemple d'interraction via les tags, non implémentée dans le moteur
-     @staticmethod
-     def can_pickup(tag1: Tag, tag2: Tag) -> bool:
-         """
-         Vérifie si un objet avec tag1 peut ramasser un objet avec tag2.
-@@ -84,6 +84,6 @@
-         Returns
-         -------
-         bool
-             True si l'objet avec tag1 peut ramasser l'objet avec tag2.
-         """
--        return bool(CAN_PICKUP.get(tag1, Tag.NONE) & tag2)
-\ No newline at end of file
-+        return bool(CAN_PICKUP.get(tag1, Tag.NONE) & tag2)
---- /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/core/geometry.py	2026-01-08 21:43:21.154088+00:00
-+++ /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/core/geometry.py	2026-01-08 22:15:52.078191+00:00
-@@ -5,11 +5,11 @@
- class Geometry:
-     """
-     Fournit des fonctions géométriques utilitaires pour la détection de collisions
-     et d'autres opérations géométriques.
-     """
--        
-+
-     @staticmethod
-     def get_polygon_normals(corners: List[Vector2D]) -> List[Vector2D]:
-         """
-         Calcule les normales unitaires aux arêtes d'un polygone.
+-        self.collider_system = ColliderSystem()  # TODO : Initialize the collision system
++        self.collider_system = (
++            ColliderSystem()
++        )  # TODO : Initialize the collision system
  
-@@ -45,11 +45,10 @@
-             normalized_normal = normal.normalized()
-             normals.append(normalized_normal)
- 
-         return normals
- 
--
-     @staticmethod
-     def project_polygon_on_axis(
-         corners: List[Vector2D], axis: Vector2D
-     ) -> Tuple[float, float]:
+     def add_game_object(self, game_object: GameObject) -> None:
          """
-@@ -82,11 +81,10 @@
-             min_proj = min(min_proj, projection)
-             max_proj = max(max_proj, projection)
+         Ajoute un GameObject au monde.
  
-         return (min_proj, max_proj)
- 
--
-     # TODO : intervals_overlap --> Move inside numeric.py?
-     @staticmethod
-     def intervals_overlap(min1: float, max1: float, min2: float, max2: float) -> bool:
-         """
-         Vérifie si deux intervalles [min1, max1] et [min2, max2] se chevauchent.
---- /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/objects/game_object.py	2026-01-08 21:58:24.736901+00:00
-+++ /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/objects/game_object.py	2026-01-08 22:15:52.098901+00:00
-@@ -21,11 +21,13 @@
-         Liste des colliders attachés à l'objet. Peut être vide.
-     active : bool
-         Indique si l'objet est actif dans le monde.
-     """
- 
--    def __init__(self, name: str, transform: Transform = Transform(), tags: Tag = Tag.NONE):
-+    def __init__(
-+        self, name: str, transform: Transform = Transform(), tags: Tag = Tag.NONE
-+    ):
-         """
-         Initialise un GameObject.
- 
+--- /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/objects/game_object.py	2026-01-09 21:45:00.825413+00:00
++++ /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/objects/game_object.py	2026-01-09 21:56:48.560825+00:00
+@@ -157,6 +157,6 @@
          Parameters
          ----------
-@@ -124,17 +126,17 @@
-     def has_tag(self, tag: Tag) -> bool:
+         other : GameObject
+             L'autre GameObject impliqué dans le trigger.
          """
-         Vérifie si ce GameObject possède un tag donné.
-         """
-         return bool(self.tags & tag)
--    
-+
-     def list_tags(self) -> list[Tag]:
-         """
-         Retourne tous les tags actifs de ce GameObject sous forme de liste.
-         """
-         return [t for t in Tag if t != Tag.NONE and self.has_tag(t)]
--    
-+
-     # TODO : Créer unee liste de gameobject qui ont déclenché une collision cette frame ?
-     # NOTE : voir si garde cela ici
-     def on_collision(self, other: "GameObject") -> None:
-         """
-         Appelé quand ce GameObject entre en collision physique.
-@@ -145,6 +147,6 @@
-     # NOTE : voir si garde cela ici
-     def on_trigger(self, other: "GameObject") -> None:
-         """
-         Appelé quand ce GameObject entre dans un trigger.
-         """
--        raise NotImplementedError("Méthode on_trigger non implémentée.")
+-        print("Trigger detected from", self.name, "to", other.name)
 \ No newline at end of file
-+        raise NotImplementedError("Méthode on_trigger non implémentée.")
---- /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/core/collider.py	2026-01-08 20:34:42.944802+00:00
-+++ /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/core/collider.py	2026-01-08 22:15:52.107559+00:00
-@@ -10,11 +10,14 @@
- class Collider:
-     """
++        print("Trigger detected from", self.name, "to", other.name)
+--- /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/game/game.py	2026-01-09 11:54:33.393073+00:00
++++ /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/game/game.py	2026-01-09 21:56:48.563646+00:00
+@@ -23,13 +23,20 @@
+         self.start_render: bool = False
+ 
+         self.gameObjects: dict[str, GameObject] = {}
+         self.initialize()
+ 
+-        self.initialize_game_objects("Object1", position=Vector2D(100, 200), tags=Tag.PLAYER, form="box")
+-        self.initialize_game_objects("Object2", position=Vector2D(500, 200), rotation=math.pi/4,tags=Tag.ENEMY, form="box")
+-
++        self.initialize_game_objects(
++            "Object1", position=Vector2D(100, 200), tags=Tag.PLAYER, form="box"
++        )
++        self.initialize_game_objects(
++            "Object2",
++            position=Vector2D(500, 200),
++            rotation=math.pi / 4,
++            tags=Tag.ENEMY,
++            form="box",
++        )
+ 
+     def initialize(self) -> None:
+         """
+         Initialise les composants du jeu.
+         """
+@@ -64,12 +71,10 @@
+             else:
+                 game_object.move(-200 * delta_time, 0)
+ 
+         self.world.collider_system.detect_collisions()
+ 
+-        
+-
+     def render(self) -> None:
+         """
+         Rendu graphique du jeu.
+         """
+ 
+@@ -79,11 +84,11 @@
+         self,
+         name: str = "Object",
+         position: Vector2D = Vector2D(0, 0),
+         rotation: float = 0.0,
+         tags: Tag = Tag.NONE,
+-        form = "circle",
++        form="circle",
+     ):
+         """
+         Initialise et ajoute un GameObject simple au monde.
+ 
+         Parameters
+--- /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/core/collider.py	2026-01-09 21:44:25.369660+00:00
++++ /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/core/collider.py	2026-01-09 21:56:48.570935+00:00
+@@ -14,11 +14,14 @@
      Classe de base pour les colliders.
      Utilisée dans les systèmes de collision pour définir des zones de collision.
      """
--    def __init__(self, parent:GameObject,transform: Transform = Transform(), solid: bool = True):
-+
-+    def __init__(
-+        self, parent: GameObject, transform: Transform = Transform(), solid: bool = True
-+    ):
+ 
+     def __init__(
+-        self, parent: "GameObject", transform: Transform = Transform(), solid: bool = True
++        self,
++        parent: "GameObject",
++        transform: Transform = Transform(),
++        solid: bool = True,
+     ):
          """
          Définit un collider de base avec un transform et une propriété de solidité.
  
          Parameters
-         ----------
-@@ -23,11 +26,11 @@
-         transform : Transform
-             Le transform associé au collider.
-         solid : bool
-             Indique si le collider interagit avec d'autres colliders ou non.
-         """
--        self.parent = parent  
-+        self.parent = parent
-         self.transform = transform
-         self.solid = solid
- 
-     def get_geometry(self) -> dict:
-         """
-@@ -41,15 +44,17 @@
-         """
-         raise NotImplementedError(
-             "Cette méthode doit être implémentée dans les sous-classes."
-         )
- 
-+
- class BoxCollider(Collider):
-     """
-     Classe de collider rectangulaire.
-     Utilisée dans les systèmes de collision pour définir des zones rectangulaires.
-     """
-+
-     def __init__(
-         self,
-         parent: GameObject,
-         width: float = 10.0,
-         height: float = 10.0,
-@@ -159,12 +164,17 @@
- class CircleCollider(Collider):
-     """
-     Classe de collider circulaire.
-     Utilisée dans les systèmes de collision pour définir des zones circulaires.
-     """
-+
-     def __init__(
--        self, parent: GameObject, center: Vector2D = Vector2D(0, 0), radius: float = 5.0, solid: bool = True
-+        self,
-+        parent: GameObject,
-+        center: Vector2D = Vector2D(0, 0),
-+        radius: float = 5.0,
-+        solid: bool = True,
-     ):
-         """
-         Initialise un CircleCollider avec un rayon.
- 
-         Parameters
---- /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/systems/collider_system.py	2026-01-08 22:15:15.310192+00:00
-+++ /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/systems/collider_system.py	2026-01-08 22:15:52.176397+00:00
-@@ -4,11 +4,10 @@
- 
- from vect_hunt.core import *
- from vect_hunt.objects import GameObject
- 
- import math
--
- 
- 
- class ColliderSystem:
-     """
-     Système global de collision pour un ensemble de colliders.
-@@ -78,11 +77,11 @@
-             return ColliderSystem._compute_aabb_circle(collider)
-         elif isinstance(collider, BoxCollider):
-             return ColliderSystem._compute_aabb_box(collider)
-         else:
-             raise TypeError("Collider inconnu pour calcul AABB")
--    
-+
-     @staticmethod
-     def _compute_aabb_box(collider: BoxCollider):
-         """
-         Calcule l'AABB mondial d'un BoxCollider.
- 
-@@ -97,11 +96,11 @@
+--- /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/systems/collider_system.py	2026-01-09 21:46:00.937300+00:00
++++ /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/systems/collider_system.py	2026-01-09 21:56:48.672213+00:00
+@@ -95,11 +95,13 @@
+         Returns
+         -------
+         tuple
              L'AABB sous la forme (min_x, min_y, max_x, max_y
          """
-         xs = [c.x for c in collider.corners]
-         ys = [c.y for c in collider.corners]
+-        world_corners = ColliderSystem.get_world_corners(collider.corners, parent_transform)
++        world_corners = ColliderSystem.get_world_corners(
++            collider.corners, parent_transform
++        )
+         xs = [c.x for c in world_corners]
+         ys = [c.y for c in world_corners]
          return (min(xs), min(ys), max(xs), max(ys))
--    
-+
-     @staticmethod
-     def _compute_aabb_circle(collider: CircleCollider):
-         """
-         Calcule l'AABB mondial d'un CircleCollider.
  
-@@ -122,27 +121,32 @@
      @staticmethod
-     def aabb_overlap(a: tuple, b: tuple) -> bool:
-         """Vérifie si deux AABB se superposent."""
-         a_min_x, a_min_y, a_max_x, a_max_y = a
-         b_min_x, b_min_y, b_max_x, b_max_y = b
--        return not (a_max_x < b_min_x or a_min_x > b_max_x or a_max_y < b_min_y or a_min_y > b_max_y)
-+        return not (
-+            a_max_x < b_min_x
-+            or a_min_x > b_max_x
-+            or a_max_y < b_min_y
-+            or a_min_y > b_max_y
-+        )
- 
-     # --------------------
-     # Collisions fines
-     # --------------------
-     @staticmethod
-     def check_collision(c1: Collider, c2: Collider) -> bool:
+@@ -155,11 +157,11 @@
          """
-         Détecte la collision fine entre deux colliders.
--        
-+
-         Parameters
-         ----------
-         c1 : Collider
-             Le premier collider.
-         c2 : Collider
-             Le second collider.
+         # Circle / Circle
+         if isinstance(c1, CircleCollider) and isinstance(c2, CircleCollider):
+             c1_world_pos = c1.transform.position + c1.parent.transform.position
+             c2_world_pos = c2.transform.position + c2.parent.transform.position
 -            
 +
-         Returns
-         -------
-         bool
-             True si les colliders sont en collision, False sinon.
-         """
-@@ -169,45 +173,49 @@
-     def _sat_collision(box1: BoxCollider, box2: BoxCollider) -> bool:
-         """
-         Collision Box/Box avec la méthode SAT (Séparation des axes).
-         Pour cette méthode, on projette les coins des deux boîtes sur les normales
-         de chaque boîte et on vérifie les chevauchements.
--        
-+
-         Parameters
-         ----------
-         box1 : BoxCollider
-             Le premier BoxCollider.
-         box2 : BoxCollider
-             Le second BoxCollider.
--        
-+
-         Returns
-         -------
-         bool
-             True si les boîtes sont en collision, False sinon.
-         """
-         corners1 = box1.corners
-         corners2 = box2.corners
+             delta = c1_world_pos - c2_world_pos
+             radius_sum = c1.radius + c2.radius
+             return delta.magnitude_squared() <= radius_sum**2
  
-         # Obtenir les axes de projection (normales des arêtes)
--        axes = Geometry.get_polygon_normals(corners1) + Geometry.get_polygon_normals(corners2)
-+        axes = Geometry.get_polygon_normals(corners1) + Geometry.get_polygon_normals(
-+            corners2
-+        )
- 
-         # Vérifier la projection sur chaque axe
-         for axis in axes:
-             min1, max1 = Geometry.project_polygon_on_axis(corners1, axis)
-             min2, max2 = Geometry.project_polygon_on_axis(corners2, axis)
- 
-             # Séparation trouvée, pas de collision
-             if not Geometry.intervals_overlap(min1, max1, min2, max2):
-                 return False
--            
-+
-         # Aucune séparation trouvée, collision détectée
-         return True
+         # Box / Box : Séparation des axes (SAT)
+@@ -216,13 +218,11 @@
  
      @staticmethod
      def _circle_box_collision(circle: CircleCollider, box: BoxCollider) -> bool:
          """Collision Circle / Box."""
--        closest = ColliderSystem.get_closest_point_on_box(box, circle.transform.position)
-+        closest = ColliderSystem.get_closest_point_on_box(
-+            box, circle.transform.position
-+        )
-         delta = circle.transform.position - closest
+         circle_world_pos = circle.transform.position + circle.parent.transform.position
+-        closest = ColliderSystem.get_closest_point_on_box(
+-            box, circle_world_pos
+-        )
++        closest = ColliderSystem.get_closest_point_on_box(box, circle_world_pos)
+         delta = circle_world_pos - closest
          return delta.magnitude_squared() <= circle.radius**2
+ 
+     @staticmethod
+     def get_world_corners(corners: List[Vector2D], parent: Transform) -> list[Vector2D]:
+@@ -251,14 +251,16 @@
+         for corner in corners:
+             # rotation par le parent
+             rotated_x = corner.x * cos_a - corner.y * sin_a
+             rotated_y = corner.x * sin_a + corner.y * cos_a
+             # translation locale
+-            
+-            world_corner = Vector2D(rotated_x+ parent.position.x, rotated_y + parent.position.y)
++
++            world_corner = Vector2D(
++                rotated_x + parent.position.x, rotated_y + parent.position.y
++            )
+             world_corners.append(world_corner)
+-            #Appliquer rotation du parent
++            # Appliquer rotation du parent
+ 
+         return world_corners
  
      # TODO : Bouger dans geometry.py ?
      @staticmethod
-@@ -257,11 +265,11 @@
-         )
-         world_y = (
-             clamped_x * sin_angle + clamped_y * cos_angle + box.transform.position.y
-         )
-         return Vector2D(world_x, world_y)
--    
-+
-     # --------------------
-     # Détection globale
-     # --------------------
-     # TODO : optimiser avec spatial partitioning? (quadtrees, grilles, etc.)
-     # TODO : gestion de on_enter et on_exit à mettre en place
-@@ -281,11 +289,11 @@
-             for c1 in colliders:
-                 for tag_mask2, colliders2 in self.colliders.items():
-                     # Filtrage par tags (une seule fois par groupe)
-                     if not TagSystem.can_collide(tag_mask, tag_mask2):
-                         continue
--                        
-+
-                     # On ne se compare pas avec soi-même
-                     for c2 in colliders2:
-                         if c1 is c2:
-                             continue
- 
-@@ -319,6 +327,5 @@
-                         elif not c1.solid and c2.solid:
-                             parent1.on_trigger(parent2)
-                         # Trigger avec solide
-                         elif c1.solid and not c2.solid:
-                             parent2.on_trigger(parent1)
--

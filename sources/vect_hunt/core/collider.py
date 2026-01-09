@@ -1,12 +1,14 @@
+from typing import TYPE_CHECKING
+
 from .vector import Vector2D
 from .transform import Transform
 
-from vect_hunt.objects import GameObject
+if TYPE_CHECKING:
+    from vect_hunt.objects import GameObject
 
 import math
 
 
-# TODO : Gestion de tag pour definir avec quoi un collider peut entrer en collision
 class Collider:
     """
     Classe de base pour les colliders.
@@ -14,7 +16,10 @@ class Collider:
     """
 
     def __init__(
-        self, parent: GameObject, transform: Transform = Transform(), solid: bool = True
+        self,
+        parent: "GameObject",
+        transform: Transform = Transform(),
+        solid: bool = True,
     ):
         """
         Définit un collider de base avec un transform et une propriété de solidité.
@@ -55,7 +60,7 @@ class BoxCollider(Collider):
 
     def __init__(
         self,
-        parent: GameObject,
+        parent: "GameObject",
         width: float = 10.0,
         height: float = 10.0,
         center: Vector2D = Vector2D(0, 0),
@@ -169,7 +174,7 @@ class CircleCollider(Collider):
 
     def __init__(
         self,
-        parent: GameObject,
+        parent: "GameObject",
         center: Vector2D = Vector2D(0, 0),
         radius: float = 5.0,
         solid: bool = True,

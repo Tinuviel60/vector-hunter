@@ -1,9 +1,10 @@
 import pygame
-from typing import List, Tuple
+from typing import Tuple
 
 from vect_hunt.objects import GameObject
 from vect_hunt.worlds import World
 from vect_hunt.utils import hex_to_rgb
+from vect_hunt.systems import ColliderSystem
 
 """
 Module de rendu pour le jeu Vector Hunter.
@@ -99,6 +100,7 @@ class Renderer:
             Objet du jeu à dessiner.
         """
         for name, game_object in game_objects.items():
+            # TODO : Dessin des différents types d'objets selon leurs propriétés
             position = game_object.transform.position
             radius = 10
             color = "#FF6464"
@@ -131,14 +133,11 @@ class Renderer:
 
         elif geom["type"] == "polygon":
             # Pour les polygones, les points incluent déjà la position absolue
-            points = [
-                (int((p + transform.position).x), int((p + transform.position).y))
-                for p in geom["points"]
-            ]
+            points = ColliderSystem.get_world_corners(geom["points"], transform)
             pygame.draw.polygon(
                 self.screen,
                 (0, 255, 0),
-                points,
+                [(int(p.x), int(p.y)) for p in points],
                 1,
             )
 
@@ -152,10 +151,7 @@ class Renderer:
             L'état actuel du monde du jeu, contenant les informations du joueur et des entités.
         """
         self.draw_background()
-        self.draw_game_objects(world.gameObjects)
-        # TODO : Implementer le dessin des entités et du joueur
-        # self.draw_entities(world.targets)
-        # self.draw_player(world.player.position)
+        self.draw_game_objects(world.game_objects)
         pygame.display.flip()
 
     def set_background_color(self, color: str = "#414141") -> None:

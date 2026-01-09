@@ -66,7 +66,7 @@ class ColliderSystem:
     # AABB Mondial
     # --------------------
     @staticmethod
-    def compute_aabb(collider: Collider):
+    def compute_aabb(collider: Collider, parent_transform: Transform) -> tuple:
         """
         Calcule l'AABB mondial du collider.
 
@@ -74,14 +74,14 @@ class ColliderSystem:
         Pour BoxCollider : calcule coins mondiaux
         """
         if isinstance(collider, CircleCollider):
-            return ColliderSystem._compute_aabb_circle(collider)
+            return ColliderSystem._compute_aabb_circle(collider, parent_transform)
         elif isinstance(collider, BoxCollider):
-            return ColliderSystem._compute_aabb_box(collider)
+            return ColliderSystem._compute_aabb_box(collider, parent_transform)
         else:
             raise TypeError("Collider inconnu pour calcul AABB")
 
     @staticmethod
-    def _compute_aabb_box(collider: BoxCollider):
+    def _compute_aabb_box(collider: BoxCollider, parent_transform: Transform):
         """
         Calcule l'AABB mondial d'un BoxCollider.
 
@@ -89,18 +89,23 @@ class ColliderSystem:
         ----------
         collider : BoxCollider
             Le BoxCollider dont on veut calculer l'AABB.
+        parent_transform : Transform
+            La transformation du GameObject parent.
 
         Returns
         -------
         tuple
             L'AABB sous la forme (min_x, min_y, max_x, max_y
         """
-        xs = [c.x for c in collider.corners]
-        ys = [c.y for c in collider.corners]
+        world_corners = ColliderSystem.get_world_corners(
+            collider.corners, parent_transform
+        )
+        xs = [c.x for c in world_corners]
+        ys = [c.y for c in world_corners]
         return (min(xs), min(ys), max(xs), max(ys))
 
     @staticmethod
-    def _compute_aabb_circle(collider: CircleCollider):
+    def _compute_aabb_circle(collider: CircleCollider, parent_transform: Transform):
         """
         Calcule l'AABB mondial d'un CircleCollider.
 
@@ -114,7 +119,7 @@ class ColliderSystem:
         tuple
             L'AABB sous la forme (min_x, min_y, max_x, max_y
         """
-        pos = collider.transform.position
+        pos = collider.transform.position + parent_transform.position
         r = collider.radius
         return (pos.x - r, pos.y - r, pos.x + r, pos.y + r)
 
@@ -152,7 +157,10 @@ class ColliderSystem:
         """
         # Circle / Circle
         if isinstance(c1, CircleCollider) and isinstance(c2, CircleCollider):
-            delta = c1.transform.position - c2.transform.position
+            c1_world_pos = c1.transform.position + c1.parent.transform.position
+            c2_world_pos = c2.transform.position + c2.parent.transform.position
+
+            delta = c1_world_pos - c2_world_pos
             radius_sum = c1.radius + c2.radius
             return delta.magnitude_squared() <= radius_sum**2
 
@@ -188,8 +196,8 @@ class ColliderSystem:
         bool
             True si les boîtes sont en collision, False sinon.
         """
-        corners1 = box1.corners
-        corners2 = box2.corners
+        corners1 = ColliderSystem.get_world_corners(box1.corners, box1.parent.transform)
+        corners2 = ColliderSystem.get_world_corners(box2.corners, box2.parent.transform)
 
         # Obtenir les axes de projection (normales des arêtes)
         axes = Geometry.get_polygon_normals(corners1) + Geometry.get_polygon_normals(
@@ -211,11 +219,48 @@ class ColliderSystem:
     @staticmethod
     def _circle_box_collision(circle: CircleCollider, box: BoxCollider) -> bool:
         """Collision Circle / Box."""
-        closest = ColliderSystem.get_closest_point_on_box(
-            box, circle.transform.position
-        )
-        delta = circle.transform.position - closest
+        circle_world_pos = circle.transform.position + circle.parent.transform.position
+        closest = ColliderSystem.get_closest_point_on_box(box, circle_world_pos)
+        delta = circle_world_pos - closest
         return delta.magnitude_squared() <= circle.radius**2
+
+    @staticmethod
+    def get_world_corners(corners: List[Vector2D], parent: Transform) -> list[Vector2D]:
+        """
+        Calcule les coins mondiaux d'un BoxCollider orienté.
+
+        Parameters
+        ----------
+        corners : List[Vector2D]
+            La liste des coins locaux d'un BoxCollider orienté.
+        parent : Transform
+            La transformation du GameObject parent.
+
+        Returns
+        -------
+        list[Vector2D]
+            La liste des coins mondiaux du BoxCollider.
+        """
+        world_corners = []
+
+        # TODO : Renvoyer cos et sin depuis rotation parent.rotation.cos() et parent.rotation.sin()
+        # TODO : Passer par une matrice de transformation ?
+        cos_a = math.cos(parent.rotation)
+        sin_a = math.sin(parent.rotation)
+
+        for corner in corners:
+            # rotation par le parent
+            rotated_x = corner.x * cos_a - corner.y * sin_a
+            rotated_y = corner.x * sin_a + corner.y * cos_a
+            # translation locale
+
+            world_corner = Vector2D(
+                rotated_x + parent.position.x, rotated_y + parent.position.y
+            )
+            world_corners.append(world_corner)
+            # Appliquer rotation du parent
+
+        return world_corners
 
     # TODO : Bouger dans geometry.py ?
     @staticmethod
@@ -238,34 +283,60 @@ class ColliderSystem:
         Vector2D
             Le point le plus proche sur le box.
         """
-        # Transforme le point dans le repère local du box
-        local_x = point.x - box.transform.position.x
-        local_y = point.y - box.transform.position.y
+        parent = box.parent.transform
+        box_tr = box.transform
 
-        # Rotation inverse pour passer dans le repère du box
-        cos_angle = math.cos(-box.transform.rotation)
-        sin_angle = math.sin(-box.transform.rotation)
+        # ----------------------------
+        # On passe le point en local du parent
+        # ----------------------------
+        dx = point.x - parent.position.x
+        dy = point.y - parent.position.y
 
-        rotated_x = local_x * cos_angle - local_y * sin_angle
-        rotated_y = local_x * sin_angle + local_y * cos_angle
+        cos_p = math.cos(-parent.rotation)
+        sin_p = math.sin(-parent.rotation)
 
-        # Clamp aux limites du box
-        half_width = box.width / 2
-        half_height = box.height / 2
+        px = dx * cos_p - dy * sin_p
+        py = dx * sin_p + dy * cos_p
 
-        clamped_x = max(-half_width, min(half_width, rotated_x))
-        clamped_y = max(-half_height, min(half_height, rotated_y))
+        # ----------------------------
+        # On passe le point en local box
+        # ----------------------------
+        px -= box_tr.position.x
+        py -= box_tr.position.y
 
-        # Rotation directe pour revenir au repère global
-        cos_angle = math.cos(box.transform.rotation)
-        sin_angle = math.sin(box.transform.rotation)
+        cos_b = math.cos(-box_tr.rotation)
+        sin_b = math.sin(-box_tr.rotation)
 
-        world_x = (
-            clamped_x * cos_angle - clamped_y * sin_angle + box.transform.position.x
-        )
-        world_y = (
-            clamped_x * sin_angle + clamped_y * cos_angle + box.transform.position.y
-        )
+        local_x = px * cos_b - py * sin_b
+        local_y = px * sin_b + py * cos_b
+
+        # ----------------------------
+        # On pose le point dans la box locale
+        # ----------------------------
+        half_w = box.width / 2
+        half_h = box.height / 2
+
+        clamped_x = max(-half_w, min(half_w, local_x))
+        clamped_y = max(-half_h, min(half_h, local_y))
+
+        # ----------------------------
+        # On repasse le point de la boite en parent local
+        # ----------------------------
+        cos_b = math.cos(box_tr.rotation)
+        sin_b = math.sin(box_tr.rotation)
+
+        px = clamped_x * cos_b - clamped_y * sin_b + box_tr.position.x
+        py = clamped_x * sin_b + clamped_y * cos_b + box_tr.position.y
+
+        # ----------------------------
+        # On passe le point en mondial
+        # ----------------------------
+        cos_p = math.cos(parent.rotation)
+        sin_p = math.sin(parent.rotation)
+
+        world_x = px * cos_p - py * sin_p + parent.position.x
+        world_y = px * sin_p + py * cos_p + parent.position.y
+
         return Vector2D(world_x, world_y)
 
     # --------------------
@@ -305,19 +376,19 @@ class ColliderSystem:
                         checked_pairs.add(pair)
                         checked_pairs.add(reverse_pair)
 
+                        parent1 = c1.parent
+                        parent2 = c2.parent
+
                         # AABB rapide
                         if not self.aabb_overlap(
-                            self.compute_aabb(c1),
-                            self.compute_aabb(c2),
+                            self.compute_aabb(c1, parent1.transform),
+                            self.compute_aabb(c2, parent2.transform),
                         ):
                             continue
 
                         # Collision fine
                         if not self.check_collision(c1, c2):
                             continue
-
-                        parent1 = c1.parent
-                        parent2 = c2.parent
 
                         # Collision détectée
                         if c1.solid and c2.solid:

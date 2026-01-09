@@ -1,15 +1,8 @@
 # Vector-Hunter Roadmap
 
 ## 🔹 Must Have (prochaines étapes critiques)
-
-1. **Intégration des GameObjects dans le World**
-   - Gestion des références des objets dans le monde
-   - Mise à jour, rendu et collisions centralisés
-
-2. **Premier test de collisions**
-   - Scenario simple avec BoxCollider et CircleCollider
-   - Vérification AABB puis collisions réelles
-   - Affichage console ou rendu minimal pour visualisation
+   - Tester les collider
+   - Nettoyer les descriptions de commits
 
 3. **Mise en place des tests unitaires**
    - Transform : translation et rotation
@@ -47,3 +40,14 @@
 10. **Préparer architecture ECS**
     - GameObject + composants modulaires
     - Réflexion pour future extension, sans implémentation immédiate
+
+# Fini 
+
+1. **Intégration des GameObjects dans le World**
+   - Gestion des références des objets dans le monde
+   - Mise à jour, rendu et collisions centralisés
+
+2. **Premier test de collisions**
+   - Scenario simple avec BoxCollider et CircleCollider
+   - Vérification AABB puis collisions réelles
+   - Affichage console ou rendu minimal pour visualisation

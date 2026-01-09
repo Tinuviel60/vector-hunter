@@ -78,7 +78,7 @@ class GameObject:
         dy : float
             Déplacement sur l'axe Y.
         """
-        self.transform.translate(Vector2D(dx, dy))
+        self.transform.move(Vector2D(dx, dy))
 
     def rotate(self, delta: float) -> None:
         """
@@ -135,18 +135,28 @@ class GameObject:
         """
         return [t for t in Tag if t != Tag.NONE and self.has_tag(t)]
 
-    # TODO : Créer unee liste de gameobject qui ont déclenché une collision cette frame ?
+    # TODO : Créer une liste de gameobject qui ont déclenché une collision cette frame ?
     # NOTE : voir si garde cela ici
     def on_collision(self, other: "GameObject") -> None:
         """
         Appelé quand ce GameObject entre en collision physique.
-        """
-        raise NotImplementedError("Méthode on_collision non implémentée.")
 
-    # TODO : Créer unee liste de gameobject qui ont déclenché un trigger cette frame ?
+        Parameters
+        ----------
+        other : GameObject
+            L'autre GameObject impliqué dans la collision.
+        """
+        print("Collision detected from", self.name, "to", other.name)
+
+    # TODO : Créer une liste de gameobject qui ont déclenché un trigger cette frame ?
     # NOTE : voir si garde cela ici
     def on_trigger(self, other: "GameObject") -> None:
         """
         Appelé quand ce GameObject entre dans un trigger.
+
+        Parameters
+        ----------
+        other : GameObject
+            L'autre GameObject impliqué dans le trigger.
         """
-        raise NotImplementedError("Méthode on_trigger non implémentée.")
+        print("Trigger detected from", self.name, "to", other.name)

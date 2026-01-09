@@ -1,5 +1,6 @@
 from typing import List
 from vect_hunt.objects import GameObject
+from vect_hunt.systems import ColliderSystem
 
 
 class World:
@@ -16,7 +17,11 @@ class World:
         self.targets: dict[str, GameObject] = {}  # TODO Define a proper target class
         self.player = object()  # TODO Define a proper player class
 
-        self.gameObjects: dict[str, GameObject] = {}
+        self.game_objects: dict[str, GameObject] = {}
+
+        self.collider_system = (
+            ColliderSystem()
+        )  # TODO : Initialize the collision system
 
     def add_game_object(self, game_object: GameObject) -> None:
         """
@@ -27,7 +32,8 @@ class World:
         game_object : GameObject
             L'objet de jeu à ajouter.
         """
-        self.gameObjects[game_object.name] = game_object
+        self.game_objects[game_object.name] = game_object
+        self.collider_system.register(game_object)
 
     def remove_game_object(self, game_object: GameObject) -> None:
         """
@@ -38,8 +44,9 @@ class World:
         game_object : GameObject
             L'objet de jeu à retirer.
         """
-        if game_object.name in self.gameObjects:
-            del self.gameObjects[game_object.name]
+        if game_object.name in self.game_objects:
+            del self.game_objects[game_object.name]
+        self.collider_system.unregister(game_object)
 
     def add_target(self, target: GameObject) -> None:
         """
@@ -81,7 +88,7 @@ class World:
 
         original_name = name
         id = 1
-        while name in self.gameObjects:
+        while name in self.game_objects:
             name = f"{original_name}_{id}"
             id += 1
         return name

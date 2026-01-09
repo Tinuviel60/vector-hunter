@@ -1,3 +1,4 @@
+import math
 from typing import TYPE_CHECKING
 
 from vect_hunt.worlds import World
@@ -24,10 +25,16 @@ class Game:
         self.gameObjects: dict[str, GameObject] = {}
         self.initialize()
 
-        self.initialize_game_objects("Object1", position=Vector2D(200, 200))
-        self.initialize_game_objects("Object2", position=Vector2D(400, 200))
-        self.initialize_game_objects("Object3", position=Vector2D(200, 400))
-        self.initialize_game_objects("Object4", position=Vector2D(400, 400))
+        self.initialize_game_objects(
+            "Object1", position=Vector2D(100, 200), tags=Tag.PLAYER, form="circle"
+        )
+        self.initialize_game_objects(
+            "Object2",
+            position=Vector2D(130, 200),
+            rotation=0,
+            tags=Tag.ENEMY,
+            form="circle",
+        )
 
     def initialize(self) -> None:
         """
@@ -58,7 +65,13 @@ class Game:
             delta_time: Temps écoulé depuis la dernière mise à jour (en secondes).
         """
         # TODO: Update game state, entities, physics, etc.
-        pass
+        for name, game_object in self.world.game_objects.items():
+            if game_object.has_tag(Tag.PLAYER):
+                game_object.move(5 * delta_time, 0)
+            else:
+                game_object.move(-5* delta_time, 0)
+
+        self.world.collider_system.detect_collisions()
 
     def render(self) -> None:
         """
@@ -72,6 +85,8 @@ class Game:
         name: str = "Object",
         position: Vector2D = Vector2D(0, 0),
         rotation: float = 0.0,
+        tags: Tag = Tag.NONE,
+        form="circle",
     ):
         """
         Initialise et ajoute un GameObject simple au monde.
@@ -83,15 +98,16 @@ class Game:
         position : Vector2D
             Position initiale de l'objet.
         rotation : float
-            Rotation initiale de l'objet en degrés.
+            Rotation initiale de l'objet en radians.
         """
         transform = Transform(position, rotation)
-        gameObject = GameObject(name, transform)
+        gameObject = GameObject(name, transform, tags=tags)
 
-        collider = CircleCollider(gameObject)
-        collider2 = BoxCollider(gameObject)
+        if form == "circle":
+            collider = CircleCollider(gameObject)
+        elif form == "box":
+            collider = BoxCollider(gameObject)
 
         gameObject.add_collider(collider)
-        gameObject.add_collider(collider2)
 
         self.world.add_game_object(gameObject)
