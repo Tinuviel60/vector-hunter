@@ -13,6 +13,8 @@ class GameObject:
 
     Attributes
     ----------
+    id : int
+        Identifiant unique de l'objet (généré automatiquement).
     name : str
         Nom de l'objet pour identification.
     transform : Transform
@@ -22,6 +24,8 @@ class GameObject:
     active : bool
         Indique si l'objet est actif dans le monde.
     """
+
+    _next_id: int = 1  # Compteur de classe pour générer des IDs uniques
 
     def __init__(
         self, name: str, transform: Optional[Transform] = None, tags: Tag = Tag.NONE
@@ -36,12 +40,21 @@ class GameObject:
         transform : Transform, optional
             Transformation initiale de l'objet. Par défaut, un Transform
             avec position (0,0) et rotation 0.
+        tags : Tag
+            Tags initiaux pour cet objet. Par défaut Tag.NONE.
         """
+        self.id = GameObject._next_id
+        GameObject._next_id += 1
+        
         self.name = name
         self.transform = transform if transform is not None else Transform()
         self.colliders: List[Collider] = []
         self.active = True
         self.tags = tags
+
+        # Listes pour suivre les collisions/triggers en cours
+        self.colliding_objects: set[GameObject] = set()
+        self.triggered_objects: set[GameObject] = set()
 
     def add_collider(self, collider: Collider) -> None:
         """

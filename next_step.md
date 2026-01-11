@@ -2,11 +2,6 @@
 
 ## 🔹 Must Have (prochaines étapes critiques)
 
-3. **Mise en place des tests unitaires**
-   -GameObject + Game + TagSystem (unitaires)
-   -ColliderSystem avancé (unitaires)
-   -Quelques tests d’intégration simples sur Game + GameObject + Transform + Collider
-
 4. **Player et InputSystem**
    - Player reçoit des commandes via InputSystem
    - Déplacement et rotation du Player
@@ -49,3 +44,8 @@
    - Scenario simple avec BoxCollider et CircleCollider
    - Vérification AABB puis collisions réelles
    - Affichage console ou rendu minimal pour visualisation
+
+3. **Mise en place des tests unitaires**
+   -GameObject + Game + TagSystem (unitaires)
+   -ColliderSystem avancé (unitaires)
+   -Quelques tests d’intégration simples sur Game + GameObject + Transform + Collider

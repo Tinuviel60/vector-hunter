@@ -90,7 +90,7 @@ class Renderer:
         # Bordure plus foncée
         pygame.draw.circle(self.screen, hex_to_rgb("#963232"), pos, radius, 2)
 
-    def draw_game_objects(self, game_objects: dict[str, GameObject]) -> None:
+    def draw_game_objects(self, game_objects: dict[int, GameObject]) -> None:
         """
         Dessine toutes les cibles de la liste.
 
@@ -99,7 +99,7 @@ class Renderer:
         game_objects : dict[str, GameObject]
             Objet du jeu à dessiner.
         """
-        for name, game_object in game_objects.items():
+        for id, game_object in game_objects.items():
             # TODO : Dessin des différents types d'objets selon leurs propriétés
             position = game_object.transform.position
             radius = 10
@@ -107,7 +107,7 @@ class Renderer:
             # self.draw_entity(position, radius, color)
 
             if self.print_names:
-                text_surface = self.font.render(name, True, (255, 255, 255))
+                text_surface = self.font.render(game_object.name, True, (255, 255, 255))
                 text_rect = text_surface.get_rect(
                     center=(int(position.x), int(position.y) - radius - 10)
                 )

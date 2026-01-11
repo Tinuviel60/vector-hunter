@@ -1,5 +1,6 @@
 from vect_hunt.objects import GameObject
 from vect_hunt.systems import ColliderSystem
+from vect_hunt.trackers import CollisionTracker
 
 
 class World:
@@ -16,11 +17,10 @@ class World:
         self.targets: dict[str, GameObject] = {}  # TODO Define a proper target class
         self.player = object()  # TODO Define a proper player class
 
-        self.game_objects: dict[str, GameObject] = {}
+        self.game_objects: dict[int, GameObject] = {}
 
-        self.collider_system = (
-            ColliderSystem()
-        )  # TODO : Initialize the collision system
+        self.collider_system = ColliderSystem()
+        self.collision_tracker = CollisionTracker()
 
     def add_game_object(self, game_object: GameObject) -> None:
         """
@@ -33,7 +33,7 @@ class World:
         """
         game_object.name = self.validate_name(game_object.name)
 
-        self.game_objects[game_object.name] = game_object
+        self.game_objects[game_object.id] = game_object
         self.collider_system.register(game_object)
 
     def remove_game_object(self, game_object: GameObject) -> None:
@@ -45,8 +45,8 @@ class World:
         game_object : GameObject
             L'objet de jeu à retirer.
         """
-        if game_object.name in self.game_objects:
-            del self.game_objects[game_object.name]
+        if game_object.id in self.game_objects:
+            del self.game_objects[game_object.id]
         self.collider_system.unregister(game_object)
 
     def validate_name(self, name: str) -> str:
@@ -63,10 +63,50 @@ class World:
         str
             Un nom unique pour le GameObject.
         """
-
+        # Collecter tous les noms existants
+        existing_names = {obj.name for obj in self.game_objects.values()}
+        
         original_name = name
-        id = 1
-        while name in self.game_objects:
-            name = f"{original_name}_{id}"
-            id += 1
+        counter = 1
+        while name in existing_names:
+            name = f"{original_name}_{counter}"
+            counter += 1
         return name
+
+    def update_collisions(self, delta_time: float) -> None:
+        """
+        Met à jour le système de collision et déclenche les callbacks appropriés.
+        
+        Parameters
+        ----------
+        delta_time : float
+            Temps écoulé depuis la dernière frame en secondes
+        """
+        # Détecter les collisions de cette frame
+        current_collisions, current_triggers = self.collider_system.detect_collisions()
+        
+        # Mettre à jour le tracker
+        self.collision_tracker.update(current_collisions, current_triggers, delta_time)
+        
+        # Déclencher les callbacks on_collision pour les collisions actives
+        for obj1_id, obj2_id in current_collisions:
+            obj1 = self.game_objects.get(obj1_id)
+            obj2 = self.game_objects.get(obj2_id)
+            if obj1 and obj2:
+                obj1.on_collision(obj2)
+                obj2.on_collision(obj1)
+        
+        # Déclencher les callbacks on_trigger pour les triggers actifs
+        for obj1_id, obj2_id in current_triggers:
+            obj1 = self.game_objects.get(obj1_id)
+            obj2 = self.game_objects.get(obj2_id)
+            if obj1 and obj2:
+                # Déterminer qui est trigger
+                obj1_has_trigger = any(not c.solid for c in obj1.colliders)
+                obj2_has_trigger = any(not c.solid for c in obj2.colliders)
+                
+                # Appeler on_trigger uniquement pour les objets qui ont des triggers
+                if obj1_has_trigger:
+                    obj1.on_trigger(obj2)
+                if obj2_has_trigger:
+                    obj2.on_trigger(obj1)

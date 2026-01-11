@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Set, Tuple
 
 from .tag_system import TagSystem
 
@@ -330,18 +330,22 @@ class ColliderSystem:
     # Détection globale
     # --------------------
     # TODO : optimiser avec spatial partitioning? (quadtrees, grilles, etc.)
-    # TODO : gestion de on_enter et on_exit à mettre en place
-    def detect_collisions(self) -> None:
+    def detect_collisions(self) -> Tuple[Set[Tuple[int, int]], Set[Tuple[int, int]]]:
         """
         Détecte les collisions entre tous les colliders enregistrés dans le système.
         Pour chaque paire de colliders, effectue une détection en deux étapes :
         1. Vérification rapide avec AABB.
         2. Détection fine si les AABB se chevauchent.
 
-        En cas de collision détectée, appelle les méthodes on_collision ou on_trigger
-        des GameObjects parents en fonction de la nature des colliders.
+        Returns
+        -------
+        Tuple[Set[Tuple[int, int]], Set[Tuple[int, int]]]
+            Un tuple contenant (collisions, triggers) où chaque élément est un
+            ensemble de paires (id_obj1, id_obj2) des GameObjects en interaction.
         """
         checked_pairs = set()
+        current_collisions: Set[Tuple[int, int]] = set()
+        current_triggers: Set[Tuple[int, int]] = set()
 
         for tag_mask, colliders in self.colliders.items():
             for c1 in colliders:
@@ -377,13 +381,12 @@ class ColliderSystem:
                         if not self.check_collision(c1, c2):
                             continue
 
-                        # Collision détectée
+                        # Collision détectée - enregistrer
+                        pair = (parent1.id, parent2.id)
                         if c1.solid and c2.solid:
-                            parent1.on_collision(parent2)
-                            parent2.on_collision(parent1)
-                        # Trigger avec solide
-                        elif not c1.solid and c2.solid:
-                            parent1.on_trigger(parent2)
-                        # Trigger avec solide
-                        elif c1.solid and not c2.solid:
-                            parent2.on_trigger(parent1)
+                            current_collisions.add(pair)
+                        else:
+                            # Au moins un des deux est un trigger
+                            current_triggers.add(pair)
+        
+        return current_collisions, current_triggers
