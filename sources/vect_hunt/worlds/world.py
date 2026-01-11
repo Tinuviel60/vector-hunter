@@ -1,3 +1,5 @@
+from typing import Set, Tuple
+
 from vect_hunt.objects import GameObject
 from vect_hunt.systems import ColliderSystem
 from vect_hunt.trackers import CollisionTracker
@@ -75,28 +77,75 @@ class World:
 
     def update_collisions(self, delta_time: float) -> None:
         """
-        Met à jour le système de collision et déclenche les callbacks appropriés.
+        Met à jour le système de collisions et triggers pour cette frame.
         
+        Gère :
+        - Les collisions actives (stay)
+        - Les triggers actifs (stay)
+        - Les événements on_enter / on_exit pour collisions et triggers
+
         Parameters
         ----------
         delta_time : float
             Temps écoulé depuis la dernière frame en secondes
         """
-        # Détecter les collisions de cette frame
+        # Détecter toutes les collisions et triggers pour cette frame
         current_collisions, current_triggers = self.collider_system.detect_collisions()
         
-        # Mettre à jour le tracker
+        # Mettre à jour le tracker (CollisionTracker)
         self.collision_tracker.update(current_collisions, current_triggers, delta_time)
-        
-        # Déclencher les callbacks on_collision pour les collisions actives
+
+        # Gestion des événements 
+        self._handle_enters()
+        self._handle_exits()
+        self._handle_stays(current_collisions, current_triggers)
+
+    def _handle_enters(self):
+        """
+        Parcourt tous les objets et déclenche on_enter_collision ou on_enter_trigger
+        selon le type d'interaction qui vient de commencer cette frame.
+        """
+        for obj_id, obj in self.game_objects.items():
+            for other_id in self.collision_tracker.get_entered_objects(obj_id):
+                other = self.game_objects.get(other_id)
+                if not other:
+                    continue
+                if self.collision_tracker.is_collision_active(obj_id, other_id):
+                    obj.on_enter_collision(other)
+                else:
+                    obj.on_enter_trigger(other)
+
+    def _handle_exits(self):
+        """
+        Parcourt tous les objets et déclenche on_exit_collision ou on_exit_trigger
+        selon le type d'interaction qui vient de se terminer cette frame.
+        """
+        for obj_id, obj in self.game_objects.items():
+            for other_id in self.collision_tracker.get_exited_objects(obj_id):
+                other = self.game_objects.get(other_id)
+                if not other:
+                    continue
+                # Pour exit, on considère l'état précédent (active ou trigger)
+                # comme la clé pour déterminer le type
+                if self.collision_tracker.is_collision_active(obj_id, other_id):
+                    obj.on_exit_collision(other)
+                else:
+                    obj.on_exit_trigger(other)
+
+    def _handle_stays(self, current_collisions: Set[Tuple[int, int]], current_triggers: Set[Tuple[int, int]]):
+        """
+        Déclenche les callbacks 'stay' pour toutes les collisions et triggers
+        encore actifs cette frame.
+        """
+        # Collisions physiques actives
         for obj1_id, obj2_id in current_collisions:
             obj1 = self.game_objects.get(obj1_id)
             obj2 = self.game_objects.get(obj2_id)
             if obj1 and obj2:
                 obj1.on_collision(obj2)
                 obj2.on_collision(obj1)
-        
-        # Déclencher les callbacks on_trigger pour les triggers actifs
+
+        # Triggers actifs
         for obj1_id, obj2_id in current_triggers:
             obj1 = self.game_objects.get(obj1_id)
             obj2 = self.game_objects.get(obj2_id)
@@ -104,7 +153,6 @@ class World:
                 # Déterminer qui est trigger
                 obj1_has_trigger = any(not c.solid for c in obj1.colliders)
                 obj2_has_trigger = any(not c.solid for c in obj2.colliders)
-                
                 # Appeler on_trigger uniquement pour les objets qui ont des triggers
                 if obj1_has_trigger:
                     obj1.on_trigger(obj2)

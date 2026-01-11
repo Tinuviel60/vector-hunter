@@ -34,6 +34,11 @@
     - GameObject + composants modulaires
     - Réflexion pour future extension, sans implémentation immédiate
 
+11. **Points d’optimisation pour Collision_tracking**
+    - Spatial partitioning pour ColliderSystem (quadtree ou grille) pour réduire le nombre de paires testées.
+    - Découpler on_trigger et on_collision pour que les callbacks soient déclenchés dans le tracker plutôt que dans World.update_collisions, ce qui rend World plus léger.
+    - Possibilité de stocker les collisions/triggers par collider plutôt que par GameObject si tu veux des interactions plus fines.
+
 # Fini 
 
 1. **Intégration des GameObjects dans le World**

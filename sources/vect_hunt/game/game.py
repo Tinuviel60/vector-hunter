@@ -68,7 +68,7 @@ class Game:
             else:
                 game_object.move(-5 * delta_time, 0)
 
-        self.world.collider_system.detect_collisions()
+        self.world.update_collisions(delta_time)
 
     def render(self) -> None:
         """

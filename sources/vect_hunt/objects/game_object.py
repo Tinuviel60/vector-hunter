@@ -173,3 +173,47 @@ class GameObject:
             L'autre GameObject impliqué dans le trigger.
         """
         print("Trigger detected from", self.name, "to", other.name)
+
+    def on_enter_collision(self, other: "GameObject") -> None:
+        """
+        Appelé quand ce GameObject commence une collision physique avec un autre.
+
+        Parameters
+        ----------
+        other : GameObject
+            L'autre GameObject impliqué dans la collision.
+        """
+        print("Collision ENTER from", self.name, "to", other.name)
+
+    def on_exit_collision(self, other: "GameObject") -> None:
+        """
+        Appelé quand ce GameObject termine une collision physique avec un autre.
+
+        Parameters
+        ----------
+        other : GameObject
+            L'autre GameObject impliqué dans la collision.
+        """
+        print("Collision EXIT from", self.name, "to", other.name)
+
+    def on_enter_trigger(self, other: "GameObject") -> None:
+        """
+        Appelé quand ce GameObject entre dans un trigger avec un autre.
+
+        Parameters
+        ----------
+        other : GameObject
+            L'autre GameObject impliqué dans le trigger.
+        """
+        print("Trigger ENTER from", self.name, "to", other.name)
+
+    def on_exit_trigger(self, other: "GameObject") -> None:
+        """
+        Appelé quand ce GameObject sort d'un trigger avec un autre.
+
+        Parameters
+        ----------
+        other : GameObject
+            L'autre GameObject impliqué dans le trigger.
+        """
+        print("Trigger EXIT from", self.name, "to", other.name)
