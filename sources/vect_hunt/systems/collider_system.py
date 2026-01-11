@@ -11,6 +11,7 @@ from vect_hunt.core import (
     BoxCollider,
     CircleCollider,
 )
+
 if TYPE_CHECKING:
     from vect_hunt.objects import GameObject
 
@@ -389,5 +390,5 @@ class ColliderSystem:
                         else:
                             # Au moins un des deux est un trigger
                             current_triggers.add(pair)
-        
+
         return current_collisions, current_triggers

@@ -1,0 +1,74 @@
+{
+  "_comment": "Registre des styles de polices utilisées dans le jeu",
+  "_format": "Chaque clé définit un style complet : police, taille, couleur, attributs",
+  "debug": {
+    "type": "system",
+    "name": "Arial",
+    "size": 12,
+    "color": "#FFFFFF",
+    "bold": false,
+    "italic": false,
+    "antialias": true,
+    "_comment": "Police système pour les infos de debug"
+  },
+  "ui_title": {
+    "type": "system",
+    "name": "Arial",
+    "size": 32,
+    "color": "#FFFFFF",
+    "bold": true,
+    "italic": false,
+    "antialias": true,
+    "_comment": "Titres principaux de l'interface"
+  },
+  "ui_subtitle": {
+    "type": "system",
+    "name": "Arial",
+    "size": 20,
+    "color": "#CCCCCC",
+    "bold": false,
+    "italic": false,
+    "antialias": true,
+    "_comment": "Sous-titres et descriptions"
+  },
+  "ui_button": {
+    "type": "system",
+    "name": "Arial",
+    "size": 16,
+    "color": "#FFFFFF",
+    "bold": false,
+    "italic": false,
+    "antialias": true,
+    "_comment": "Texte des boutons"
+  },
+  "dialog": {
+    "type": "system",
+    "name": "Arial",
+    "size": 14,
+    "color": "#EEEEEE",
+    "bold": false,
+    "italic": false,
+    "antialias": true,
+    "_comment": "Texte des dialogues et messages"
+  },
+  "score": {
+    "type": "system",
+    "name": "Arial",
+    "size": 24,
+    "color": "#FFD700",
+    "bold": true,
+    "italic": false,
+    "antialias": true,
+    "_comment": "Affichage du score en jeu"
+  },
+  "hud": {
+    "type": "system",
+    "name": "Arial",
+    "size": 14,
+    "color": "#00FF00",
+    "bold": false,
+    "italic": false,
+    "antialias": true,
+    "_comment": "Informations HUD (vie, munitions, etc.)"
+  }
+}

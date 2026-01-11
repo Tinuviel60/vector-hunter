@@ -2,7 +2,8 @@ import pygame
 from typing import Tuple, TYPE_CHECKING
 
 from vect_hunt.utils import hex_to_rgb
-from vect_hunt.systems import ColliderSystem
+from vect_hunt.systems import ColliderSystem, FontSystem
+from vect_hunt.resources import DataLoader
 
 if TYPE_CHECKING:
     from vect_hunt.objects import GameObject
@@ -29,16 +30,24 @@ class Renderer:
         screen : pygame.Surface
             La surface Pygame où le jeu sera rendu.
         """
+        # Charger la configuration du renderer
+        config = DataLoader.load_json("configs/renderer.json")
+
         self.screen = screen
         self.width = screen.get_width()
         self.height = screen.get_height()
-        self.background_color = "#414141"  # Gris par défaut
+        self.background_color = config["background_color"]
 
-        self.draw_colliders = True  # Option pour dessiner les colliders (debug)
-        self.print_names = True  # Option pour afficher les noms des entités (debug)
-        self.print_fps = False  # Option pour afficher les FPS (debug)
+        # Options de debug depuis la config
+        debug_config = config["debug"]
+        self.draw_colliders = debug_config["draw_colliders"]
+        self.print_names = debug_config["print_names"]
+        self.print_fps = debug_config["print_fps"]
+        self.collider_color = debug_config["collider_color"]
+        self.collider_thickness = debug_config["collider_thickness"]
 
-        self.font = pygame.font.SysFont("Arial", 12)
+        # Style de police pour le debug (géré par FontSystem)
+        self.debug_font_style = FontSystem.get("debug")
 
     def clear(self) -> None:
         """
@@ -84,11 +93,11 @@ class Renderer:
         for game_object in game_objects.values():
             if not game_object.active:
                 continue
-            
+
             # Dessine le GameObject
             if game_object.render_component:
                 self.draw_render(game_object)
-            # Dessine le nom 
+            # Dessine le nom
             if self.print_names:
                 self.draw_name(game_object)
             # Dessine les colliders
@@ -99,13 +108,13 @@ class Renderer:
     def draw_name(self, game_object: "GameObject") -> None:
         """
         Dessine le nom d'un GameObject au-dessus de celui-ci.
-        
+
         Parameters
         ----------
         game_object : GameObject
             L'objet de jeu dont le nom doit être dessiné.
         """
-        name_surf = self.font.render(game_object.name, True, (255, 255, 255))
+        name_surf = self.debug_font_style.render(game_object.name)
         pos = game_object.transform.position
         self.screen.blit(
             name_surf,
@@ -115,7 +124,7 @@ class Renderer:
     def draw_collider(self, collider, transform):
         """
         Dessine un collider pour le debug.
-        
+
         Parameters
         ----------
         collider : Collider
@@ -160,7 +169,6 @@ class Renderer:
 
         # On utilise directement le transform du GameObject pour le rendu
         game_object.render_component.render(self.screen, game_object.transform)
-
 
     def render(self, world: "World") -> None:
         """

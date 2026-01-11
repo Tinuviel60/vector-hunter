@@ -46,7 +46,7 @@ class GameObject:
         """
         self.id = GameObject._next_id
         GameObject._next_id += 1
-        
+
         # Implementation des attributs
         self.name = name
         self.transform = transform if transform is not None else Transform()
@@ -54,7 +54,7 @@ class GameObject:
         self.active = True
         self.tags = tags
 
-        # 
+        # Composant de rendu (optionnel)
         self.render_component: Optional[RenderComponent] = None
 
     def set_renderer(self, renderer: RenderComponent) -> None:

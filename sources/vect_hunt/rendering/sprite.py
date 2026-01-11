@@ -1,6 +1,7 @@
 import pygame
 from .render_component import RenderComponent
 from vect_hunt.core import Transform
+from vect_hunt.resources import ImageLoader
 
 
 class Sprite(RenderComponent):
@@ -13,11 +14,11 @@ class Sprite(RenderComponent):
         Parameters
         ----------
         image_path : str
-            Chemin vers l'image.
+            Chemin relatif vers l'image depuis assets/images/
         scale : float
             Facteur d'échelle.
         """
-        self.original_image = pygame.image.load(image_path).convert_alpha()
+        self.original_image = ImageLoader.load(image_path)
         self.scale = scale
 
         if scale != 1.0:

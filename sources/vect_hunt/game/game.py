@@ -1,11 +1,7 @@
 from vect_hunt.worlds import World
 from vect_hunt.rendering import Renderer
-from vect_hunt.objects import GameObject
-from vect_hunt.core import Transform, Vector2D, Tag, BoxCollider, CircleCollider
-from vect_hunt.rendering import BasicShape
-
-import math
-
+from vect_hunt.objects import GameObject, GameObjectFactory
+from vect_hunt.core import Vector2D, Tag
 
 import pygame
 
@@ -25,16 +21,16 @@ class Game:
         self.gameObjects: dict[str, GameObject] = {}
         self.initialize()
 
-        self.initialize_game_objects(
-            "Object", position=Vector2D(100, 200), tags=Tag.PLAYER, form="box"
+        # Créer des objets depuis les templates JSON
+        player = GameObjectFactory.from_template(
+            "player.json", position=Vector2D(100, 200)
         )
-        self.initialize_game_objects(
-            "Object",
-            position=Vector2D(130, 200),
-            rotation=math.pi / 4,
-            tags=Tag.ENEMY,
-            form="box",
+        self.world.add_game_object(player)
+
+        target = GameObjectFactory.from_template(
+            "targets/basic.json", position=Vector2D(200, 200)
         )
+        self.world.add_game_object(target)
 
     def initialize(self) -> None:
         """
@@ -66,6 +62,7 @@ class Game:
         """
         # TODO: Update game state, entities, physics, etc.
         for name, game_object in self.world.game_objects.items():
+            # TODO : Revoir la logique de déplacement
             if game_object.has_tag(Tag.PLAYER):
                 game_object.move(5 * delta_time, 0)
             else:
@@ -79,38 +76,3 @@ class Game:
         """
 
         self.renderer.render(self.world)
-
-    def initialize_game_objects(
-        self,
-        name: str = "Object",
-        position: Vector2D = Vector2D(0, 0),
-        rotation: float = 0.0,
-        tags: Tag = Tag.NONE,
-        form="circle",
-    ):
-        """
-        Initialise et ajoute un GameObject simple au monde.
-
-        Parameters
-        ----------
-        name : str
-            Nom de l'objet.
-        position : Vector2D
-            Position initiale de l'objet.
-        rotation : float
-            Rotation initiale de l'objet en radians.
-        """
-        transform = Transform(position, rotation)
-        gameObject = GameObject(name, transform, tags=tags)
-
-        if form == "circle":
-            collider = CircleCollider(gameObject)
-        elif form == "box":
-            collider = BoxCollider(gameObject)
-
-        gameObject.add_collider(collider)
-
-        render = BasicShape(transform, form, (20, 20), "#FF6464", "#000000", 2)
-        gameObject.set_renderer(render)
-
-        self.world.add_game_object(gameObject)

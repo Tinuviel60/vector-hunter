@@ -67,7 +67,7 @@ class World:
         """
         # Collecter tous les noms existants
         existing_names = {obj.name for obj in self.game_objects.values()}
-        
+
         original_name = name
         counter = 1
         while name in existing_names:
@@ -78,7 +78,7 @@ class World:
     def update_collisions(self, delta_time: float) -> None:
         """
         Met à jour le système de collisions et triggers pour cette frame.
-        
+
         Gère :
         - Les collisions actives (stay)
         - Les triggers actifs (stay)
@@ -91,11 +91,11 @@ class World:
         """
         # Détecter toutes les collisions et triggers pour cette frame
         current_collisions, current_triggers = self.collider_system.detect_collisions()
-        
+
         # Mettre à jour le tracker (CollisionTracker)
         self.collision_tracker.update(current_collisions, current_triggers, delta_time)
 
-        # Gestion des événements 
+        # Gestion des événements
         self._handle_enters()
         self._handle_exits()
         self._handle_stays(current_collisions, current_triggers)
@@ -132,7 +132,11 @@ class World:
                 else:
                     obj.on_exit_trigger(other)
 
-    def _handle_stays(self, current_collisions: Set[Tuple[int, int]], current_triggers: Set[Tuple[int, int]]):
+    def _handle_stays(
+        self,
+        current_collisions: Set[Tuple[int, int]],
+        current_triggers: Set[Tuple[int, int]],
+    ):
         """
         Déclenche les callbacks 'stay' pour toutes les collisions et triggers
         encore actifs cette frame.

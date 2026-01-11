@@ -1,0 +1,30 @@
+{
+  "_comment": "Mur standard solide",
+  "name": "Wall_Standard",
+  "tags": ["WALL"],
+  "transform": {
+    "position": [600, 400],
+    "rotation": 0.0
+  },
+  "collider": {
+    "type": "box",
+    "width": 100.0,
+    "height": 20.0,
+    "solid": true,
+    "transform": {
+      "position": [0, 0],
+      "rotation": 0.0
+    }
+  },
+  "rendering": {
+    "type": "basic_shape",
+    "shape": "rectangle",
+    "color": "#888888",
+    "width": 100,
+    "height": 20
+  },
+  "physics": {
+    "static": true,
+    "elasticity": 0.8
+  }
+}

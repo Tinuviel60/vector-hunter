@@ -25,6 +25,7 @@ def test_collider_initialization():
     assert collider.transform == transform
     assert collider.solid is False
 
+
 def test_collider_geometry_not_implemented():
     parent = DummyGameObject()
     collider = Collider(parent)  # type: ignore

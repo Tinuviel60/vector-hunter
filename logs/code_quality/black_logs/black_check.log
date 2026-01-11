@@ -1,15 +1,21 @@
---- /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/rendering/renderer.py	2026-01-11 16:22:19.596763+00:00
-+++ /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/rendering/renderer.py	2026-01-11 16:22:58.253631+00:00
-@@ -101,11 +101,11 @@
-         """
-         for name, game_object in game_objects.items():
-             # TODO : Dessin des différents types d'objets selon leurs propriétés
-             position = game_object.transform.position
-             radius = 10
--            #color = "#FF6464"
-+            # color = "#FF6464"
-             # self.draw_entity(position, radius, color)
+--- /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/objects/game_object_factory.py	2026-01-11 22:51:32.711773+00:00
++++ /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/objects/game_object_factory.py	2026-01-11 22:59:27.499703+00:00
+@@ -135,14 +135,16 @@
+         collider_type = collider_data["type"]
+         solid = collider_data.get("solid", True)
  
-             if self.print_names:
-                 text_surface = self.font.render(name, True, (255, 255, 255))
-                 text_rect = text_surface.get_rect(
+         # Lire le transform du collider (en coordonnées locales)
+         # Par défaut position=[0, 0] et rotation=0.0 (centré sur le GameObject)
+-        transform_data = collider_data.get("transform", {"position": [0, 0], "rotation": 0.0})
++        transform_data = collider_data.get(
++            "transform", {"position": [0, 0], "rotation": 0.0}
++        )
+         position_data = transform_data.get("position", [0, 0])
+         rotation = transform_data.get("rotation", 0.0)
+-        
++
+         center = Vector2D(position_data[0], position_data[1])
+ 
+         if collider_type == "circle":
+             radius = collider_data.get("radius", 10.0)
+             return CircleCollider(

@@ -1,4 +1,5 @@
 from .collider_system import ColliderSystem
+from .font_system import FontSystem
 from .tag_system import TagSystem
 
 # from sound_system import SoundSystem
@@ -8,6 +9,7 @@ from .tag_system import TagSystem
 
 __all__ = [
     "ColliderSystem",
+    "FontSystem",
     "TagSystem",
     # "SoundSystem",
     # "RenderingSystem",

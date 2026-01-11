@@ -1,0 +1,26 @@
+{
+  "_comment": "Configuration de l'application Vector Hunter",
+  "window": {
+    "width": 1200,
+    "height": 800,
+    "title": "Vector Hunter",
+    "resizable": false
+  },
+  "simulation": {
+    "fps": 60,
+    "fixed_timestep": 0.016666667,
+    "_comment_timestep": "1/60 = 0.016666667 secondes"
+  },
+  "logging": {
+    "level": "WARNING",
+    "_comment_level": "DEBUG, INFO, WARNING, ERROR, CRITICAL",
+    "enable_console": true,
+    "max_file_size_mb": 5,
+    "backup_count": 5
+  },
+  "profiling": {
+    "enabled": false,
+    "tick_limit": 10,
+    "report_lines": 40
+  }
+}
