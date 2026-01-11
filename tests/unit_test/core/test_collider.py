@@ -42,7 +42,9 @@ def test_collider_initialization():
 def test_box_collider_initialization(width, height, center_x, center_y, orientation):
     parent = DummyGameObject()
     center = Vector2D(center_x, center_y)
-    box = BoxCollider(parent, width, height, center, orientation, solid=True)  # type: ignore
+    box = BoxCollider(
+        parent, width, height, center, orientation, solid=True  # type: ignore
+    )
 
     assert box.width == width
     assert box.height == height

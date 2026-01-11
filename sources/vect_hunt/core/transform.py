@@ -2,7 +2,6 @@ from typing import Optional
 
 from .vector import Vector2D
 from .rotation import Rotation
-import math
 
 
 class Transform:

@@ -156,7 +156,8 @@ def test_rotate_updates_rotation(delta):
     obj = GameObject("Spinner")
 
     obj.rotate(delta)
-    # L'angle attendu est celui que to_angle() retourne après avoir créé une Rotation avec delta
+    # L'angle attendu est celui que to_angle() retourne après avoir
+    # créé une Rotation avec delta
     assert obj.transform.rotation.to_angle() == pytest.approx(
         math.atan2(math.sin(delta), math.cos(delta))
     )

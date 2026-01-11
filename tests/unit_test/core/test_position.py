@@ -1,4 +1,3 @@
-import math
 import pytest
 
 from vect_hunt.core import Position2D

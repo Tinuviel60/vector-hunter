@@ -1,4 +1,3 @@
-import math
 import pytest
 import random
 
@@ -195,6 +194,3 @@ def test_gaussian_between_distribution():
 
     # La moyenne devrait être proche du centre avec une certaine tolérance
     assert abs(mean - expected_mean) < 10  # tolérance de 10% de la plage
-
-
-import os

@@ -1,4 +1,3 @@
-from typing import List
 from vect_hunt.objects import GameObject
 from vect_hunt.systems import ColliderSystem
 
@@ -13,7 +12,7 @@ class World:
         Initialise un monde de jeu vide.
         """
 
-        # TODO : targets and player management to remove when GameObject management is fully in place ?
+        # TODO : targets and player to remove when GameObject  is fully in place ?
         self.targets: dict[str, GameObject] = {}  # TODO Define a proper target class
         self.player = object()  # TODO Define a proper player class
 

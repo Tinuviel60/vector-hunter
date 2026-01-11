@@ -1,10 +1,7 @@
-import math
-from typing import TYPE_CHECKING
-
 from vect_hunt.worlds import World
 from vect_hunt.rendering import Renderer
 from vect_hunt.objects import GameObject
-from vect_hunt.core import *
+from vect_hunt.core import Transform, Vector2D, Tag, BoxCollider, CircleCollider
 
 
 import pygame

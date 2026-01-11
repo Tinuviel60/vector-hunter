@@ -17,7 +17,7 @@ if PROFILING:
     REPORT_NB = 40
 
 """
-Configuration globale de l'application et mise en place de 
+Configuration globale de l'application et mise en place de
 la boucle principale du jeu.
 
 Paramètres graphiques et de simulation:
@@ -71,7 +71,8 @@ def main() -> None:
 
         if accumulator > SIM_DT * 4:
             logger.warning(
-                "Temps d'execution trop long, limitation de l'accumulateur | accumulator=%f | frame_time=%f",
+                "Temps d'execution trop long, limitation de l'accumulateur | "
+                "accumulator=%f | frame_time=%f",
                 accumulator,
                 frame_time,
             )

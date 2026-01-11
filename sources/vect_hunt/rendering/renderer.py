@@ -103,7 +103,7 @@ class Renderer:
             # TODO : Dessin des différents types d'objets selon leurs propriétés
             position = game_object.transform.position
             radius = 10
-            color = "#FF6464"
+            # color = "#FF6464"
             # self.draw_entity(position, radius, color)
 
             if self.print_names:
@@ -120,7 +120,7 @@ class Renderer:
         geom = collider.get_geometry()
 
         if geom["type"] == "circle":
-            # Pour les cercles, center est local (0,0), on ajoute la position du GameObject
+            # Pour les cercles, center est local et on ajoute la position du GameObject
             center_vec = transform.position + collider.transform.position
             center = (int(center_vec.x), int(center_vec.y))
             pygame.draw.circle(
@@ -148,7 +148,7 @@ class Renderer:
         Parameters
         ----------
         world : World
-            L'état actuel du monde du jeu, contenant les informations du joueur et des entités.
+            L'état actuel du monde du jeu, contenant les informations des objets de jeu.
         """
         self.draw_background()
         self.draw_game_objects(world.game_objects)

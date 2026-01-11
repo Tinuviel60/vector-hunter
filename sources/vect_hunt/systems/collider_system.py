@@ -2,10 +2,16 @@ from typing import List
 
 from .tag_system import TagSystem
 
-from vect_hunt.core import *
+from vect_hunt.core import (
+    Tag,
+    Transform,
+    Vector2D,
+    Geometry,
+    Collider,
+    BoxCollider,
+    CircleCollider,
+)
 from vect_hunt.objects import GameObject
-
-import math
 
 
 class ColliderSystem:
@@ -52,7 +58,7 @@ class ColliderSystem:
 
     def update_tag(self, game_object: GameObject) -> None:
         """
-        Met à jour l'affectation des colliders d'un objet de jeu en fonction de ses tags.
+        Met à jour l'affectation des colliders d'un objet en fonction de ses tags.
 
         Parameters
         ----------

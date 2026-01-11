@@ -20,6 +20,7 @@ dev = [
     "pytest",
     "pytest-cov",
     "black",
+    "flake8"
 ]
 
 [tool.setuptools]
@@ -35,4 +36,6 @@ testpaths = ["tests"]
 [tool.coverage.run]
 omit = [
     "*/__init__.py",
+    "__main__.py",
+    "logging_config.py"
 ]
