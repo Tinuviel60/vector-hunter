@@ -326,7 +326,7 @@ class Vector2D:
             Vecteur unitaire (0, 1).
         """
         return Vector2D(0.0, 1.0)
-    
+
     @staticmethod
     def bottom() -> "Vector2D":
         """
@@ -338,7 +338,7 @@ class Vector2D:
             Vecteur unitaire (0, -1).
         """
         return Vector2D(0.0, -1.0)
-    
+
     @staticmethod
     def left() -> "Vector2D":
         """
@@ -350,7 +350,7 @@ class Vector2D:
             Vecteur unitaire (-1, 0).
         """
         return Vector2D(-1.0, 0.0)
-    
+
     @staticmethod
     def right() -> "Vector2D":
         """

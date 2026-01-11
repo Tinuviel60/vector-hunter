@@ -1,3 +1,5 @@
+from typing import Optional
+
 from .vector import Vector2D
 from .rotation import Rotation
 import math
@@ -15,7 +17,7 @@ class Transform:
     (collisions, rendu, physique).
     """
 
-    def __init__(self, position: Vector2D = Vector2D(), rotation: float = 0.0):
+    def __init__(self, position: Optional[Vector2D] = None, rotation: float = 0.0):
         """
         Initialise un Transform.
 
@@ -27,7 +29,7 @@ class Transform:
         rotation : float
             Orientation en radians. 0 correspond à aucune rotation.
         """
-        self.position: Vector2D = position
+        self.position: Vector2D = position if position is not None else Vector2D()
         self.rotation: Rotation = Rotation(rotation)
 
     def translate(self, position: Vector2D) -> None:

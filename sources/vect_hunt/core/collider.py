@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from .vector import Vector2D
 from .transform import Transform
@@ -18,7 +18,7 @@ class Collider:
     def __init__(
         self,
         parent: "GameObject",
-        transform: Transform = Transform(),
+        transform: Optional[Transform] = None,
         solid: bool = True,
     ):
         """
@@ -34,7 +34,7 @@ class Collider:
             Indique si le collider interagit avec d'autres colliders ou non.
         """
         self.parent = parent
-        self.transform = transform
+        self.transform = transform if transform is not None else Transform()
         self.solid = solid
 
     def get_geometry(self) -> dict:
@@ -63,7 +63,7 @@ class BoxCollider(Collider):
         parent: "GameObject",
         width: float = 10.0,
         height: float = 10.0,
-        center: Vector2D = Vector2D(0, 0),
+        center: Optional[Vector2D] = None,
         orientation: float = 0.0,
         solid: bool = True,
     ):
@@ -88,6 +88,8 @@ class BoxCollider(Collider):
         self.width = width
         self.height = height
 
+        if center is None:
+            center = Vector2D(0, 0)
         transform = Transform(position=center, rotation=orientation)
 
         # Initialiser les attributs nécessaires AVANT d'appeler super()
@@ -161,7 +163,7 @@ class BoxCollider(Collider):
         """
 
         return {
-            "type": "polygon",
+            "type": "box",
             "points": self.corners,
         }
 
@@ -175,7 +177,7 @@ class CircleCollider(Collider):
     def __init__(
         self,
         parent: "GameObject",
-        center: Vector2D = Vector2D(0, 0),
+        center: Optional[Vector2D] = None,
         radius: float = 5.0,
         solid: bool = True,
     ):
@@ -192,6 +194,8 @@ class CircleCollider(Collider):
             Le rayon du CircleCollider.
         """
 
+        if center is None:
+            center = Vector2D(0, 0)
         transform = Transform(center)
         self.radius = radius
 

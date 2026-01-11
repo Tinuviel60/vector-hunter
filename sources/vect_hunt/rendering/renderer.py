@@ -131,7 +131,7 @@ class Renderer:
                 1,
             )
 
-        elif geom["type"] == "polygon":
+        elif geom["type"] == "box":
             # Pour les polygones, les points incluent déjà la position absolue
             points = ColliderSystem.get_world_corners(geom["points"], transform)
             pygame.draw.polygon(

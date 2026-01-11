@@ -1,13 +1,11 @@
 # Vector-Hunter Roadmap
 
 ## 🔹 Must Have (prochaines étapes critiques)
-   - Tester les collider
-   - Nettoyer les descriptions de commits
 
 3. **Mise en place des tests unitaires**
-   - Transform : translation et rotation
-   - Collider : Box-Box, Circle-Circle, Box-Circle
-   - GameObject : déplacement et gestion des colliders
+   -GameObject + Game + TagSystem (unitaires)
+   -ColliderSystem avancé (unitaires)
+   -Quelques tests d’intégration simples sur Game + GameObject + Transform + Collider
 
 4. **Player et InputSystem**
    - Player reçoit des commandes via InputSystem

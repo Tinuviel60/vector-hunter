@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from vect_hunt.core import Collider, Tag, Vector2D, Transform
 
 
@@ -24,7 +24,7 @@ class GameObject:
     """
 
     def __init__(
-        self, name: str, transform: Transform = Transform(), tags: Tag = Tag.NONE
+        self, name: str, transform: Optional[Transform] = None, tags: Tag = Tag.NONE
     ):
         """
         Initialise un GameObject.

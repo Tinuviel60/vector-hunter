@@ -26,10 +26,10 @@ class Game:
         self.initialize()
 
         self.initialize_game_objects(
-            "Object1", position=Vector2D(100, 200), tags=Tag.PLAYER, form="circle"
+            "Object", position=Vector2D(100, 200), tags=Tag.PLAYER, form="circle"
         )
         self.initialize_game_objects(
-            "Object2",
+            "Object",
             position=Vector2D(130, 200),
             rotation=0,
             tags=Tag.ENEMY,
@@ -69,7 +69,7 @@ class Game:
             if game_object.has_tag(Tag.PLAYER):
                 game_object.move(5 * delta_time, 0)
             else:
-                game_object.move(-5* delta_time, 0)
+                game_object.move(-5 * delta_time, 0)
 
         self.world.collider_system.detect_collisions()
 

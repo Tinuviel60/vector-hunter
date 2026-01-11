@@ -23,7 +23,6 @@ class NumberedRotatingFileHandler(RotatingFileHandler):
         """
         if self.stream:
             self.stream.close()
-            self.stream = None
 
         # Décale les fichiers existants (du plus ancien au plus récent)
         for i in range(self.backupCount - 1, -1, -1):

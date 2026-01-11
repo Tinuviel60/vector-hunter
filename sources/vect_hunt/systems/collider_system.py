@@ -307,15 +307,18 @@ class ColliderSystem:
         # ----------------------------
         # Repasser en coordonnées parent
         # ----------------------------
-        point_in_parent_space = box_tr.rotation.apply(point_clamped_local_box) + box_tr.position
+        point_in_parent_space = (
+            box_tr.rotation.apply(point_clamped_local_box) + box_tr.position
+        )
 
         # ----------------------------
         # Repasser en coordonnées mondiales
         # ----------------------------
-        point_world = parent_tr.rotation.apply(point_in_parent_space) + parent_tr.position
+        point_world = (
+            parent_tr.rotation.apply(point_in_parent_space) + parent_tr.position
+        )
 
         return point_world
-
 
     # --------------------
     # Détection globale

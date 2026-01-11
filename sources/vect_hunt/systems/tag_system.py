@@ -29,61 +29,79 @@ class TagSystem:
     """
 
     @staticmethod
-    def can_collide(tag1: Tag, tag2: Tag) -> bool:
+    def _check_mask(source: Tag, target: Tag, mask: dict[Tag, Tag]) -> bool:
         """
-        Vérifie si deux tags peuvent interagir pour une collision.
+        Vérifie si une interaction est permise entre deux tags selon un masque donné.
 
         Parameters
         ----------
-        tag1 : Tag
-            Premier tag.
-        tag2 : Tag
-            Deuxième tag.
+        source : Tag
+            Le tag source de l'interaction.
+        target : Tag
+            Le tag cible de l'interaction.
+        mask : dict[Tag, Tag]
+            Le masque d'interaction à utiliser.
 
         Returns
         -------
         bool
-            True si les objets peuvent interagir.
+            True si l'interaction est permise, False sinon.
         """
-        # On teste si tag2 est présent dans le masque autorisé de tag1
-        return bool(CAN_COLLIDE.get(tag1, Tag.NONE) & tag2)
+        return bool(mask.get(source, Tag.NONE) & target)
 
-    # NOTE : Exemple d'interraction via les tags, non implémentée dans le moteur
+    @staticmethod
+    def can_collide(tag1: Tag, tag2: Tag) -> bool:
+        """
+        Vérifie si un tag peut entrer en collision avec le second.
+
+        Parameters
+        ----------
+        source : Tag
+            Le tag source de l'interaction.
+        target : Tag
+            Le tag cible de l'interaction.
+
+        Returns
+        -------
+        bool
+            True si la collision est permise, False sinon.
+        """
+        return TagSystem._check_mask(tag1, tag2, CAN_COLLIDE)
+
     @staticmethod
     def can_destroy(tag1: Tag, tag2: Tag) -> bool:
         """
-        Vérifie si un objet avec tag1 peut détruire un objet avec tag2.
+        Vérifie si un tag peut détruire le second.
 
         Parameters
         ----------
-        tag1 : Tag
-            Tag de l'objet agresseur.
-        tag2 : Tag
-            Tag de l'objet cible.
+        source : Tag
+            Le tag source de l'interaction.
+        target : Tag
+            Le tag cible de l'interaction.
 
         Returns
         -------
         bool
-            True si l'objet avec tag1 peut détruire l'objet avec tag2.
+            True si la destruction est permise, False sinon.
         """
-        return bool(CAN_DESTROY.get(tag1, Tag.NONE) & tag2)
+        return TagSystem._check_mask(tag1, tag2, CAN_DESTROY)
 
-    # NOTE : Exemple d'interraction via les tags, non implémentée dans le moteur
     @staticmethod
     def can_pickup(tag1: Tag, tag2: Tag) -> bool:
         """
-        Vérifie si un objet avec tag1 peut ramasser un objet avec tag2.
+        Vérifie si un tag peut ramasser le second.
 
         Parameters
         ----------
-        tag1 : Tag
-            Tag de l'objet ramasseur.
-        tag2 : Tag
-            Tag de l'objet ramassable.
+        source : Tag
+            Le tag source de l'interaction.
+        target : Tag
+            Le tag cible de l'interaction.
 
         Returns
         -------
         bool
-            True si l'objet avec tag1 peut ramasser l'objet avec tag2.
+            True si le ramassage est permis, False sinon.
         """
-        return bool(CAN_PICKUP.get(tag1, Tag.NONE) & tag2)
+        return TagSystem._check_mask(tag1, tag2, CAN_PICKUP)

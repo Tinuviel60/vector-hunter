@@ -32,6 +32,8 @@ class World:
         game_object : GameObject
             L'objet de jeu à ajouter.
         """
+        game_object.name = self.validate_name(game_object.name)
+
         self.game_objects[game_object.name] = game_object
         self.collider_system.register(game_object)
 
@@ -47,29 +49,6 @@ class World:
         if game_object.name in self.game_objects:
             del self.game_objects[game_object.name]
         self.collider_system.unregister(game_object)
-
-    def add_target(self, target: GameObject) -> None:
-        """
-        Ajoute une cible au monde.
-
-        Parameters
-        ----------
-        target : GameObject
-            La cible à ajouter au monde.
-        """
-        self.targets[target.name] = target
-
-    def remove_target(self, target: GameObject) -> None:
-        """
-        Retire une cible du monde.
-
-        Parameters
-        ----------
-        target : GameObject
-            La cible à retirer du monde.
-        """
-        if target.name in self.targets:
-            del self.targets[target.name]
 
     def validate_name(self, name: str) -> str:
         """
