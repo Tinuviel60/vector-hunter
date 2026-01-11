@@ -58,6 +58,7 @@ def test_vector_orientation(x, y, expected_orientation):
     v = Vector2D(x, y)
     assert math.isclose(v.orientation(), expected_orientation)
 
+
 # TODO : Test d'integration pour from_direction, à migrer en temps voulu
 @pytest.mark.parametrize(
     "angle, x_expected, y_expected",

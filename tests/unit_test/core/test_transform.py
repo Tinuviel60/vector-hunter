@@ -86,8 +86,9 @@ def test_transform_translate(x, y, new_x, new_y):
 def test_transform_rotate(orientation, delta, expected_orientation):
     transform = Transform(rotation=orientation)
     transform.rotate(delta)
-    assert math.isclose(transform.rotation.to_angle(), expected_orientation, rel_tol=1e-9)
-
+    assert math.isclose(
+        transform.rotation.to_angle(), expected_orientation, rel_tol=1e-9
+    )
 
 
 @pytest.mark.parametrize(
