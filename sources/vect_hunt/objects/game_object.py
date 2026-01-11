@@ -1,5 +1,6 @@
 from typing import List, Optional
 from vect_hunt.core import Collider, Tag, Vector2D, Transform
+from vect_hunt.rendering import RenderComponent
 
 
 class GameObject:
@@ -46,15 +47,21 @@ class GameObject:
         self.id = GameObject._next_id
         GameObject._next_id += 1
         
+        # Implementation des attributs
         self.name = name
         self.transform = transform if transform is not None else Transform()
         self.colliders: List[Collider] = []
         self.active = True
         self.tags = tags
 
-        # Listes pour suivre les collisions/triggers en cours
-        self.colliding_objects: set[GameObject] = set()
-        self.triggered_objects: set[GameObject] = set()
+        # 
+        self.render_component: Optional[RenderComponent] = None
+
+    def set_renderer(self, renderer: RenderComponent) -> None:
+        """
+        Associe un composant de rendu à ce GameObject.
+        """
+        self.render_component = renderer
 
     def add_collider(self, collider: Collider) -> None:
         """

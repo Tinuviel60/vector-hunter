@@ -2,6 +2,9 @@ from vect_hunt.worlds import World
 from vect_hunt.rendering import Renderer
 from vect_hunt.objects import GameObject
 from vect_hunt.core import Transform, Vector2D, Tag, BoxCollider, CircleCollider
+from vect_hunt.rendering import BasicShape
+
+import math
 
 
 import pygame
@@ -23,14 +26,14 @@ class Game:
         self.initialize()
 
         self.initialize_game_objects(
-            "Object", position=Vector2D(100, 200), tags=Tag.PLAYER, form="circle"
+            "Object", position=Vector2D(100, 200), tags=Tag.PLAYER, form="box"
         )
         self.initialize_game_objects(
             "Object",
             position=Vector2D(130, 200),
-            rotation=0,
+            rotation=math.pi / 4,
             tags=Tag.ENEMY,
-            form="circle",
+            form="box",
         )
 
     def initialize(self) -> None:
@@ -106,5 +109,8 @@ class Game:
             collider = BoxCollider(gameObject)
 
         gameObject.add_collider(collider)
+
+        render = BasicShape(transform, form, (20, 20), "#FF6464", "#000000", 2)
+        gameObject.set_renderer(render)
 
         self.world.add_game_object(gameObject)

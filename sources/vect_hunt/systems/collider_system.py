@@ -1,4 +1,4 @@
-from typing import List, Set, Tuple
+from typing import List, Set, Tuple, TYPE_CHECKING
 
 from .tag_system import TagSystem
 
@@ -11,7 +11,8 @@ from vect_hunt.core import (
     BoxCollider,
     CircleCollider,
 )
-from vect_hunt.objects import GameObject
+if TYPE_CHECKING:
+    from vect_hunt.objects import GameObject
 
 
 class ColliderSystem:
@@ -26,7 +27,7 @@ class ColliderSystem:
     def __init__(self):
         self.colliders: dict[Tag, List[Collider]] = {}
 
-    def register(self, game_object: GameObject) -> None:
+    def register(self, game_object: "GameObject") -> None:
         """
         Ajoute les collider d'un objet de jeu au système.
 
@@ -41,7 +42,7 @@ class ColliderSystem:
             for collider in game_object.colliders:
                 self.colliders[tag].append(collider)
 
-    def unregister(self, game_object: GameObject) -> None:
+    def unregister(self, game_object: "GameObject") -> None:
         """
         Retire les collider d'un objet de jeu du système.
 
@@ -56,7 +57,7 @@ class ColliderSystem:
                     if collider in self.colliders[tag]:
                         self.colliders[tag].remove(collider)
 
-    def update_tag(self, game_object: GameObject) -> None:
+    def update_tag(self, game_object: "GameObject") -> None:
         """
         Met à jour l'affectation des colliders d'un objet en fonction de ses tags.
 

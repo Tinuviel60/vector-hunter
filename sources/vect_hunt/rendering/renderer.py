@@ -1,10 +1,12 @@
 import pygame
-from typing import Tuple
+from typing import Tuple, TYPE_CHECKING
 
-from vect_hunt.objects import GameObject
-from vect_hunt.worlds import World
 from vect_hunt.utils import hex_to_rgb
 from vect_hunt.systems import ColliderSystem
+
+if TYPE_CHECKING:
+    from vect_hunt.objects import GameObject
+    from vect_hunt.worlds import World
 
 """
 Module de rendu pour le jeu Vector Hunter.
@@ -70,27 +72,7 @@ class Renderer:
         # Bordure plus foncée
         pygame.draw.circle(self.screen, (50, 100, 150), pos, radius, 2)
 
-    def draw_entity(
-        self, position: Tuple[float, float], radius: int = 10, color: str = "#FF6464"
-    ) -> None:
-        """
-        Dessine une entité sous forme de cercle.
-
-        Parameters
-        ----------
-        position : Tuple[float, float]
-            Position (x, y) de l'entité.
-        radius : int, optional
-            Rayon du cercle représentant l'entité, par défaut 10.
-        color : str, optional
-            Couleur de l'entité en hexadécimal, par défaut "#FF6464".
-        """
-        pos = (int(position[0]), int(position[1]))
-        pygame.draw.circle(self.screen, hex_to_rgb(color), pos, radius)
-        # Bordure plus foncée
-        pygame.draw.circle(self.screen, hex_to_rgb("#963232"), pos, radius, 2)
-
-    def draw_game_objects(self, game_objects: dict[int, GameObject]) -> None:
+    def draw_game_objects(self, game_objects: dict[int, "GameObject"]) -> None:
         """
         Dessine toutes les cibles de la liste.
 
@@ -99,24 +81,47 @@ class Renderer:
         game_objects : dict[str, GameObject]
             Objet du jeu à dessiner.
         """
-        for id, game_object in game_objects.items():
-            # TODO : Dessin des différents types d'objets selon leurs propriétés
-            position = game_object.transform.position
-            radius = 10
-            # color = "#FF6464"
-            # self.draw_entity(position, radius, color)
-
+        for game_object in game_objects.values():
+            if not game_object.active:
+                continue
+            
+            # Dessine le GameObject
+            if game_object.render_component:
+                self.draw_render(game_object)
+            # Dessine le nom 
             if self.print_names:
-                text_surface = self.font.render(game_object.name, True, (255, 255, 255))
-                text_rect = text_surface.get_rect(
-                    center=(int(position.x), int(position.y) - radius - 10)
-                )
-                self.screen.blit(text_surface, text_rect)
+                self.draw_name(game_object)
+            # Dessine les colliders
             if self.draw_colliders:
                 for collider in game_object.colliders:
                     self.draw_collider(collider, game_object.transform)
 
+    def draw_name(self, game_object: "GameObject") -> None:
+        """
+        Dessine le nom d'un GameObject au-dessus de celui-ci.
+        
+        Parameters
+        ----------
+        game_object : GameObject
+            L'objet de jeu dont le nom doit être dessiné.
+        """
+        name_surf = self.font.render(game_object.name, True, (255, 255, 255))
+        pos = game_object.transform.position
+        self.screen.blit(
+            name_surf,
+            (int(pos.x - name_surf.get_width() / 2), int(pos.y - 20)),
+        )
+
     def draw_collider(self, collider, transform):
+        """
+        Dessine un collider pour le debug.
+        
+        Parameters
+        ----------
+        collider : Collider
+            Le collider à dessiner.
+        transform : Transform
+            La transformation du GameObject auquel le collider appartient."""
         geom = collider.get_geometry()
 
         if geom["type"] == "circle":
@@ -141,7 +146,23 @@ class Renderer:
                 1,
             )
 
-    def render(self, world: World) -> None:
+    def draw_render(self, game_object: "GameObject") -> None:
+        """
+        Dessine le composant de rendu d'un GameObject.
+
+        Parameters
+        ----------
+        game_object : GameObject
+            L'objet de jeu à dessiner.
+        """
+        if not game_object.render_component:
+            return
+
+        # On utilise directement le transform du GameObject pour le rendu
+        game_object.render_component.render(self.screen, game_object.transform)
+
+
+    def render(self, world: "World") -> None:
         """
         Rend une frame complète du jeu.
 
