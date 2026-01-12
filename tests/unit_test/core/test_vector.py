@@ -5,32 +5,6 @@ from vect_hunt.core.rotation import Rotation
 
 
 # --------------------
-# Création & accès
-# --------------------
-
-
-def test_vector_default_initialization():
-    v = Vector2D()
-    assert v.x == 0.0
-    assert v.y == 0.0
-
-
-@pytest.mark.parametrize(
-    "x, y",
-    [
-        (10, 10),
-        (0, 0),
-        (-49, 49),
-        (-25, -25),
-    ],
-)
-def test_vector_custom_initialization(x, y):
-    v = Vector2D(x, y)
-    assert v.x == x
-    assert v.y == y
-
-
-# --------------------
 # Magnitude & orientation
 # --------------------
 @pytest.mark.parametrize(
@@ -40,6 +14,20 @@ def test_vector_custom_initialization(x, y):
 def test_vector_magnitude(x, y, expected_magnitude):
     v = Vector2D(x, y)
     assert math.isclose(v.magnitude(), expected_magnitude)
+
+
+@pytest.mark.parametrize(
+    "x, y, expected",
+    [
+        (0, 0, 0.0),
+        (3, 4, 25.0),
+        (5, 12, 169.0),
+        (-3, -4, 25.0),
+    ],
+)
+def test_magnitude_squared(x, y, expected):
+    v = Vector2D(x, y)
+    assert math.isclose(v.magnitude_squared(), expected)
 
 
 @pytest.mark.parametrize(

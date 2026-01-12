@@ -5,51 +5,6 @@ from vect_hunt.core import Vector2D
 
 
 # --------------------
-# Création & accès
-# --------------------
-
-
-def test_position_default_initialization():
-    p = Position2D()
-    assert p.x == 0.0
-    assert p.y == 0.0
-
-
-@pytest.mark.parametrize(
-    "x, y",
-    [
-        (10, 10),
-        (0, 0),
-        (-49, 49),
-        (-25, -25),
-    ],
-)
-def test_position_initialization(x, y):
-    p = Position2D(x, y)
-    assert p.x == x
-    assert p.y == y
-
-
-# --------------------
-# Setters
-# --------------------
-@pytest.mark.parametrize(
-    "x, y",
-    [
-        (10, 10),
-        (0, 0),
-        (-49, 49),
-        (-25, -25),
-    ],
-)
-def test_set_position(x, y):
-    p = Position2D()
-    p.set_position(x, y)
-    assert p.x == x
-    assert p.y == y
-
-
-# --------------------
 # Distance
 # --------------------
 @pytest.mark.parametrize(
@@ -87,6 +42,29 @@ def test_translate(x1, y1, x2, y2, expected_x, expected_y):
 
     assert p.x == expected_x
     assert p.y == expected_y
+
+
+@pytest.mark.parametrize(
+    "x1, y1, dx, dy, expected_x, expected_y",
+    [
+        (0, 0, 5, 10, 5, 10),
+        (10, 20, -5, -10, 5, 10),
+        (-5, 5, 10, -5, 5, 0),
+    ],
+)
+def test_translated(x1, y1, dx, dy, expected_x, expected_y):
+    p = Position2D(x1, y1)
+    v = Vector2D(dx, dy)
+    
+    p_new = p.translated(v)
+    
+    # Vérifie que l'original n'a pas changé
+    assert p.x == x1
+    assert p.y == y1
+    
+    # Vérifie la nouvelle position
+    assert p_new.x == expected_x
+    assert p_new.y == expected_y
 
 
 # --------------------

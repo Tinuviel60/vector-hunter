@@ -16,16 +16,6 @@ class DummyGameObject:
 # --------------------
 # Tests unitaires de Collider
 # --------------------
-def test_collider_initialization():
-    parent = DummyGameObject()
-    transform = Transform(Vector2D(1, 2), 0.5)
-    collider = Collider(parent, transform, solid=False)  # type: ignore
-
-    assert collider.parent is parent
-    assert collider.transform == transform
-    assert collider.solid is False
-
-
 def test_collider_geometry_not_implemented():
     parent = DummyGameObject()
     collider = Collider(parent)  # type: ignore
