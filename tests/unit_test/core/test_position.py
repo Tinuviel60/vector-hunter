@@ -55,13 +55,13 @@ def test_translate(x1, y1, x2, y2, expected_x, expected_y):
 def test_translated(x1, y1, dx, dy, expected_x, expected_y):
     p = Position2D(x1, y1)
     v = Vector2D(dx, dy)
-    
+
     p_new = p.translated(v)
-    
+
     # Vérifie que l'original n'a pas changé
     assert p.x == x1
     assert p.y == y1
-    
+
     # Vérifie la nouvelle position
     assert p_new.x == expected_x
     assert p_new.y == expected_y

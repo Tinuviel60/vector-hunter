@@ -94,36 +94,36 @@ def test_transform_directions(
     rotation, expected_forward, expected_right, expected_behind, expected_left
 ):
     t = Transform(rotation=rotation)
-    
+
     forward = t.forward()
     right = t.right()
     behind = t.behind()
     left = t.left()
-    
+
     # Vérifie forward
     assert math.isclose(forward.x, expected_forward[0], abs_tol=1e-9)
     assert math.isclose(forward.y, expected_forward[1], abs_tol=1e-9)
-    
+
     # Vérifie right
     assert math.isclose(right.x, expected_right[0], abs_tol=1e-9)
     assert math.isclose(right.y, expected_right[1], abs_tol=1e-9)
-    
+
     # Vérifie behind
     assert math.isclose(behind.x, expected_behind[0], abs_tol=1e-9)
     assert math.isclose(behind.y, expected_behind[1], abs_tol=1e-9)
-    
+
     # Vérifie left
     assert math.isclose(left.x, expected_left[0], abs_tol=1e-9)
     assert math.isclose(left.y, expected_left[1], abs_tol=1e-9)
-    
+
     # Vérifie que forward et behind sont opposés
     assert math.isclose(forward.x, -behind.x, abs_tol=1e-9)
     assert math.isclose(forward.y, -behind.y, abs_tol=1e-9)
-    
+
     # Vérifie que right et left sont opposés
     assert math.isclose(right.x, -left.x, abs_tol=1e-9)
     assert math.isclose(right.y, -left.y, abs_tol=1e-9)
-    
+
     # Vérifie que forward et right sont perpendiculaires (dot product = 0)
     dot = forward.x * right.x + forward.y * right.y
     assert math.isclose(dot, 0.0, abs_tol=1e-9)

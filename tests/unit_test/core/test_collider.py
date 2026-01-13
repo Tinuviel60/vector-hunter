@@ -1,6 +1,6 @@
 import math
 import pytest
-from vect_hunt.core import Vector2D, Transform
+from vect_hunt.core import Vector2D
 from vect_hunt.core import Collider, BoxCollider, CircleCollider
 
 

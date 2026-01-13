@@ -29,7 +29,7 @@ def mock_pygame():
 def test_load_basic(mock_pygame):
     with patch("vect_hunt.resources.image_loader.IMAGES_DIR", Path("/fake")):
         surface = ImageLoader.load("player.png")
-    
+
     mock_pygame.image.load.assert_called_once_with(Path("/fake/player.png"))
     assert surface is not None
 
@@ -38,7 +38,7 @@ def test_load_file_not_found():
     with patch("vect_hunt.resources.image_loader.IMAGES_DIR", Path("/fake")):
         with patch("vect_hunt.resources.image_loader.pygame") as mock_pg:
             mock_pg.image.load.side_effect = FileNotFoundError()
-            
+
             with pytest.raises(FileNotFoundError):
                 ImageLoader.load("nonexistent.png")
 
@@ -50,7 +50,7 @@ def test_cache_works(mock_pygame):
     with patch("vect_hunt.resources.image_loader.IMAGES_DIR", Path("/fake")):
         surf1 = ImageLoader.load("player.png")
         surf2 = ImageLoader.load("player.png")
-    
+
     assert mock_pygame.image.load.call_count == 1
     assert surf1 is surf2
 
@@ -60,13 +60,13 @@ def test_different_images_separate_cache(mock_pygame):
         mock = MagicMock(name=name)
         mock.convert_alpha.return_value = mock
         return mock
-    
+
     mock_pygame.image.load.side_effect = [create_surface("p1"), create_surface("p2")]
-    
+
     with patch("vect_hunt.resources.image_loader.IMAGES_DIR", Path("/fake")):
         surf1 = ImageLoader.load("player.png")
         surf2 = ImageLoader.load("enemy.png")
-    
+
     assert mock_pygame.image.load.call_count == 2
     assert surf1 is not surf2
 
@@ -81,8 +81,8 @@ def test_convert_alpha_called():
             converted = MagicMock()
             original.convert_alpha.return_value = converted
             mock_pg.image.load.return_value = original
-            
+
             result = ImageLoader.load("test.png")
-    
+
     original.convert_alpha.assert_called_once()
     assert result is converted
