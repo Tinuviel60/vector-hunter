@@ -1,7 +1,7 @@
 from typing import Set, Tuple
 
-from vect_hunt.objects import GameObject
-from vect_hunt.systems import ColliderSystem
+from vect_hunt.objects import GameObject, Player, Enemy
+from vect_hunt.systems import ColliderSystem, InputSystem
 from vect_hunt.trackers import CollisionTracker
 
 
@@ -23,6 +23,7 @@ class World:
 
         self.collider_system = ColliderSystem()
         self.collision_tracker = CollisionTracker()
+        self.input_system = InputSystem()
 
     def add_game_object(self, game_object: GameObject) -> None:
         """
@@ -74,6 +75,25 @@ class World:
             name = f"{original_name}_{counter}"
             counter += 1
         return name
+
+    def update(self, delta_time: float) -> None:
+        """
+        Met à jour le monde et tous ses systèmes.
+
+        Parameters
+        ----------
+        delta_time : float
+            Temps écoulé depuis la dernière frame (en secondes).
+        """
+        # Mettre à jour le système d'inputs
+        self.input_system.update(delta_time)
+
+        # Mettre à jour les GameObjects qui ont une méthode update
+        for game_object in self.game_objects.values():
+            if isinstance(game_object, Player):
+                game_object.update(self.input_system, delta_time)
+            elif isinstance(game_object, Enemy):
+                game_object.update(delta_time)
 
     def update_collisions(self, delta_time: float) -> None:
         """

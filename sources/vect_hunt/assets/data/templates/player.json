@@ -1,7 +1,9 @@
 {
   "_comment": "Template du joueur",
+  "type": "player",
   "name": "Player",
   "tags": ["PLAYER"],
+  "speed": 300.0,
   "transform": {
     "position": [100, 200],
     "rotation": 0.0

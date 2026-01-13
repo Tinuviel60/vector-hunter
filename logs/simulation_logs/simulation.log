@@ -6,3 +6,5 @@
 2026-01-08 18:34:52 | WARNING  | __main__ | __main__.py:68 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=3.438000 | frame_time=3.438000
 2026-01-09 12:34:08 | WARNING  | __main__ | __main__.py:73 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=7.622333 | frame_time=7.617000
 2026-01-09 12:38:29 | WARNING  | __main__ | __main__.py:73 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=3.911333 | frame_time=3.908000
+2026-01-14 00:11:15 | WARNING  | __main__ | __main__.py:82 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=4.325333 | frame_time=4.324000
+2026-01-14 00:11:22 | WARNING  | __main__ | __main__.py:82 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=2.611000 | frame_time=2.608000

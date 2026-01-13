@@ -96,7 +96,7 @@ def test_remove_non_existing_collider():
 def test_move_updates_position(dx, dy, expected_x, expected_y):
     obj = GameObject("Player")
 
-    obj.move(dx, dy)
+    obj.move(Vector2D(dx, dy))
 
     assert obj.transform.position == Vector2D(expected_x, expected_y)
 
@@ -114,7 +114,7 @@ def test_move_multiple_times(list_of_moves, expected_x, expected_y):
     obj = GameObject("Player")
 
     for dx, dy in list_of_moves:
-        obj.move(dx, dy)
+        obj.move(Vector2D(dx, dy))
 
     assert obj.transform.position == Vector2D(expected_x, expected_y)
 
@@ -130,7 +130,7 @@ def test_move_multiple_times(list_of_moves, expected_x, expected_y):
 def test_set_position_from_origin(x, y):
     obj = GameObject("Player")
 
-    obj.set_position(x, y)
+    obj.set_position(Vector2D(x, y))
     assert obj.transform.position == Vector2D(x, y)
 
 
@@ -144,9 +144,9 @@ def test_set_position_from_origin(x, y):
 )
 def test_set_position_from_non_zero(x, y):
     obj = GameObject("Player")
-    obj.move(2.0, 3.0)
+    obj.move(Vector2D(2.0, 3.0))
 
-    obj.set_position(x, y)
+    obj.set_position(Vector2D(x, y))
 
     assert obj.transform.position == Vector2D(x, y)
 

@@ -122,3 +122,45 @@ def test_rotation_to_angle(angle):
     tol = 1e-9
     # La conversion en angle doit retrouver l'angle initial à tolérance près
     assert math.isclose(rot.to_angle(), angle, abs_tol=tol)
+
+
+# --------------------
+# Réflexion par rapport à une normale
+# --------------------
+@pytest.mark.parametrize(
+    "angle, normal_x, normal_y, expected_x, expected_y",
+    [
+        (0, 0, -1, 0, 1),  # perpendiculaire vers bas → haut
+        (math.pi / 4, 0, -1, math.sqrt(2) / 2, math.sqrt(2) / 2), 
+        (-math.pi / 4, 0, -1, -math.sqrt(2) / 2, math.sqrt(2) / 2),  
+        (math.pi / 2, -1, 0, -math.sqrt(2) / 2, math.sqrt(2) / 2), 
+        (math.pi / 4, -1, 0, -math.sqrt(2) / 2, -math.sqrt(2) / 2), 
+    ],
+)
+def test_rotation_reflect(angle, normal_x, normal_y, expected_x, expected_y):
+    rot = Rotation(angle)
+    normal = Vector2D(normal_x, normal_y)
+    reflected = rot.reflect(normal)
+    reflected_dir = reflected.apply(Vector2D(0, -1))
+    
+    tol = 1e-6
+    assert math.isclose(reflected_dir.x, expected_x, abs_tol=tol)
+    assert math.isclose(reflected_dir.y, expected_y, abs_tol=tol)
+
+
+@pytest.mark.parametrize(
+    "angle, normal_x, normal_y",
+    [
+        (math.pi / 3, 0, -1),
+        (math.pi / 4, -1, 0),
+        (math.pi / 6, 0, 1),
+        (0.5, 1, 0),
+    ],
+)
+def test_rotation_reflect_twice(angle, normal_x, normal_y):
+    """Réfléchir deux fois doit revenir à la rotation initiale."""
+    rot = Rotation(angle)
+    normal = Vector2D(normal_x, normal_y)
+    
+    reflected_twice = rot.reflect(normal).reflect(normal)
+    assert math.isclose(rot.to_angle(), reflected_twice.to_angle())

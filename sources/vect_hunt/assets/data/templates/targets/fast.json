@@ -1,7 +1,7 @@
 {
   "_comment": "Cible rapide et agile",
   "name": "Target_Fast",
-  "tags": ["TARGET"],
+  "tags": ["ENEMY"],
   "transform": {
     "position": [600, 400],
     "rotation": 0.0

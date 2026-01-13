@@ -47,12 +47,17 @@ class GameObject:
         self.id = GameObject._next_id
         GameObject._next_id += 1
 
+        self.type = self.__class__.__name__
+
         # Implementation des attributs
         self.name = name
         self.transform = transform if transform is not None else Transform()
         self.colliders: List[Collider] = []
         self.active = True
         self.tags = tags
+
+        # État de collision (pour le rendu debug)
+        self.nb_collision = False
 
         # Composant de rendu (optionnel)
         self.render_component: Optional[RenderComponent] = None
@@ -86,19 +91,16 @@ class GameObject:
         if collider in self.colliders:
             self.colliders.remove(collider)
 
-    # TODO : donner un vecteur directement ?
-    def move(self, dx: float, dy: float) -> None:
+    def move(self, displacement: Vector2D) -> None:
         """
         Déplace le GameObject dans l'espace en modifiant son Transform.
 
         Parameters
         ----------
-        dx : float
-            Déplacement sur l'axe X.
-        dy : float
-            Déplacement sur l'axe Y.
+        displacement : Vector2D
+            Vecteur de déplacement à appliquer.
         """
-        self.transform.move(Vector2D(dx, dy))
+        self.transform.move(displacement)
 
     def rotate(self, delta: float) -> None:
         """
@@ -111,20 +113,17 @@ class GameObject:
         """
         self.transform.rotate(delta)
 
-    def set_position(self, x: float, y: float) -> None:
+    def set_position(self, position: Vector2D) -> None:
         """
         Définit explicitement la position du GameObject.
 
         Parameters
         ----------
-        x : float
-            Position X.
-        y : float
-            Position Y.
+        position : Vector2D
+            Nouvelle position à définir.
         """
-        dx = x - self.transform.position.x
-        dy = y - self.transform.position.y
-        self.move(dx, dy)
+        displacement = position - self.transform.position
+        self.move(displacement)
 
     def add_tag(self, tag: Tag) -> None:
         """
@@ -166,7 +165,7 @@ class GameObject:
         other : GameObject
             L'autre GameObject impliqué dans la collision.
         """
-        print("Collision detected from", self.name, "to", other.name)
+        pass
 
     # TODO : Créer une liste de gameobject qui ont déclenché un trigger cette frame ?
     # NOTE : voir si garde cela ici
@@ -179,7 +178,7 @@ class GameObject:
         other : GameObject
             L'autre GameObject impliqué dans le trigger.
         """
-        print("Trigger detected from", self.name, "to", other.name)
+        pass
 
     def on_enter_collision(self, other: "GameObject") -> None:
         """
@@ -190,7 +189,7 @@ class GameObject:
         other : GameObject
             L'autre GameObject impliqué dans la collision.
         """
-        print("Collision ENTER from", self.name, "to", other.name)
+        self.nb_collision += 1
 
     def on_exit_collision(self, other: "GameObject") -> None:
         """
@@ -201,7 +200,7 @@ class GameObject:
         other : GameObject
             L'autre GameObject impliqué dans la collision.
         """
-        print("Collision EXIT from", self.name, "to", other.name)
+        self.nb_collision -= 1
 
     def on_enter_trigger(self, other: "GameObject") -> None:
         """
@@ -212,7 +211,7 @@ class GameObject:
         other : GameObject
             L'autre GameObject impliqué dans le trigger.
         """
-        print("Trigger ENTER from", self.name, "to", other.name)
+        self.nb_collision += 1
 
     def on_exit_trigger(self, other: "GameObject") -> None:
         """
@@ -223,4 +222,19 @@ class GameObject:
         other : GameObject
             L'autre GameObject impliqué dans le trigger.
         """
-        print("Trigger EXIT from", self.name, "to", other.name)
+        self.nb_collision -= 1
+
+    def update(self, delta_time: float) -> None:
+        """
+        Méthode de mise à jour appelée chaque frame.
+
+        Par défaut, cette méthode ne fait rien.
+        Les sous-classes (comme Player) peuvent la surcharger pour
+        implémenter un comportement spécifique.
+
+        Parameters
+        ----------
+        delta_time : float
+            Temps écoulé depuis la dernière frame (en secondes).
+        """
+        pass

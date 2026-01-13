@@ -1,10 +1,12 @@
 {
   "_comment": "Cible standard",
+  "type": "enemy",
   "name": "Target_Basic",
-  "tags": ["TARGET"],
+  "tags": ["ENEMY"],
+  "speed": 150.0,
   "transform": {
     "position": [400, 300],
-    "rotation": 0.0
+    "rotation": 45.0
   },
   "collider": {
     "type": "circle",

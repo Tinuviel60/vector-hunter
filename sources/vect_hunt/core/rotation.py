@@ -117,3 +117,41 @@ class Rotation:
             Angle de rotation en radians.
         """
         return math.atan2(self.m10, self.m00)
+
+    def reflect(self, normal: Vector2D) -> "Rotation":
+        """
+        Retourne la rotation réfléchie par rapport à une normale de surface.
+
+        Utilise la formule de réflexion :
+            reflected = incident - 2 * (incident · normal) * normal
+        Cette méthode calcule la nouvelle direction après un rebond sur une surface
+        ayant la normale donnée.
+
+        Parameters
+        ----------
+        normal : Vector2D
+            Vecteur normal normalisé de la surface.
+
+        Returns
+        -------
+        Rotation
+            Rotation correspondant à la direction réfléchie.
+        """
+        # Obtenir le vecteur de direction actuel
+        direction = self.apply(Vector2D(0, -1))  # Direction forward
+
+        # Calculer le produit scalaire direction · normal
+        dot = direction.dot(normal)
+
+        # Appliquer la formule de réflexion :
+        # reflected = incident - 2 * (incident · normal) * normal
+        reflected_x = direction.x - 2 * dot * normal.x
+        reflected_y = direction.y - 2 * dot * normal.y
+        reflected = Vector2D(reflected_x, reflected_y)
+
+        # Calculer l'angle de la nouvelle direction
+        new_angle = (
+            math.atan2(reflected.y, reflected.x) + math.pi / 2
+        )  # +π/2 car forward est (0, -1)
+
+        return Rotation(new_angle)

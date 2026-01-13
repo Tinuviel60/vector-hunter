@@ -5,11 +5,12 @@ from vect_hunt.core import (
     Transform,
     Vector2D,
 )
-from vect_hunt.objects import GameObject
 from vect_hunt.rendering import BasicShape
 from vect_hunt.resources import DataLoader
 
 from typing import Optional
+
+from vect_hunt.objects.game_object import GameObject
 
 """
 Factory pour créer des GameObjects depuis des templates JSON.
@@ -29,9 +30,14 @@ class GameObjectFactory:
         template_path: str,
         position: Optional[Vector2D] = None,
         rotation: Optional[float] = None,
-    ) -> GameObject:
+    ) -> "GameObject":
         """
-        Crée un GameObject depuis un template JSON.
+        Crée un GameObject (ou Player/Enemy) depuis un template JSON.
+
+        Le type d'objet créé dépend du champ "type" dans le JSON :
+        - "player" → crée un Player
+        - "enemy" → crée un Enemy
+        - absent ou autre → crée un GameObject de base
 
         Parameters
         ----------
@@ -46,16 +52,18 @@ class GameObjectFactory:
         Returns
         -------
         GameObject
-            GameObject complet avec tous ses composants
+            GameObject, Player ou Enemy selon le template
 
         Examples
         --------
         >>> player = GameObjectFactory.from_template("player.json")
-        >>> target = GameObjectFactory.from_template(
-        ...     "targets/basic.json",
-        ...     position=Vector2D(400, 300)
-        ... )
+        >>> enemy = GameObjectFactory.from_template("targets/basic.json")
         """
+        # Import ici pour éviter les imports circulaires
+        from vect_hunt.objects.game_object import GameObject
+        from vect_hunt.objects.player import Player
+        from vect_hunt.objects.enemy import Enemy
+
         # Charger le template
         template = DataLoader.load_json(f"templates/{template_path}")
 
@@ -73,8 +81,23 @@ class GameObjectFactory:
         # Créer les tags
         tags = GameObjectFactory._parse_tags(template.get("tags", []))
 
-        # Créer le GameObject
-        game_object = GameObject(template["name"], transform, tags=tags)
+        # Déterminer le type d'objet à créer
+        object_type = template.get("type", "gameobject")
+        speed = template.get("speed", 0.0)
+
+        # Instancier le bon type de GameObject
+        if object_type == "player":
+            game_object = Player(
+                name=template["name"], transform=transform, speed=speed
+            )
+        elif object_type == "enemy":
+            game_object = Enemy(name=template["name"], transform=transform, speed=speed)
+        else:
+            game_object = GameObject(template["name"], transform, tags=tags)
+
+        # Pour Player et Enemy, ajouter les tags après création
+        if object_type in ["player", "enemy"]:
+            game_object.tags = tags
 
         # Ajouter le collider
         if "collider" in template:

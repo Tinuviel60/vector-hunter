@@ -103,7 +103,9 @@ class Renderer:
             # Dessine les colliders
             if self.draw_colliders:
                 for collider in game_object.colliders:
-                    self.draw_collider(collider, game_object.transform)
+                    self.draw_collider(
+                        collider, game_object.transform, game_object.nb_collision > 0
+                    )
 
     def draw_name(self, game_object: "GameObject") -> None:
         """
@@ -121,7 +123,7 @@ class Renderer:
             (int(pos.x - name_surf.get_width() / 2), int(pos.y - 20)),
         )
 
-    def draw_collider(self, collider, transform):
+    def draw_collider(self, collider, transform, is_colliding: bool = False):
         """
         Dessine un collider pour le debug.
 
@@ -130,8 +132,14 @@ class Renderer:
         collider : Collider
             Le collider à dessiner.
         transform : Transform
-            La transformation du GameObject auquel le collider appartient."""
+            La transformation du GameObject auquel le collider appartient.
+        is_colliding : bool
+            Indique si le GameObject est actuellement en collision.
+        """
         geom = collider.get_geometry()
+
+        # Couleur rouge si en collision, vert sinon
+        color = (255, 0, 0) if is_colliding else (0, 255, 0)
 
         if geom["type"] == "circle":
             # Pour les cercles, center est local et on ajoute la position du GameObject
@@ -139,7 +147,7 @@ class Renderer:
             center = (int(center_vec.x), int(center_vec.y))
             pygame.draw.circle(
                 self.screen,
-                (0, 255, 0),
+                color,
                 center,
                 int(geom["radius"]),
                 1,
@@ -150,7 +158,7 @@ class Renderer:
             points = ColliderSystem.get_world_corners(geom["points"], transform)
             pygame.draw.polygon(
                 self.screen,
-                (0, 255, 0),
+                color,
                 [(int(p.x), int(p.y)) for p in points],
                 1,
             )

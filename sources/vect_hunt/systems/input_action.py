@@ -33,7 +33,12 @@ class InputAction:
 
     Notes
     -----
-    Pour VECTOR2D avec clavier, keys est un dict {'up': [...], 'down': [...], 'left': [...], 'right': [...]}.
+    Pour VECTOR2D avec clavier, keys est un dict :
+    {'up': [...],
+    'down': [...],
+    'left': [...],
+    'right': [...]}.
+
     Pour les autres types, keys est une liste de touches.
     """
 
