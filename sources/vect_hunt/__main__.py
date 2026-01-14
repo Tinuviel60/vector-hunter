@@ -3,7 +3,7 @@ import logging
 import pygame
 
 from vect_hunt.game import Game
-from vect_hunt.resources import DataLoader
+from vect_hunt.engine.resources import DataLoader
 from .logging_config import setup_logging
 
 logger = logging.getLogger(__name__)
