@@ -1,6 +1,5 @@
 import pygame
-from vect_hunt.engine.rendering.render_component import RenderComponent
-from vect_hunt.engine.core.transform import Transform
+from vect_hunt.engine.components.render_component import RenderComponent
 from vect_hunt.engine.resources import ImageLoader
 
 
@@ -18,6 +17,7 @@ class Sprite(RenderComponent):
         scale : float
             Facteur d'échelle.
         """
+        super().__init__()
         self.original_image = ImageLoader.load(image_path)
         self.scale = scale
 
@@ -29,7 +29,17 @@ class Sprite(RenderComponent):
         else:
             self.image = self.original_image
 
-    def render(self, surface, transform: Transform) -> None:
+    def render(self, surface) -> None:
+        """
+        Dessine le sprite sur la surface donnée.
+
+        Parameters
+        ----------
+        surface
+            Surface de rendu (ex: pygame.Surface).
+        """
+        assert self.game_object is not None, "Component must be attached to GameObject"
+        transform = self.game_object.transform
         pos = transform.position
         rect = self.image.get_rect(center=(int(pos.x), int(pos.y)))
         surface.blit(self.image, rect)

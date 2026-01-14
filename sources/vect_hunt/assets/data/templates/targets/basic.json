@@ -20,7 +20,7 @@
   "physics": {
     "mass": 0.5,
     "drag": 0.01,
-    "max_speed": 100.0
+    "speed": 100.0
   },
   "rendering": {
     "type": "basic_shape",

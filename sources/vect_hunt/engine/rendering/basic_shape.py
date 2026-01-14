@@ -1,7 +1,6 @@
 import pygame
 from typing import Tuple
-from vect_hunt.engine.rendering.render_component import RenderComponent
-from vect_hunt.engine.core.transform import Transform
+from vect_hunt.engine.components.render_component import RenderComponent
 from vect_hunt.engine.core.math import Vector2D, hex_to_rgb
 
 
@@ -12,7 +11,6 @@ class BasicShape(RenderComponent):
 
     def __init__(
         self,
-        transform: Transform,
         shape_type: str,
         size: Tuple[int, int] | int,
         color: str = "#FFFFFF",
@@ -33,14 +31,14 @@ class BasicShape(RenderComponent):
         outline_width : int
             Épaisseur du contour.
         """
-        self.transform = transform
+        super().__init__()
         self.shape_type = shape_type
         self.size = size
         self.color = color
         self.outline_color = outline_color
         self.outline_width = outline_width
 
-    def render(self, surface, transform: Transform) -> None:
+    def render(self, surface) -> None:
         """
         Dessine la forme sur la surface donnée.
 
@@ -48,8 +46,9 @@ class BasicShape(RenderComponent):
         ----------
         surface
             Surface de rendu (ex: pygame.Surface).
-        transform : Transform
-            Transformation spatiale du GameObject."""
+        """
+        assert self.game_object is not None, "Component must be attached to GameObject"
+        transform = self.game_object.transform
         pos = transform.position
         x, y = int(pos.x), int(pos.y)
 

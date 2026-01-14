@@ -2,6 +2,7 @@ from vect_hunt.engine.worlds import World
 from vect_hunt.engine.rendering import Renderer
 from vect_hunt.engine.objects import GameObject, GameObjectFactory
 from vect_hunt.engine.core import Vector2D
+from vect_hunt.engine.components import InputComponent
 
 import pygame
 
@@ -21,10 +22,19 @@ class Game:
         self.gameObjects: dict[str, GameObject] = {}
         self.initialize()
 
+    def initialize(self) -> None:
+        """
+        Initialise les composants du jeu.
+        """
+        self.world = World()
+
         # Créer le joueur via template
         player = GameObjectFactory.from_template(
             "player.json", position=Vector2D(100, 200)
         )
+        # Ajouter le composant d'input avec référence au InputSystem
+        input_comp = InputComponent(self.world.input_system)
+        player.add_component(input_comp)
         self.world.add_game_object(player)
 
         # Créer un ennemi via template
@@ -32,12 +42,6 @@ class Game:
             "targets/basic.json", position=Vector2D(600, 200)
         )
         self.world.add_game_object(enemy)
-
-    def initialize(self) -> None:
-        """
-        Initialise les composants du jeu.
-        """
-        self.world = World()
 
     def initiate_rendering(self, screen: pygame.Surface) -> None:
         """

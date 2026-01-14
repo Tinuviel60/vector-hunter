@@ -29,7 +29,7 @@ from .engine import (
     FontLoader,
 )
 
-from .game import Game, Player, Enemy
+from .game import Game
 
 __version__ = "0.1.0"
 
@@ -51,7 +51,4 @@ __all__ = [
     "FontLoader",
     # Game
     "Game",
-    "Player",
-    "Enemy",
 ]
-

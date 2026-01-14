@@ -17,7 +17,7 @@ class Collider:
 
     def __init__(
         self,
-        parent: "GameObject",
+        parent: Optional["GameObject"] = None,
         transform: Optional[Transform] = None,
         solid: bool = True,
     ):
@@ -26,10 +26,11 @@ class Collider:
 
         Parameters
         ----------
-        parent : GameObject
+        parent : GameObject, optional
             L'objet de jeu auquel le collider appartient.
+            Peut être None à la création, mais doit être assigné avant utilisation.
         transform : Transform
-            Le transform associé au collider.
+            Le transform associé au collider (offset et orientation locaux).
         solid : bool
             Indique si le collider interagit avec d'autres colliders ou non.
         """
@@ -60,7 +61,7 @@ class BoxCollider(Collider):
 
     def __init__(
         self,
-        parent: "GameObject",
+        parent: Optional["GameObject"] = None,
         width: float = 10.0,
         height: float = 10.0,
         center: Optional[Vector2D] = None,
@@ -72,16 +73,16 @@ class BoxCollider(Collider):
 
         Parameters
         ----------
-        parent : GameObject
+        parent : GameObject, optional
             L'objet de jeu auquel le collider appartient.
         width : float
             La largeur du BoxCollider.
         height : float
             La hauteur du BoxCollider.
         center : Vector2D
-            Le centre du BoxCollider.
+            Le centre du BoxCollider (offset local).
         orientation : float
-            L'orientation du BoxCollider en radians. Par défaut à 0.
+            L'orientation du BoxCollider en radians (rotation locale). Par défaut à 0.
         solid : bool
             Indique si le collider interagit avec d'autres colliders ou non.
         """
@@ -176,7 +177,7 @@ class CircleCollider(Collider):
 
     def __init__(
         self,
-        parent: "GameObject",
+        parent: Optional["GameObject"] = None,
         center: Optional[Vector2D] = None,
         radius: float = 5.0,
         solid: bool = True,
@@ -186,12 +187,14 @@ class CircleCollider(Collider):
 
         Parameters
         ----------
-        parent : GameObject
+        parent : GameObject, optional
             L'objet de jeu auquel le collider appartient.
         center : Vector2D
-            Le centre du CircleCollider.
+            Le centre du CircleCollider (offset local).
         radius : float
             Le rayon du CircleCollider.
+        solid : bool
+            Indique si le collider interagit avec d'autres colliders ou non.
         """
 
         if center is None:

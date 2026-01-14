@@ -1,19 +1,22 @@
-from typing import List, Optional
+from typing import List, Optional, TypeVar, TYPE_CHECKING
 from vect_hunt.engine.core import Tag
-from vect_hunt.engine.core.math import Vector2D
 from vect_hunt.engine.core.transform import Transform
-from vect_hunt.engine.physics.collider import Collider
-from vect_hunt.engine.rendering.render_component import RenderComponent
+
+if TYPE_CHECKING:
+    from vect_hunt.engine.components.component import Component
+
+# Type générique pour les composants
+T = TypeVar("T", bound="Component")
 
 
 class GameObject:
     """
-    Représente un objet du jeu, avec sa transformation spatiale et ses colliders.
+    Représente un objet du jeu, avec sa transformation spatiale et ses composants.
 
     Un GameObject est une entité logique qui peut être :
     - déplacée dans l'espace via son Transform,
-    - équipée de colliders pour la détection de collisions,
-    - enrichie plus tard avec des composants (physique, rendu, scripts...).
+    - équipée de composants (rendu, physique, collision, scripts...),
+    - enrichie avec des comportements via le système de composants.
 
     Attributes
     ----------
@@ -23,10 +26,10 @@ class GameObject:
         Nom de l'objet pour identification.
     transform : Transform
         Transformation spatiale de l'objet.
-    colliders : List[Collider]
-        Liste des colliders attachés à l'objet. Peut être vide.
     active : bool
         Indique si l'objet est actif dans le monde.
+    components : List[Component]
+        Liste des composants attachés à cet objet.
     """
 
     _next_id: int = 1  # Compteur de classe pour générer des IDs uniques
@@ -50,83 +53,96 @@ class GameObject:
         self.id = GameObject._next_id
         GameObject._next_id += 1
 
-        self.type = self.__class__.__name__
-
         # Implementation des attributs
         self.name = name
         self.transform = transform if transform is not None else Transform()
-        self.colliders: List[Collider] = []
         self.active = True
         self.tags = tags
 
-        # État de collision (pour le rendu debug)
-        self.nb_collision = False
+        # Système de composants
+        self.components: List["Component"] = []
 
-        # Composant de rendu (optionnel)
-        self.render_component: Optional[RenderComponent] = None
+    def add_component(self, component: "Component") -> "Component":
+        """
+        Attache un composant au GameObject.
 
-    def set_renderer(self, renderer: RenderComponent) -> None:
-        """
-        Associe un composant de rendu à ce GameObject.
-        """
-        self.render_component = renderer
-
-    def add_collider(self, collider: Collider) -> None:
-        """
-        Attache un collider à l'objet.
+        Le composant est ajouté à la liste des composants et sa méthode
+        on_attach() est appelée pour assigner le GameObject et permettre
+        une initialisation supplémentaire si nécessaire.
 
         Parameters
         ----------
-        collider : Collider
-            Le collider à ajouter.
-        """
-        self.colliders.append(collider)
+        component : Component
+            Le composant à attacher à ce GameObject.
 
-    def remove_collider(self, collider: Collider) -> None:
+        Returns
+        -------
+        Component
+            Le composant qui vient d'être attaché, permettant un
+            chaînage de méthodes si nécessaire.
         """
-        Retire un collider de l'objet.
+        self.components.append(component)
+        component.on_attach(self)
+        return component
 
-        Parameters
-        ----------
-        collider : Collider
-            Le collider à retirer.
+    def remove_component(self, component: "Component") -> None:
         """
-        if collider in self.colliders:
-            self.colliders.remove(collider)
+        Détache un composant du GameObject.
 
-    def move(self, displacement: Vector2D) -> None:
-        """
-        Déplace le GameObject dans l'espace en modifiant son Transform.
-
-        Parameters
-        ----------
-        displacement : Vector2D
-            Vecteur de déplacement à appliquer.
-        """
-        self.transform.move(displacement)
-
-    def rotate(self, delta: float) -> None:
-        """
-        Applique une rotation relative au GameObject.
+        Le composant est retiré de la liste des composants et sa méthode
+        on_detach() est appelée pour permettre un nettoyage si nécessaire.
 
         Parameters
         ----------
-        delta : float
-            Angle en radians à ajouter à la rotation actuelle.
+        component : Component
+            Le composant à détacher de ce GameObject.
         """
-        self.transform.rotate(delta)
+        if component in self.components:
+            component.on_detach()
+            self.components.remove(component)
 
-    def set_position(self, position: Vector2D) -> None:
+    def get_component(self, component_type: type[T]) -> Optional[T]:
         """
-        Définit explicitement la position du GameObject.
+        Récupère le premier composant d'un type donné attaché à ce GameObject.
+
+        Cette méthode est utile lorsqu'on sait qu'un seul composant d'un
+        type donné est attaché (par exemple, Transform, Rigidbody).
 
         Parameters
         ----------
-        position : Vector2D
-            Nouvelle position à définir.
+        component_type : type[T]
+            Le type de composant recherché.
+
+        Returns
+        -------
+        T or None
+            Le premier composant du type spécifié, ou None si aucun
+            composant de ce type n'est trouvé.
         """
-        displacement = position - self.transform.position
-        self.move(displacement)
+        for comp in self.components:
+            if isinstance(comp, component_type):
+                return comp
+        return None
+
+    def get_components(self, component_type: type[T]) -> List[T]:
+        """
+        Récupère tous les composants d'un type donné attachés à ce GameObject.
+
+        Cette méthode est utile lorsque plusieurs composants du même type
+        peuvent être attachés (par exemple, plusieurs Collider).
+
+        Parameters
+        ----------
+        component_type : type[T]
+            Le type de composant recherché.
+
+        Returns
+        -------
+        List[T]
+            Liste de tous les composants du type spécifié. La liste est
+            vide si aucun composant de ce type n'est trouvé.
+        """
+        return [comp for comp in self.components if isinstance(comp, component_type)]
 
     def add_tag(self, tag: Tag) -> None:
         """
@@ -161,83 +177,105 @@ class GameObject:
     # NOTE : voir si garde cela ici
     def on_collision(self, other: "GameObject") -> None:
         """
-        Appelé quand ce GameObject entre en collision physique.
+        Appelé quand ce GameObject est en collision physique persistante.
+
+        Propage l'événement à tous les composants actifs.
 
         Parameters
         ----------
         other : GameObject
             L'autre GameObject impliqué dans la collision.
         """
-        pass
+        for component in self.components:
+            if component.active:
+                component.on_collision(other)
 
     # TODO : Créer une liste de gameobject qui ont déclenché un trigger cette frame ?
     # NOTE : voir si garde cela ici
     def on_trigger(self, other: "GameObject") -> None:
         """
-        Appelé quand ce GameObject entre dans un trigger.
+        Appelé quand ce GameObject est dans un trigger persistant.
+
+        Propage l'événement à tous les composants actifs.
 
         Parameters
         ----------
         other : GameObject
             L'autre GameObject impliqué dans le trigger.
         """
-        pass
+        for component in self.components:
+            if component.active:
+                component.on_trigger(other)
 
     def on_enter_collision(self, other: "GameObject") -> None:
         """
         Appelé quand ce GameObject commence une collision physique avec un autre.
 
+        Propage l'événement à tous les composants actifs.
+
         Parameters
         ----------
         other : GameObject
             L'autre GameObject impliqué dans la collision.
         """
-        self.nb_collision += 1
+        for component in self.components:
+            if component.active:
+                component.on_enter_collision(other)
 
     def on_exit_collision(self, other: "GameObject") -> None:
         """
         Appelé quand ce GameObject termine une collision physique avec un autre.
 
+        Propage l'événement à tous les composants actifs.
+
         Parameters
         ----------
         other : GameObject
             L'autre GameObject impliqué dans la collision.
         """
-        self.nb_collision -= 1
+        for component in self.components:
+            if component.active:
+                component.on_exit_collision(other)
 
     def on_enter_trigger(self, other: "GameObject") -> None:
         """
         Appelé quand ce GameObject entre dans un trigger avec un autre.
 
+        Propage l'événement à tous les composants actifs.
+
         Parameters
         ----------
         other : GameObject
             L'autre GameObject impliqué dans le trigger.
         """
-        self.nb_collision += 1
+        for component in self.components:
+            if component.active:
+                component.on_enter_trigger(other)
 
     def on_exit_trigger(self, other: "GameObject") -> None:
         """
         Appelé quand ce GameObject sort d'un trigger avec un autre.
 
+        Propage l'événement à tous les composants actifs.
+
         Parameters
         ----------
         other : GameObject
             L'autre GameObject impliqué dans le trigger.
         """
-        self.nb_collision -= 1
+        for component in self.components:
+            if component.active:
+                component.on_exit_trigger(other)
 
     def update(self, delta_time: float) -> None:
         """
-        Méthode de mise à jour appelée chaque frame.
-
-        Par défaut, cette méthode ne fait rien.
-        Les sous-classes (comme Player) peuvent la surcharger pour
-        implémenter un comportement spécifique.
+        Met à jour tous les composants actifs du GameObject.
 
         Parameters
         ----------
         delta_time : float
             Temps écoulé depuis la dernière frame (en secondes).
         """
-        pass
+        for component in self.components:
+            if component.active:
+                component.update(delta_time)

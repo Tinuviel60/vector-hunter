@@ -3,6 +3,7 @@ from typing import Set, Tuple
 from vect_hunt.engine.objects import GameObject
 from vect_hunt.engine.physics import ColliderSystem, CollisionTracker
 from vect_hunt.engine.input import InputSystem
+from vect_hunt.engine.components.collider_component import ColliderComponent
 
 
 class World:
@@ -14,11 +15,6 @@ class World:
         """
         Initialise un monde de jeu vide.
         """
-
-        # TODO : targets and player to remove when GameObject  is fully in place ?
-        self.targets: dict[str, GameObject] = {}  # TODO Define a proper target class
-        self.player = object()  # TODO Define a proper player class
-
         self.game_objects: dict[int, GameObject] = {}
 
         self.collider_system = ColliderSystem()
@@ -37,7 +33,6 @@ class World:
         game_object.name = self.validate_name(game_object.name)
 
         self.game_objects[game_object.id] = game_object
-        self.collider_system.register(game_object)
 
     def remove_game_object(self, game_object: GameObject) -> None:
         """
@@ -50,7 +45,6 @@ class World:
         """
         if game_object.id in self.game_objects:
             del self.game_objects[game_object.id]
-        self.collider_system.unregister(game_object)
 
     def validate_name(self, name: str) -> str:
         """
@@ -85,18 +79,12 @@ class World:
         delta_time : float
             Temps écoulé depuis la dernière frame (en secondes).
         """
-        #TODO : Modifier cela quand GameObject sera pleinement en place
-        # Import ici pour éviter l'import circulaire
-        from vect_hunt.game.actors import Player, Enemy
-        
         # Mettre à jour le système d'inputs
         self.input_system.update(delta_time)
 
-        # Mettre à jour les GameObjects qui ont une méthode update
+        # Mettre à jour tous les GameObjects
         for game_object in self.game_objects.values():
-            if isinstance(game_object, Player):
-                game_object.update(self.input_system, delta_time)
-            elif isinstance(game_object, Enemy):
+            if game_object.active:
                 game_object.update(delta_time)
 
     def update_collisions(self, delta_time: float) -> None:
@@ -114,7 +102,9 @@ class World:
             Temps écoulé depuis la dernière frame en secondes
         """
         # Détecter toutes les collisions et triggers pour cette frame
-        current_collisions, current_triggers = self.collider_system.detect_collisions()
+        current_collisions, current_triggers = self.collider_system.detect_collisions(
+            self
+        )
 
         # Mettre à jour le tracker (CollisionTracker)
         self.collision_tracker.update(current_collisions, current_triggers, delta_time)
@@ -179,8 +169,15 @@ class World:
             obj2 = self.game_objects.get(obj2_id)
             if obj1 and obj2:
                 # Déterminer qui est trigger
-                obj1_has_trigger = any(not c.solid for c in obj1.colliders)
-                obj2_has_trigger = any(not c.solid for c in obj2.colliders)
+                collider_comp1 = obj1.get_component(ColliderComponent)
+                collider_comp2 = obj2.get_component(ColliderComponent)
+
+                obj1_has_trigger = collider_comp1 and any(
+                    not c.solid for c in collider_comp1.colliders
+                )
+                obj2_has_trigger = collider_comp2 and any(
+                    not c.solid for c in collider_comp2.colliders
+                )
                 # Appeler on_trigger uniquement pour les objets qui ont des triggers
                 if obj1_has_trigger:
                     obj1.on_trigger(obj2)

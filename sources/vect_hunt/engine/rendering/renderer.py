@@ -4,6 +4,8 @@ from typing import Tuple, TYPE_CHECKING
 from vect_hunt.engine.core.math import hex_to_rgb
 from vect_hunt.engine.physics import ColliderSystem
 from vect_hunt.engine.rendering.font import FontSystem
+from vect_hunt.engine.components.render_component import RenderComponent
+from vect_hunt.engine.components.collider_component import ColliderComponent
 from vect_hunt.engine.resources import DataLoader
 
 if TYPE_CHECKING:
@@ -95,18 +97,21 @@ class Renderer:
             if not game_object.active:
                 continue
 
-            # Dessine le GameObject
-            if game_object.render_component:
-                self.draw_render(game_object)
+            # Dessine le GameObject via son composant de rendu
+            self.render_game_object(game_object)
             # Dessine le nom
             if self.print_names:
                 self.draw_name(game_object)
             # Dessine les colliders
             if self.draw_colliders:
-                for collider in game_object.colliders:
-                    self.draw_collider(
-                        collider, game_object.transform, game_object.nb_collision > 0
-                    )
+                collider_comp = game_object.get_component(ColliderComponent)
+                if collider_comp:
+                    for collider in collider_comp.colliders:
+                        self.draw_collider(
+                            collider,
+                            game_object.transform,
+                            collider_comp.nb_collision > 0,
+                        )
 
     def draw_name(self, game_object: "GameObject") -> None:
         """
@@ -164,7 +169,7 @@ class Renderer:
                 1,
             )
 
-    def draw_render(self, game_object: "GameObject") -> None:
+    def render_game_object(self, game_object: "GameObject") -> None:
         """
         Dessine le composant de rendu d'un GameObject.
 
@@ -173,11 +178,13 @@ class Renderer:
         game_object : GameObject
             L'objet de jeu à dessiner.
         """
-        if not game_object.render_component:
+
+        render_component = game_object.get_component(RenderComponent)
+        if not render_component:
             return
 
-        # On utilise directement le transform du GameObject pour le rendu
-        game_object.render_component.render(self.screen, game_object.transform)
+        # Le composant utilise directement game_object.transform
+        render_component.render(self.screen)
 
     def render(self, world: "World") -> None:
         """

@@ -4,6 +4,7 @@ from vect_hunt.engine.core.transform import Transform
 from vect_hunt.engine.physics.collider import BoxCollider, CircleCollider
 from vect_hunt.engine.rendering.basic_shape import BasicShape
 from vect_hunt.engine.resources import DataLoader
+from vect_hunt.engine.components.collider_component import ColliderComponent
 
 from typing import Optional
 
@@ -56,11 +57,6 @@ class GameObjectFactory:
         >>> player = GameObjectFactory.from_template("player.json")
         >>> enemy = GameObjectFactory.from_template("targets/basic.json")
         """
-        # TODO : Gérer les imports au millieu pour éviter les imports circulaires
-        # Import ici pour éviter les imports circulaires
-        from .game_object import GameObject
-        from vect_hunt.game.actors import Player, Enemy
-
         # Charger le template
         template = DataLoader.load_json(f"templates/{template_path}")
 
@@ -82,33 +78,47 @@ class GameObjectFactory:
         object_type = template.get("type", "gameobject")
         speed = template.get("speed", 0.0)
 
-        # Instancier le bon type de GameObject
-        if object_type == "player":
-            game_object = Player(
-                name=template["name"], transform=transform, speed=speed
-            )
-        elif object_type == "enemy":
-            game_object = Enemy(name=template["name"], transform=transform, speed=speed)
-        else:
-            game_object = GameObject(template["name"], transform, tags=tags)
+        # Créer un GameObject basique (plus de Player/Enemy)
+        game_object = GameObject(template["name"], transform, tags=tags)
 
-        # Pour Player et Enemy, ajouter les tags après création
+        # Ajouter les composants selon le type
+        from vect_hunt.engine.components import (
+            PhysicBodyComponent,
+            IaComponent,
+        )
+
+        # Ajouter PhysicBodyComponent pour tous les objets qui bougent
         if object_type in ["player", "enemy"]:
-            game_object.tags = tags
+            physic_body = PhysicBodyComponent(speed=speed)
+            game_object.add_component(physic_body)
+
+        if object_type == "player":
+            # On doit passer l'input_system
+            # il faudra le récupérer du template ou context
+            # Pour l'instant on va devoir le passer depuis World (TODO)
+            pass  # InputComponent sera ajouté dynamiquement par World
+        elif object_type == "enemy":
+            ia_comp = IaComponent()
+            game_object.add_component(ia_comp)
 
         # Ajouter le collider
         if "collider" in template:
             collider = GameObjectFactory._create_collider(
                 game_object, template["collider"]
             )
-            game_object.add_collider(collider)
+
+            # Récupérer ou créer le ColliderComponent
+            collider_comp = game_object.get_component(ColliderComponent)
+            if collider_comp is None:
+                collider_comp = ColliderComponent()
+                game_object.add_component(collider_comp)
+
+            collider_comp.add_collider(collider)
 
         # Ajouter le renderer
         if "rendering" in template:
-            renderer = GameObjectFactory._create_renderer(
-                transform, template["rendering"]
-            )
-            game_object.set_renderer(renderer)
+            renderer = GameObjectFactory._create_renderer(template["rendering"])
+            game_object.add_component(renderer)
 
         # TODO: Ajouter physics, controls, behavior selon les besoins futurs
 
@@ -188,14 +198,12 @@ class GameObjectFactory:
             raise ValueError(f"Type de collider inconnu : {collider_type}")
 
     @staticmethod
-    def _create_renderer(transform: Transform, rendering_data: dict):
+    def _create_renderer(rendering_data: dict):
         """
         Crée un composant de rendu depuis les données du template.
 
         Parameters
         ----------
-        transform : Transform
-            Transform du GameObject
         rendering_data : dict
             Données de rendu du template
 
@@ -227,9 +235,7 @@ class GameObjectFactory:
             border_color = rendering_data.get("border_color", "#000000")
             border_thickness = rendering_data.get("border_thickness", 2)
 
-            return BasicShape(
-                transform, shape, size, color, border_color, border_thickness
-            )
+            return BasicShape(shape, size, color, border_color, border_thickness)
 
         # TODO: Gérer sprite, animated_sprite, etc.
         else:
