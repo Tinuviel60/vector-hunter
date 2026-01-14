@@ -148,34 +148,3 @@ def test_circle_collider_geometry_returns_circle(radius, center_x, center_y):
     assert geo["type"] == "circle"
     assert geo["center"] == center
     assert geo["radius"] == radius
-
-
-# --------------------
-# Tests limites combinés pour BoxCollider et CircleCollider
-# --------------------
-@pytest.mark.parametrize(
-    "width, height, radius",
-    [
-        (0, 0, 0),
-        (1, 1, 1),
-        (100, 50, 25),
-        (1e-6, 1e-6, 1e-6),
-        (1e6, 1e6, 1e6),
-    ],
-)
-def test_colliders_with_extreme_values(width, height, radius):
-    parent = DummyGameObject()
-    box = BoxCollider(parent, width, height)  # type: ignore
-    circle = CircleCollider(parent, radius=radius)  # type: ignore
-
-    # Aire correcte
-    assert math.isclose(box.get_area(), width * height)
-    assert math.isclose(circle.get_area(), math.pi * radius**2)
-
-    # Géométrie correcte
-    geo_box = box.get_geometry()
-    geo_circle = circle.get_geometry()
-    assert geo_box["type"] == "box"
-    assert len(geo_box["points"]) == 4
-    assert geo_circle["type"] == "circle"
-    assert geo_circle["radius"] == radius

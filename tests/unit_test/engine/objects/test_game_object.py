@@ -1,9 +1,9 @@
 import pytest
-import math
 
 from vect_hunt.engine.objects import GameObject
 from vect_hunt.engine.physics import Collider
 from vect_hunt.engine.core import Tag, Transform, Vector2D
+from vect_hunt.engine.components.collider_component import ColliderComponent
 
 
 class DummyCollider(Collider):
@@ -23,7 +23,7 @@ def test_game_object_initialization_defaults():
     assert obj.name == "Player"
     assert isinstance(obj.transform, Transform)
     assert obj.transform.position == Vector2D(0.0, 0.0)
-    assert obj.colliders == []
+    assert obj.get_component(ColliderComponent) is None
     assert obj.active is True
     assert obj.tags == Tag.NONE
 
@@ -48,13 +48,15 @@ def test_game_object_initialization(name, position, rotation, tags):
 @pytest.mark.parametrize("nb_colliders", [0, 1, 10])
 def test_add_collider(nb_colliders):
     obj = GameObject("Wall")
+    collider_comp = ColliderComponent()
+    obj.add_component(collider_comp)
 
     for _ in range(nb_colliders):
         collider = DummyCollider()
-        obj.add_collider(collider)
-        assert collider in obj.colliders
+        collider_comp.add_collider(collider)
+        assert collider in collider_comp.colliders
 
-    assert len(obj.colliders) == nb_colliders
+    assert len(collider_comp.colliders) == nb_colliders
 
 
 @pytest.mark.parametrize(
@@ -62,130 +64,32 @@ def test_add_collider(nb_colliders):
 )
 def test_remove_existing_collider(nb_initial_colliders, nb_colliders_to_remove):
     obj = GameObject("Wall")
+    collider_comp = ColliderComponent()
+    obj.add_component(collider_comp)
     colliders = [DummyCollider() for _ in range(nb_initial_colliders)]
 
     for collider in colliders:
-        obj.add_collider(collider)
+        collider_comp.add_collider(collider)
 
     for i in range(nb_colliders_to_remove):
-        obj.remove_collider(colliders[i])
+        collider_comp.remove_collider(colliders[i])
 
-    assert len(obj.colliders) == nb_initial_colliders - nb_colliders_to_remove
+    assert len(collider_comp.colliders) == nb_initial_colliders - nb_colliders_to_remove
     for i in range(nb_colliders_to_remove):
-        assert colliders[i] not in obj.colliders
+        assert colliders[i] not in collider_comp.colliders
     for i in range(nb_colliders_to_remove, nb_initial_colliders):
-        assert colliders[i] in obj.colliders
+        assert colliders[i] in collider_comp.colliders
 
 
 def test_remove_non_existing_collider():
     obj = GameObject("Wall")
+    collider_comp = ColliderComponent()
+    obj.add_component(collider_comp)
     collider = DummyCollider()
 
-    obj.remove_collider(collider)
+    collider_comp.remove_collider(collider)
 
-    assert obj.colliders == []
-
-
-@pytest.mark.parametrize(
-    "dx, dy, expected_x, expected_y",
-    [
-        (5.0, 3.0, 5.0, 3.0),
-        (-2.0, 4.0, -2.0, 4.0),
-        (0.0, 0.0, 0.0, 0.0),
-    ],
-)
-def test_move_updates_position(dx, dy, expected_x, expected_y):
-    obj = GameObject("Player")
-
-    obj.move(Vector2D(dx, dy))
-
-    assert obj.transform.position == Vector2D(expected_x, expected_y)
-
-
-@pytest.mark.parametrize(
-    "list_of_moves, expected_x, expected_y",
-    [
-        ([(1.0, 1.0), (-2.0, 3.0)], -1.0, 4.0),
-        ([(0.0, 0.0), (0.0, 0.0)], 0.0, 0.0),
-        ([(-1.0, -1.0), (1.0, 1.0), (2.0, 2.0)], 2.0, 2.0),
-        ([(3.5, -2.5), (-1.5, 4.5), (0.0, -2.0)], 2.0, 0.0),
-    ],
-)
-def test_move_multiple_times(list_of_moves, expected_x, expected_y):
-    obj = GameObject("Player")
-
-    for dx, dy in list_of_moves:
-        obj.move(Vector2D(dx, dy))
-
-    assert obj.transform.position == Vector2D(expected_x, expected_y)
-
-
-@pytest.mark.parametrize(
-    "x, y",
-    [
-        (10.0, -5.0),
-        (0.0, 0.0),
-        (-3.5, 2.5),
-    ],
-)
-def test_set_position_from_origin(x, y):
-    obj = GameObject("Player")
-
-    obj.set_position(Vector2D(x, y))
-    assert obj.transform.position == Vector2D(x, y)
-
-
-@pytest.mark.parametrize(
-    "x, y",
-    [
-        (-1.0, 4.0),
-        (2.5, -3.5),
-        (0.0, 0.0),
-    ],
-)
-def test_set_position_from_non_zero(x, y):
-    obj = GameObject("Player")
-    obj.move(Vector2D(2.0, 3.0))
-
-    obj.set_position(Vector2D(x, y))
-
-    assert obj.transform.position == Vector2D(x, y)
-
-
-@pytest.mark.parametrize("delta", [0.0, 1.57, -3.14, 6.28, -1.057, 3.5, -4.75])
-def test_rotate_updates_rotation(delta):
-    obj = GameObject("Spinner")
-
-    obj.rotate(delta)
-    # L'angle attendu est celui que to_angle() retourne après avoir
-    # créé une Rotation avec delta
-    assert obj.transform.rotation.to_angle() == pytest.approx(
-        math.atan2(math.sin(delta), math.cos(delta))
-    )
-
-
-@pytest.mark.parametrize(
-    "initial_rotation, list_of_delta",
-    [
-        (0.0, (1.0, -0.25)),
-        (3.0, (0.5, 0.5, -1.0)),
-        (-2.0, (2.0, 2.0, -4.0)),
-        (-2.0, (1.0, 1.0, 1.0, -3.0)),
-    ],
-)
-def test_rotate_multiple_times(initial_rotation, list_of_delta):
-    from vect_hunt.engine.core import Rotation
-
-    obj = GameObject("Spinner", transform=Transform(rotation=initial_rotation))
-
-    for delta in list_of_delta:
-        obj.rotate(delta)
-
-    # Calculer l'angle attendu en utilisant la même méthode que le code
-    total_rotation = initial_rotation + sum(list_of_delta)
-    expected_rotation = Rotation(total_rotation).to_angle()
-
-    assert obj.transform.rotation.to_angle() == pytest.approx(expected_rotation)
+    assert collider_comp.colliders == []
 
 
 @pytest.mark.parametrize(

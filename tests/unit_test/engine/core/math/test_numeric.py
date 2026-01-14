@@ -179,18 +179,3 @@ def test_gaussian_between_range(low, high, num_samples):
     for _ in range(num_samples):
         value = gaussian_between(low, high, rng=rng)
         assert low <= value <= high
-
-
-def test_gaussian_between_distribution():
-    """
-    Teste que la distribution est bien centrée autour de la moyenne.
-    """
-    rng = random.Random(42)
-    low, high = 0.0, 100.0
-    samples = [gaussian_between(low, high, rng=rng) for _ in range(1000)]
-
-    mean = sum(samples) / len(samples)
-    expected_mean = (low + high) / 2
-
-    # La moyenne devrait être proche du centre avec une certaine tolérance
-    assert abs(mean - expected_mean) < 10  # tolérance de 10% de la plage

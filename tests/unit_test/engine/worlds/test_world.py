@@ -2,33 +2,14 @@ import pytest
 
 from vect_hunt.engine.worlds import World
 from vect_hunt.engine.objects import GameObject
-from vect_hunt.engine.physics import ColliderSystem
-
-
-class DummyColliderSystem(ColliderSystem):
-    """
-    ColliderSystem minimal pour les tests.
-    Permet de vérifier si un GameObject est enregistré/désenregistré.
-    """
-
-    def __init__(self):
-        self.registered = set()
-
-    def register(self, game_object: GameObject):
-        self.registered.add(game_object.name)
-
-    def unregister(self, game_object: GameObject):
-        self.registered.discard(game_object.name)
 
 
 @pytest.fixture
 def empty_world():
     """
-    Retourne un World vide avec un DummyColliderSystem pour tests.
+    Retourne un World vide pour tests.
     """
-    w = World()
-    w.collider_system = DummyColliderSystem()
-    return w
+    return World()
 
 
 @pytest.mark.parametrize(
@@ -43,9 +24,6 @@ def test_add_game_object_registers_in_world(empty_world, object_name):
     # Vérifie que l'objet est ajouté au dictionnaire (par ID)
     assert obj.id in world.game_objects
     assert world.game_objects[obj.id] is obj
-
-    # Vérifie que ColliderSystem l'a enregistré
-    assert obj.name in world.collider_system.registered
 
 
 @pytest.mark.parametrize(
@@ -70,7 +48,6 @@ def test_add_game_object_same_name(empty_world, base_name, count, expected_names
     for obj, expected_name in zip(objects, expected_names):
         assert obj.name == expected_name
         assert world.game_objects[obj.id] is obj
-        assert expected_name in world.collider_system.registered
 
 
 @pytest.mark.parametrize(
@@ -94,12 +71,10 @@ def test_remove_game_object_unregisters_from_world(empty_world, object_names):
 
     # Vérifie que l'objet n'est plus dans le dictionnaire
     assert objects[0].id not in world.game_objects
-    assert objects[0].name not in world.collider_system.registered
 
     # Vérifie que les autres sont toujours là
     for obj in objects[1:]:
         assert obj.id in world.game_objects
-        assert obj.name in world.collider_system.registered
 
 
 @pytest.mark.parametrize(

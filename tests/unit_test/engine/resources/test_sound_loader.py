@@ -25,7 +25,9 @@ def mock_pygame():
 # Chargement basique
 # --------------------
 def test_load_basic(mock_pygame):
-    with patch("vect_hunt.engine.resources.loaders.sound_loader.SOUNDS_DIR", Path("/fake")):
+    with patch(
+        "vect_hunt.engine.resources.loaders.sound_loader.SOUNDS_DIR", Path("/fake")
+    ):
         sound = SoundLoader.load("jump.wav")
 
     mock_pygame.mixer.Sound.assert_called_once_with(Path("/fake/jump.wav"))
@@ -33,7 +35,9 @@ def test_load_basic(mock_pygame):
 
 
 def test_load_file_not_found():
-    with patch("vect_hunt.engine.resources.loaders.sound_loader.SOUNDS_DIR", Path("/fake")):
+    with patch(
+        "vect_hunt.engine.resources.loaders.sound_loader.SOUNDS_DIR", Path("/fake")
+    ):
         with patch("vect_hunt.engine.resources.loaders.sound_loader.pygame") as mock_pg:
             mock_pg.mixer.Sound.side_effect = FileNotFoundError()
 
@@ -45,7 +49,9 @@ def test_load_file_not_found():
 # Cache
 # --------------------
 def test_cache_works(mock_pygame):
-    with patch("vect_hunt.engine.resources.loaders.sound_loader.SOUNDS_DIR", Path("/fake")):
+    with patch(
+        "vect_hunt.engine.resources.loaders.sound_loader.SOUNDS_DIR", Path("/fake")
+    ):
         sound1 = SoundLoader.load("jump.wav")
         sound2 = SoundLoader.load("jump.wav")
 
@@ -56,7 +62,9 @@ def test_cache_works(mock_pygame):
 def test_different_sounds_separate_cache(mock_pygame):
     mock_pygame.mixer.Sound.side_effect = [MagicMock(name="s1"), MagicMock(name="s2")]
 
-    with patch("vect_hunt.engine.resources.loaders.sound_loader.SOUNDS_DIR", Path("/fake")):
+    with patch(
+        "vect_hunt.engine.resources.loaders.sound_loader.SOUNDS_DIR", Path("/fake")
+    ):
         sound1 = SoundLoader.load("jump.wav")
         sound2 = SoundLoader.load("shoot.wav")
 

@@ -27,7 +27,9 @@ def mock_pygame():
 # Chargement basique
 # --------------------
 def test_load_basic(mock_pygame):
-    with patch("vect_hunt.engine.resources.loaders.image_loader.IMAGES_DIR", Path("/fake")):
+    with patch(
+        "vect_hunt.engine.resources.loaders.image_loader.IMAGES_DIR", Path("/fake")
+    ):
         surface = ImageLoader.load("player.png")
 
     mock_pygame.image.load.assert_called_once_with(Path("/fake/player.png"))
@@ -35,7 +37,9 @@ def test_load_basic(mock_pygame):
 
 
 def test_load_file_not_found():
-    with patch("vect_hunt.engine.resources.loaders.image_loader.IMAGES_DIR", Path("/fake")):
+    with patch(
+        "vect_hunt.engine.resources.loaders.image_loader.IMAGES_DIR", Path("/fake")
+    ):
         with patch("vect_hunt.engine.resources.loaders.image_loader.pygame") as mock_pg:
             mock_pg.image.load.side_effect = FileNotFoundError()
 
@@ -47,7 +51,9 @@ def test_load_file_not_found():
 # Cache
 # --------------------
 def test_cache_works(mock_pygame):
-    with patch("vect_hunt.engine.resources.loaders.image_loader.IMAGES_DIR", Path("/fake")):
+    with patch(
+        "vect_hunt.engine.resources.loaders.image_loader.IMAGES_DIR", Path("/fake")
+    ):
         surf1 = ImageLoader.load("player.png")
         surf2 = ImageLoader.load("player.png")
 
@@ -63,7 +69,9 @@ def test_different_images_separate_cache(mock_pygame):
 
     mock_pygame.image.load.side_effect = [create_surface("p1"), create_surface("p2")]
 
-    with patch("vect_hunt.engine.resources.loaders.image_loader.IMAGES_DIR", Path("/fake")):
+    with patch(
+        "vect_hunt.engine.resources.loaders.image_loader.IMAGES_DIR", Path("/fake")
+    ):
         surf1 = ImageLoader.load("player.png")
         surf2 = ImageLoader.load("enemy.png")
 
@@ -75,7 +83,9 @@ def test_different_images_separate_cache(mock_pygame):
 # convert_alpha
 # --------------------
 def test_convert_alpha_called():
-    with patch("vect_hunt.engine.resources.loaders.image_loader.IMAGES_DIR", Path("/fake")):
+    with patch(
+        "vect_hunt.engine.resources.loaders.image_loader.IMAGES_DIR", Path("/fake")
+    ):
         with patch("vect_hunt.engine.resources.loaders.image_loader.pygame") as mock_pg:
             original = MagicMock()
             converted = MagicMock()

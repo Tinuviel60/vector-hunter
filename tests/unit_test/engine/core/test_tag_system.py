@@ -41,22 +41,6 @@ def test_can_collide(tag1: Tag, tag2: Tag, expected: bool):
 
 
 @pytest.mark.parametrize(
-    "tag1, tag2",
-    [
-        (Tag.NONE, Tag.PLAYER),
-        (Tag.NONE, Tag.ENEMY),
-        (Tag.PLAYER, Tag.NONE),
-        (Tag.NONE, Tag.NONE),
-    ],
-)
-def test_can_collide_with_none(tag1: Tag, tag2: Tag):
-    """
-    Aucun tag ne doit interagir avec Tag.NONE.
-    """
-    assert TagSystem.can_collide(tag1, tag2) is False
-
-
-@pytest.mark.parametrize(
     "tag1, tag2, expected",
     [
         (Tag.PROJECTILE, Tag.ENEMY, True),
@@ -71,22 +55,6 @@ def test_can_destroy(tag1: Tag, tag2: Tag, expected: bool):
     Vérifie les règles de destruction métier.
     """
     assert TagSystem.can_destroy(tag1, tag2) is expected
-
-
-@pytest.mark.parametrize(
-    "tag1, tag2",
-    [
-        (Tag.PLAYER, Tag.ENEMY),
-        (Tag.PLAYER, Tag.WALL),
-        (Tag.WALL, Tag.PLAYER),
-        (Tag.NONE, Tag.ENEMY),
-    ],
-)
-def test_can_destroy_invalid_cases(tag1: Tag, tag2: Tag):
-    """
-    Les interactions non définies doivent retourner False.
-    """
-    assert TagSystem.can_destroy(tag1, tag2) is False
 
 
 @pytest.mark.parametrize(
@@ -106,18 +74,33 @@ def test_can_pickup(tag1: Tag, tag2: Tag, expected: bool):
 
 
 @pytest.mark.parametrize(
-    "tag1, tag2",
+    "method, tag1, tag2",
     [
-        (Tag.NONE, Tag.PICKUP),
-        (Tag.PLAYER, Tag.NONE),
-        (Tag.NONE, Tag.NONE),
+        # Tag.NONE ne collide jamais
+        ("can_collide", Tag.NONE, Tag.PLAYER),
+        ("can_collide", Tag.NONE, Tag.ENEMY),
+        ("can_collide", Tag.PLAYER, Tag.NONE),
+        ("can_collide", Tag.NONE, Tag.NONE),
+        # Tag.NONE ne peut jamais détruire
+        ("can_destroy", Tag.NONE, Tag.ENEMY),
+        ("can_destroy", Tag.PLAYER, Tag.NONE),
+        # Tag.NONE ne permet jamais un pickup
+        ("can_pickup", Tag.NONE, Tag.PICKUP),
+        ("can_pickup", Tag.PLAYER, Tag.NONE),
+        ("can_pickup", Tag.NONE, Tag.NONE),
+        # Interactions invalides retournent False
+        ("can_destroy", Tag.PLAYER, Tag.ENEMY),
+        ("can_destroy", Tag.PLAYER, Tag.WALL),
+        ("can_destroy", Tag.WALL, Tag.PLAYER),
     ],
 )
-def test_can_pickup_with_none(tag1: Tag, tag2: Tag):
+def test_tag_none_and_invalid_interactions(method: str, tag1: Tag, tag2: Tag):
     """
-    Tag.NONE ne permet jamais une interaction.
+    Tag.NONE ne doit jamais interagir avec aucun tag.
+    Les interactions non définies doivent également retourner False.
     """
-    assert TagSystem.can_pickup(tag1, tag2) is False
+    method_func = getattr(TagSystem, method)
+    assert method_func(tag1, tag2) is False
 
 
 @pytest.mark.parametrize(
