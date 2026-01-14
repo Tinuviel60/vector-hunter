@@ -97,6 +97,9 @@ class Renderer:
             if not game_object.active:
                 continue
 
+            # DEBUG: Affiche le compteur de collisions
+            collider_comp = game_object.get_component(ColliderComponent)
+
             # Dessine le GameObject via son composant de rendu
             self.render_game_object(game_object)
             # Dessine le nom

@@ -3,38 +3,28 @@
   "type": "enemy",
   "name": "Target_Basic",
   "tags": ["ENEMY"],
-  "speed": 150.0,
   "transform": {
     "position": [400, 300],
     "rotation": 45.0
   },
+  "physics": {
+    "speed": 150.0
+  },
   "collider": {
     "type": "circle",
     "radius": 20.0,
-    "solid": false,
+    "solid": true,
     "transform": {
       "position": [0, 0],
       "rotation": 0.0
     }
   },
-  "physics": {
-    "mass": 0.5,
-    "drag": 0.01,
-    "speed": 100.0
-  },
   "rendering": {
     "type": "basic_shape",
     "shape": "circle",
     "color": "#FF6464",
-    "radius": 20
-  },
-  "behavior": {
-    "movement_type": "linear",
-    "speed": 50.0,
-    "direction": [1.0, 0.0]
-  },
-  "gameplay": {
-    "score_value": 100,
-    "destroy_on_hit": true
+    "radius": 20,
+    "outline_color": "#8B0000",
+    "outline_width": 2
   }
 }

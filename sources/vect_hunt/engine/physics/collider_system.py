@@ -342,6 +342,12 @@ class ColliderSystem:
         current_collisions: Set[Tuple[int, int]] = set()
         current_triggers: Set[Tuple[int, int]] = set()
 
+        # Réinitialiser le compteur de collisions debug
+        for game_object in collidable_objects:
+            collider_comp = game_object.get_component(ColliderComponent)
+            if collider_comp:
+                collider_comp.nb_collision = 0
+        
         # Tester toutes les paires de GameObjects
         for i, obj1 in enumerate(collidable_objects):
             next_i = i + 1
@@ -373,6 +379,9 @@ class ColliderSystem:
                         pair = (obj1.id, obj2.id)
                         if c1.solid and c2.solid:
                             current_collisions.add(pair)
+                            # Incrémenter le compteur debug pour les deux objets
+                            collider_component1.nb_collision += 1
+                            collider_component2.nb_collision += 1
                         else:
                             # Au moins un des deux est un trigger
                             current_triggers.add(pair)

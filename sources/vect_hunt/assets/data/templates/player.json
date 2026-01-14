@@ -3,10 +3,12 @@
   "type": "player",
   "name": "Player",
   "tags": ["PLAYER"],
-  "speed": 300.0,
   "transform": {
     "position": [100, 200],
     "rotation": 0.0
+  },
+  "physics": {
+    "speed": 300.0
   },
   "collider": {
     "type": "circle",
@@ -17,19 +19,12 @@
       "rotation": 0.0
     }
   },
-  "physics": {
-    "mass": 1.0,
-    "drag": 0.02,
-    "speed": 800.0
-  },
   "rendering": {
     "type": "basic_shape",
     "shape": "circle",
     "color": "#64C8FF",
-    "radius": 15
-  },
-  "controls": {
-    "propulsion_force": 500.0,
-    "rotation_speed": 3.14159
+    "radius": 15,
+    "outline_color": "#000000",
+    "outline_width": 2
   }
 }

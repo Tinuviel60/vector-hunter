@@ -1,18 +1,27 @@
+"""
+Factory pour créer des GameObjects depuis des templates JSON.
+"""
+
+import math
+from typing import Optional, TYPE_CHECKING
+
+from vect_hunt.engine.components import (
+    ColliderComponent,
+    IaComponent,
+    PhysicBodyComponent,
+)
+from vect_hunt.engine.components.render_component import RenderComponent
 from vect_hunt.engine.core import Tag
 from vect_hunt.engine.core.math import Vector2D
 from vect_hunt.engine.core.transform import Transform
 from vect_hunt.engine.physics.collider import BoxCollider, CircleCollider
 from vect_hunt.engine.rendering.basic_shape import BasicShape
 from vect_hunt.engine.resources import DataLoader
-from vect_hunt.engine.components.collider_component import ColliderComponent
-
-from typing import Optional
 
 from .game_object import GameObject
 
-"""
-Factory pour créer des GameObjects depuis des templates JSON.
-"""
+if TYPE_CHECKING:
+    from vect_hunt.engine.input import InputSystem
 
 
 class GameObjectFactory:
@@ -28,14 +37,10 @@ class GameObjectFactory:
         template_path: str,
         position: Optional[Vector2D] = None,
         rotation: Optional[float] = None,
+        input_system: Optional["InputSystem"] = None,
     ) -> "GameObject":
         """
-        Crée un GameObject (ou Player/Enemy) depuis un template JSON.
-
-        Le type d'objet créé dépend du champ "type" dans le JSON :
-        - "player" → crée un Player
-        - "enemy" → crée un Enemy
-        - absent ou autre → crée un GameObject de base
+        Crée un GameObject depuis un template JSON.
 
         Parameters
         ----------
@@ -45,21 +50,59 @@ class GameObjectFactory:
         position : Vector2D, optional
             Position initiale (override la position du template)
         rotation : float, optional
-            Rotation initiale en radians (override la rotation du template)
+            Rotation initiale en degrés (override la rotation du template)
+        input_system : InputSystem, optional
+            Système d'inputs nécessaire pour les objets de type "player"
 
         Returns
         -------
         GameObject
-            GameObject, Player ou Enemy selon le template
+            GameObject configuré selon le template
 
         Examples
         --------
-        >>> player = GameObjectFactory.from_template("player.json")
+        >>> player = GameObjectFactory.from_template(
+        ...     "player.json",
+        ...     input_system=game.input_system
+        ... )
         >>> enemy = GameObjectFactory.from_template("targets/basic.json")
         """
         # Charger le template
         template = DataLoader.load_json(f"templates/{template_path}")
 
+        # Créer le GameObject avec transform et tags
+        game_object = GameObjectFactory._create_base_object(
+            template, position, math.radians(rotation) if rotation is not None else None
+        )
+
+        # Ajouter les composants selon le template
+        GameObjectFactory._add_components(game_object, template, input_system)
+
+        return game_object
+
+    @staticmethod
+    def _create_base_object(
+        template: dict,
+        position: Optional[Vector2D],
+        rotation: Optional[float],
+    ) -> GameObject:
+        """
+        Crée le GameObject de base avec transform et tags.
+
+        Parameters
+        ----------
+        template : dict
+            Données du template
+        position : Vector2D, optional
+            Position initiale (override)
+        rotation : float, optional
+            Rotation initiale (override)
+
+        Returns
+        -------
+        GameObject
+            GameObject avec transform et tags configurés
+        """
         # Extraire les données de transform
         transform_data = template["transform"]
         pos = (
@@ -74,55 +117,80 @@ class GameObjectFactory:
         # Créer les tags
         tags = GameObjectFactory._parse_tags(template.get("tags", []))
 
-        # Déterminer le type d'objet à créer
+        return GameObject(template["name"], transform, tags=tags)
+
+    @staticmethod
+    def _add_components(
+        game_object: GameObject,
+        template: dict,
+        input_system: Optional["InputSystem"],
+    ) -> None:
+        """
+        Ajoute tous les composants au GameObject selon le template.
+
+        Parameters
+        ----------
+        game_object : GameObject
+            GameObject cible
+        template : dict
+            Données du template
+        input_system : InputSystem, optional
+            Système d'inputs pour InputComponent
+        """
         object_type = template.get("type", "gameobject")
-        speed = template.get("speed", 0.0)
 
-        # Créer un GameObject basique (plus de Player/Enemy)
-        game_object = GameObject(template["name"], transform, tags=tags)
-
-        # Ajouter les composants selon le type
-        from vect_hunt.engine.components import (
-            PhysicBodyComponent,
-            IaComponent,
-        )
-
-        # Ajouter PhysicBodyComponent pour tous les objets qui bougent
-        if object_type in ["player", "enemy"]:
+        # Ajouter PhysicBodyComponent si présent dans physics
+        if "physics" in template:
+            speed = template["physics"].get("speed", 300.0)
             physic_body = PhysicBodyComponent(speed=speed)
             game_object.add_component(physic_body)
 
+        # Ajouter InputComponent pour le joueur
         if object_type == "player":
-            # On doit passer l'input_system
-            # il faudra le récupérer du template ou context
-            # Pour l'instant on va devoir le passer depuis World (TODO)
-            pass  # InputComponent sera ajouté dynamiquement par World
+            if input_system is None:
+                raise ValueError(
+                    "InputSystem requis pour créer un objet de type 'player'"
+                )
+            from vect_hunt.engine.components import InputComponent
+
+            input_comp = InputComponent(input_system)
+            game_object.add_component(input_comp)
+
+        # Ajouter IaComponent pour les ennemis
         elif object_type == "enemy":
             ia_comp = IaComponent()
             game_object.add_component(ia_comp)
 
-        # Ajouter le collider
+        # Ajouter ColliderComponent
         if "collider" in template:
-            collider = GameObjectFactory._create_collider(
-                game_object, template["collider"]
-            )
+            GameObjectFactory._add_collider(game_object, template["collider"])
 
-            # Récupérer ou créer le ColliderComponent
-            collider_comp = game_object.get_component(ColliderComponent)
-            if collider_comp is None:
-                collider_comp = ColliderComponent()
-                game_object.add_component(collider_comp)
-
-            collider_comp.add_collider(collider)
-
-        # Ajouter le renderer
+        # Ajouter RenderComponent
         if "rendering" in template:
             renderer = GameObjectFactory._create_renderer(template["rendering"])
             game_object.add_component(renderer)
 
-        # TODO: Ajouter physics, controls, behavior selon les besoins futurs
+    @staticmethod
+    def _add_collider(game_object: GameObject, collider_data: dict) -> None:
+        """
+        Ajoute un ColliderComponent avec un collider au GameObject.
 
-        return game_object
+        Parameters
+        ----------
+        game_object : GameObject
+            GameObject cible
+        collider_data : dict
+            Données du collider du template
+        """
+        collider = GameObjectFactory._create_collider(game_object, collider_data)
+
+        # Créer ou récupérer le ColliderComponent
+        collider_comp = game_object.get_component(ColliderComponent)
+        if collider_comp is None:
+            collider_comp = ColliderComponent()
+            game_object.add_component(collider_comp)
+
+        collider_comp.add_collider(collider)
 
     @staticmethod
     def _parse_tags(tags_list: list[str]) -> Tag:
@@ -171,7 +239,7 @@ class GameObjectFactory:
             "transform", {"position": [0, 0], "rotation": 0.0}
         )
         position_data = transform_data.get("position", [0, 0])
-        rotation = transform_data.get("rotation", 0.0)
+        rotation = math.radians(transform_data.get("rotation", 0.0))
 
         center = Vector2D(position_data[0], position_data[1])
 
@@ -198,7 +266,7 @@ class GameObjectFactory:
             raise ValueError(f"Type de collider inconnu : {collider_type}")
 
     @staticmethod
-    def _create_renderer(rendering_data: dict):
+    def _create_renderer(rendering_data: dict) -> "RenderComponent":
         """
         Crée un composant de rendu depuis les données du template.
 
@@ -211,6 +279,11 @@ class GameObjectFactory:
         -------
         RenderComponent
             Composant de rendu (actuellement BasicShape)
+
+        Raises
+        ------
+        ValueError
+            Si le type de rendu est inconnu
         """
         render_type = rendering_data["type"]
 
@@ -220,22 +293,20 @@ class GameObjectFactory:
 
             # Dimensions selon la forme
             if shape == "circle":
-                # Pour un cercle, size doit être un int (le rayon)
                 size = rendering_data["radius"]
-            elif shape == "rectangle" or shape == "box":
-                # Pour un rectangle, size doit être un tuple (width, height)
+            elif shape in ("rectangle", "box"):
                 size = (
                     rendering_data.get("width", 20),
                     rendering_data.get("height", 20),
                 )
             else:
-                size = 20  # Défaut pour cercle
+                raise ValueError(f"Forme inconnue : {shape}")
 
             # Couleur de bordure et épaisseur optionnelles
-            border_color = rendering_data.get("border_color", "#000000")
-            border_thickness = rendering_data.get("border_thickness", 2)
+            outline_color = rendering_data.get("outline_color")
+            outline_width = rendering_data.get("outline_width", 1)
 
-            return BasicShape(shape, size, color, border_color, border_thickness)
+            return BasicShape(shape, size, color, outline_color, outline_width)
 
         # TODO: Gérer sprite, animated_sprite, etc.
         else:

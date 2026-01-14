@@ -9,3 +9,4 @@
 2026-01-14 00:11:15 | WARNING  | __main__ | __main__.py:82 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=4.325333 | frame_time=4.324000
 2026-01-14 00:11:22 | WARNING  | __main__ | __main__.py:82 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=2.611000 | frame_time=2.608000
 2026-01-14 21:57:19 | WARNING  | __main__ | __main__.py:82 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.072000 | frame_time=0.072000
+2026-01-15 00:02:33 | WARNING  | __main__ | __main__.py:82 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=4.603333 | frame_time=4.597000

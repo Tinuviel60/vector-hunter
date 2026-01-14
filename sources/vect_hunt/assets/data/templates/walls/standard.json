@@ -1,5 +1,6 @@
 {
   "_comment": "Mur standard solide",
+  "type": "wall",
   "name": "Wall_Standard",
   "tags": ["WALL"],
   "transform": {
@@ -21,10 +22,8 @@
     "shape": "rectangle",
     "color": "#888888",
     "width": 100,
-    "height": 20
-  },
-  "physics": {
-    "static": true,
-    "elasticity": 0.8
+    "height": 20,
+    "outline_color": "#444444",
+    "outline_width": 2
   }
 }

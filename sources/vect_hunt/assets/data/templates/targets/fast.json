@@ -1,38 +1,30 @@
 {
   "_comment": "Cible rapide et agile",
+  "type": "enemy",
   "name": "Target_Fast",
   "tags": ["ENEMY"],
   "transform": {
     "position": [600, 400],
     "rotation": 0.0
   },
+  "physics": {
+    "speed": 250.0
+  },
   "collider": {
     "type": "circle",
     "radius": 15.0,
-    "solid": false,
+    "solid": true,
     "transform": {
       "position": [0, 0],
       "rotation": 0.0
     }
   },
-  "physics": {
-    "mass": 0.3,
-    "drag": 0.005,
-    "speed": 250.0
-  },
   "rendering": {
     "type": "basic_shape",
     "shape": "circle",
     "color": "#FF9900",
-    "radius": 15
-  },
-  "behavior": {
-    "movement_type": "erratic",
-    "speed": 150.0,
-    "change_direction_interval": 1.5
-  },
-  "gameplay": {
-    "score_value": 200,
-    "destroy_on_hit": true
+    "radius": 15,
+    "outline_color": "#CC6600",
+    "outline_width": 2
   }
 }
