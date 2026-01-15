@@ -35,6 +35,7 @@ class CollisionTracker:
         self._active_triggers: Dict[Tuple[int, int], float] = {}
         self._entered_this_frame: Set[Tuple[int, int]] = set()
         self._exited_this_frame: Set[Tuple[int, int]] = set()
+        self._collision_info: Dict[Tuple[int, int], dict] = {}
 
     def _normalize_pair(self, obj1_id: int, obj2_id: int) -> Tuple[int, int]:
         """
@@ -58,6 +59,7 @@ class CollisionTracker:
         self,
         current_collisions: Set[Tuple[int, int]],
         current_triggers: Set[Tuple[int, int]],
+        collision_info: Dict[Tuple[int, int], dict],
         delta_time: float,
     ):
         """
@@ -69,6 +71,8 @@ class CollisionTracker:
             Ensemble des collisions détectées cette frame
         current_triggers : Set[Tuple[int, int]]
             Ensemble des triggers détectés cette frame
+        collision_info : Dict[Tuple[int, int], dict]
+            Dictionnaire des informations de collision pour chaque paire
         delta_time : float
             Temps écoulé depuis la dernière frame en secondes
         """
@@ -76,10 +80,20 @@ class CollisionTracker:
         self._entered_this_frame.clear()
         self._exited_this_frame.clear()
 
-        # Normaliser les paires
-        normalized_collisions = {
-            self._normalize_pair(*pair) for pair in current_collisions
-        }
+        # Séparer et normaliser les paires, construire le mapping infos
+        self._collision_info.clear()
+        normalized_collisions = set()
+
+        for pair in current_collisions:
+            norm_pair = self._normalize_pair(*pair)
+            normalized_collisions.add(norm_pair)
+            info = collision_info.get(pair)
+            if info is None:
+                info = collision_info.get((pair[1], pair[0]))
+            if info is not None:
+                self._collision_info[norm_pair] = info
+
+
         normalized_triggers = {self._normalize_pair(*pair) for pair in current_triggers}
 
         # Traiter les collisions
@@ -202,6 +216,70 @@ class CollisionTracker:
         """
         pair = self._normalize_pair(obj1_id, obj2_id)
         return pair in self._exited_this_frame
+
+    def get_all_collisions(self) -> List[Tuple[int, int]]:
+        """
+        Retourne la liste de toutes les collisions actives.
+
+        Returns
+        -------
+        List[Tuple[int, int]]
+            Liste des paires d'IDs en collision
+        """
+        return list(self._active_collisions.keys())
+    
+    def get_all_triggers(self) -> List[Tuple[int, int]]:
+        """
+        Retourne la liste de tous les triggers actifs.
+
+        Returns
+        -------
+        List[Tuple[int, int]]
+            Liste des paires d'IDs en trigger
+        """
+        return list(self._active_triggers.keys())
+    
+    def get_collision_info(self, obj1_id: int, obj2_id: int) -> Optional[dict]:
+        """
+        Retourne les informations de collision pour une paire d'objets.
+
+        Parameters
+        ----------
+        obj1_id : int
+            ID du premier objet
+        obj2_id : int
+            ID du second objet
+
+        Returns
+        -------
+        Optional[dict]
+            Dictionnaire des informations de collision, ou None si pas active
+        """
+        pair = self._normalize_pair(obj1_id, obj2_id)
+        return self._collision_info.get(pair)
+    
+    def get_all_entered(self) -> List[Tuple[int, int]]:
+        """
+        Retourne la liste de toutes les collisions/triggers commencées cette frame.
+
+        Returns
+        -------
+        List[Tuple[int, int]]
+            Liste des paires d'IDs qui viennent d'entrer en interaction
+        """
+        return list(self._entered_this_frame)
+    
+    def get_all_exited(self) -> List[Tuple[int, int]]:
+        """
+        Retourne la liste de toutes les collisions/triggers terminées cette frame.
+
+        Returns
+        -------
+        List[Tuple[int, int]]
+            Liste des paires d'IDs qui viennent de quitter l'interaction
+        """
+        return list(self._exited_this_frame)
+
 
     def get_collision_duration(self, obj1_id: int, obj2_id: int) -> Optional[float]:
         """

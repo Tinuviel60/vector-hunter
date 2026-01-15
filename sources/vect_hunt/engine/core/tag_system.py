@@ -1,26 +1,41 @@
+
 from .tag import Tag
 from typing import Dict
+import json
+import os
 
-# Masque de collision par défaut : quels tags peuvent interagir avec quels autres
-# Exemple : PLAYER peut toucher ENEMY et PICKUP
-CAN_COLLIDE: Dict[Tag, Tag] = {
-    Tag.PLAYER: Tag.ENEMY,
-    Tag.ENEMY: Tag.PLAYER | Tag.WALL | Tag.PROJECTILE,
-    Tag.PROJECTILE: Tag.ENEMY | Tag.WALL,
-    Tag.WALL: Tag.PLAYER | Tag.ENEMY | Tag.PROJECTILE,
-}
+# Chemin du fichier de configuration JSON
+CONFIG_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+    "assets/data/configs/collision.json"
+)
 
+def _load_collision_config():
+    with open(CONFIG_PATH, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    return data
 
-# NOTE : Exemple de masque d'interraction via les tags, non implémentée dans le moteur
-CAN_DESTROY: Dict[Tag, Tag] = {
-    Tag.PROJECTILE: Tag.ENEMY | Tag.WALL,
-    Tag.ENEMY: Tag.PLAYER,
-}
+def _tag_from_str(tag_str: str) -> Tag:
+    try:
+        return Tag[tag_str]
+    except KeyError:
+        return Tag.NONE
 
-# NOTE : Exemple de masque d'interraction via les tags, non implémentée dans le moteur
-CAN_PICKUP: Dict[Tag, Tag] = {
-    Tag.PLAYER: Tag.PICKUP,
-}
+def _build_mask(matrix_dict) -> Dict[Tag, Tag]:
+    mask = {}
+    for tag_str, targets in matrix_dict.items():
+        tag = _tag_from_str(tag_str)
+        value = Tag.NONE
+        for t in targets:
+            value |= _tag_from_str(t)
+        mask[tag] = value
+    return mask
+
+# Charger la configuration JSON
+_config = _load_collision_config()
+CAN_COLLIDE = _build_mask(_config["collision_matrix"])
+CAN_DESTROY = _build_mask(_config.get("destruction_matrix", {}))
+CAN_PICKUP = _build_mask(_config.get("pickup_matrix", {}))
 
 
 class TagSystem:
@@ -29,79 +44,16 @@ class TagSystem:
     """
 
     @staticmethod
-    def _check_mask(source: Tag, target: Tag, mask: dict[Tag, Tag]) -> bool:
-        """
-        Vérifie si une interaction est permise entre deux tags selon un masque donné.
-
-        Parameters
-        ----------
-        source : Tag
-            Le tag source de l'interaction.
-        target : Tag
-            Le tag cible de l'interaction.
-        mask : dict[Tag, Tag]
-            Le masque d'interaction à utiliser.
-
-        Returns
-        -------
-        bool
-            True si l'interaction est permise, False sinon.
-        """
-        return bool(mask.get(source, Tag.NONE) & target)
-
-    @staticmethod
     def can_collide(tag1: Tag, tag2: Tag) -> bool:
         """
-        Vérifie si un tag peut entrer en collision avec le second.
-
-        Parameters
-        ----------
-        source : Tag
-            Le tag source de l'interaction.
-        target : Tag
-            Le tag cible de l'interaction.
-
-        Returns
-        -------
-        bool
-            True si la collision est permise, False sinon.
+        Vérifie si deux tags peuvent collisionner selon la matrice chargée.
         """
-        return TagSystem._check_mask(tag1, tag2, CAN_COLLIDE)
+        return bool(CAN_COLLIDE.get(tag1, Tag.NONE) & tag2 or CAN_COLLIDE.get(tag2, Tag.NONE) & tag1)
 
     @staticmethod
     def can_destroy(tag1: Tag, tag2: Tag) -> bool:
-        """
-        Vérifie si un tag peut détruire le second.
-
-        Parameters
-        ----------
-        source : Tag
-            Le tag source de l'interaction.
-        target : Tag
-            Le tag cible de l'interaction.
-
-        Returns
-        -------
-        bool
-            True si la destruction est permise, False sinon.
-        """
-        return TagSystem._check_mask(tag1, tag2, CAN_DESTROY)
+        return bool(CAN_DESTROY.get(tag1, Tag.NONE) & tag2)
 
     @staticmethod
     def can_pickup(tag1: Tag, tag2: Tag) -> bool:
-        """
-        Vérifie si un tag peut ramasser le second.
-
-        Parameters
-        ----------
-        source : Tag
-            Le tag source de l'interaction.
-        target : Tag
-            Le tag cible de l'interaction.
-
-        Returns
-        -------
-        bool
-            True si le ramassage est permis, False sinon.
-        """
-        return TagSystem._check_mask(tag1, tag2, CAN_PICKUP)
+        return bool(CAN_PICKUP.get(tag1, Tag.NONE) & tag2)

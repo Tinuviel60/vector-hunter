@@ -115,9 +115,9 @@ class ColliderSystem:
     # Collisions fines
     # --------------------
     @staticmethod
-    def check_collision(c1: Collider, c2: Collider) -> bool:
+    def check_collision(c1: Collider, c2: Collider) -> dict | None:
         """
-        Détecte la collision fine entre deux colliders.
+        Détecte la collision fine entre deux colliders et retourne un dictionnaire d'information ou None.
 
         Parameters
         ----------
@@ -128,84 +128,129 @@ class ColliderSystem:
 
         Returns
         -------
-        bool
-            True si les colliders sont en collision, False sinon.
+        dict | None
+            Un dictionnaire d'information de collision (normal, depth, point, etc.) si collision, sinon None.
         """
         # Circle / Circle
         if isinstance(c1, CircleCollider) and isinstance(c2, CircleCollider):
-            assert c1.parent is not None, "c1 must have a parent"
-            assert c2.parent is not None, "c2 must have a parent"
-            c1_world_pos = c1.transform.position + c1.parent.transform.position
-            c2_world_pos = c2.transform.position + c2.parent.transform.position
-
-            delta = c1_world_pos - c2_world_pos
-            radius_sum = c1.radius + c2.radius
-            return delta.magnitude_squared() <= radius_sum**2
-
-        # Box / Box : Séparation des axes (SAT)
+            return ColliderSystem._circle_circle_collision_info(c1, c2)
         elif isinstance(c1, BoxCollider) and isinstance(c2, BoxCollider):
-            return ColliderSystem._sat_collision(c1, c2)
-
-        # Box / Circle
+            return ColliderSystem._sat_collision_info(c1, c2)
         elif isinstance(c1, BoxCollider) and isinstance(c2, CircleCollider):
-            return ColliderSystem._circle_box_collision(c2, c1)
+            return ColliderSystem._circle_box_collision_info(c2, c1)
         elif isinstance(c1, CircleCollider) and isinstance(c2, BoxCollider):
-            return ColliderSystem._circle_box_collision(c1, c2)
-
+            return ColliderSystem._circle_box_collision_info(c1, c2)
         else:
             raise TypeError("Type de collider non supporté pour collision fine")
 
     @staticmethod
-    def _sat_collision(box1: BoxCollider, box2: BoxCollider) -> bool:
+    def _circle_circle_collision_info(c1: CircleCollider, c2: CircleCollider):
         """
-        Collision Box/Box avec la méthode SAT (Séparation des axes).
-        Pour cette méthode, on projette les coins des deux boîtes sur les normales
-        de chaque boîte et on vérifie les chevauchements.
+        Détecte et retourne les informations de collision entre deux cercles.
+
+        Parameters
+        ----------
+        c1 : CircleCollider
+            Premier cercle.
+        c2 : CircleCollider
+            Second cercle.
+
+        Returns
+        -------
+        dict or None
+            Dictionnaire d'information (normal, depth, point) si collision, sinon None.
+        """
+        assert c1.parent is not None
+        assert c2.parent is not None
+
+        c1_world_pos = c1.transform.position + c1.parent.transform.position
+        c2_world_pos = c2.transform.position + c2.parent.transform.position
+
+        delta = c1_world_pos - c2_world_pos
+        dist = delta.magnitude()
+        radius_sum = c1.radius + c2.radius
+
+        if dist < radius_sum:
+            normal = delta.normalized() if dist != 0 else Vector2D(1, 0)
+            penetration = radius_sum - dist
+            return {"normal": normal, "depth": penetration, "point": c2_world_pos + normal * c2.radius}
+        return None
+
+    @staticmethod
+    def _sat_collision_info(box1: BoxCollider, box2: BoxCollider):
+        """
+        Détecte et retourne les informations de collision entre deux BoxCollider (méthode SAT).
 
         Parameters
         ----------
         box1 : BoxCollider
-            Le premier BoxCollider.
+            Premier box.
         box2 : BoxCollider
-            Le second BoxCollider.
+            Second box.
 
         Returns
         -------
-        bool
-            True si les boîtes sont en collision, False sinon.
+        dict or None
+            Dictionnaire d'information (normal, depth) si collision, sinon None.
         """
-        assert box1.parent is not None, "box1 must have a parent"
-        assert box2.parent is not None, "box2 must have a parent"
+        # SAT avec calcul de la plus petite séparation
+        assert box1.parent is not None
+        assert box2.parent is not None
+
         corners1 = ColliderSystem.get_world_corners(box1.corners, box1.parent.transform)
         corners2 = ColliderSystem.get_world_corners(box2.corners, box2.parent.transform)
+        axes = Geometry.get_polygon_normals(corners1) + Geometry.get_polygon_normals(corners2)
+        min_overlap = float('inf')
+        smallest_axis = None
 
-        # Obtenir les axes de projection (normales des arêtes)
-        axes = Geometry.get_polygon_normals(corners1) + Geometry.get_polygon_normals(
-            corners2
-        )
-
-        # Vérifier la projection sur chaque axe
         for axis in axes:
             min1, max1 = Geometry.project_polygon_on_axis(corners1, axis)
             min2, max2 = Geometry.project_polygon_on_axis(corners2, axis)
-
-            # Séparation trouvée, pas de collision
             if not Geometry.intervals_overlap(min1, max1, min2, max2):
-                return False
-
-        # Aucune séparation trouvée, collision détectée
-        return True
+                return None
+            
+            overlap = min(max1, max2) - max(min1, min2)
+            if overlap < min_overlap:
+                min_overlap = overlap
+                smallest_axis = axis
+                
+        if smallest_axis is not None:
+            normal = smallest_axis.normalized()
+            return {"normal": normal, "depth": min_overlap}
+        return None
 
     @staticmethod
-    def _circle_box_collision(circle: CircleCollider, box: BoxCollider) -> bool:
-        """Collision Circle / Box."""
-        assert circle.parent is not None, "circle must have a parent"
-        assert box.parent is not None, "box must have a parent"
+    def _circle_box_collision_info(circle: CircleCollider, box: BoxCollider):
+        """
+        Détecte et retourne les informations de collision entre un cercle et un box.
+
+        Parameters
+        ----------
+        circle : CircleCollider
+            Le cercle.
+        box : BoxCollider
+            Le box.
+
+        Returns
+        -------
+        dict or None
+            Dictionnaire d'information (normal, depth, point) si collision, sinon None.
+        """
+        assert circle.parent is not None
+        assert box.parent is not None
+
         circle_world_pos = circle.transform.position + circle.parent.transform.position
         closest = ColliderSystem.get_closest_point_on_box(box, circle_world_pos)
         delta = circle_world_pos - closest
-        return delta.magnitude_squared() <= circle.radius**2
+        dist = delta.magnitude()
 
+        if dist < circle.radius:
+            normal = delta.normalized() if dist != 0 else Vector2D(1, 0)
+            penetration = circle.radius - dist
+            return {"normal": normal, "depth": penetration, "point": closest}
+        return None
+
+  
     @staticmethod
     def get_world_corners(corners: List[Vector2D], parent: Transform) -> list[Vector2D]:
         """
@@ -308,7 +353,7 @@ class ColliderSystem:
     # --------------------
     def detect_collisions(
         self, world: "World"
-    ) -> Tuple[Set[Tuple[int, int]], Set[Tuple[int, int]]]:
+    ) -> Tuple[Set[Tuple[int, int]], Set[Tuple[int, int]], dict]:
         """
         Détecte les collisions entre tous les GameObjects du monde
         ayant des ColliderComponents.
@@ -341,6 +386,7 @@ class ColliderSystem:
 
         current_collisions: Set[Tuple[int, int]] = set()
         current_triggers: Set[Tuple[int, int]] = set()
+        collision_info: dict = {}
 
         # Réinitialiser le compteur de collisions debug
         for game_object in collidable_objects:
@@ -372,21 +418,20 @@ class ColliderSystem:
                             continue
 
                         # Collision fine (narrow phase)
-                        if not self.check_collision(c1, c2):
+                        info = self.check_collision(c1, c2)
+                        if info is None:
                             continue
 
-                        # Collision détectée - enregistrer une seule paire d'objets
                         pair = (obj1.id, obj2.id)
                         if c1.solid and c2.solid:
                             current_collisions.add(pair)
-                            # Incrémenter le compteur debug pour les deux objets
+                            collision_info[pair] = info
                             collider_component1.nb_collision += 1
                             collider_component2.nb_collision += 1
                         else:
                             # Au moins un des deux est un trigger
                             current_triggers.add(pair)
 
-                        # Pas besoin de tester les autres colliders pour cette paire
                         break
                     else:
                         # Continue si pas de collision détectée avec c1
@@ -394,4 +439,4 @@ class ColliderSystem:
                     # Break du for c2 si collision détectée
                     break
 
-        return current_collisions, current_triggers
+        return current_collisions, current_triggers, collision_info

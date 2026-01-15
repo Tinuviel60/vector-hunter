@@ -15,7 +15,7 @@ class PhysicBodyComponent(Component):
     Le système de collision se charge des limitations.
     """
 
-    def __init__(self, speed: float = 300.0):
+    def __init__(self, speed: float = 300.0, is_kinematic: bool = False):
         """
         Initialise le composant de corps physique.
 
@@ -23,11 +23,14 @@ class PhysicBodyComponent(Component):
         ----------
         speed : float, optional
             Vitesse de déplacement en pixels/seconde. Par défaut 300.0.
+        is_kinematic : bool, optional
+            Indique si le corps est cinématique (non affecté par la physique). Par défaut False.
         """
         super().__init__()
         self.speed = speed
         self.velocity = Vector2D(0, 0)
         self.acceleration = Vector2D(0, 0)
+        self.is_kinematic = is_kinematic
 
     def update(self, delta_time: float) -> None:
         """

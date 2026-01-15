@@ -2,7 +2,7 @@ import math
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .rotation import Rotation
+    from vect_hunt.engine.core.transform.rotation import Rotation
 
 
 class Vector2D:

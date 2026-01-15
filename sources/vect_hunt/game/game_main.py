@@ -41,6 +41,12 @@ class Game:
         )
         self.world.add_game_object(enemy)
 
+        # Créer un obstacle via template
+        obstacle = GameObjectFactory.from_template(
+            "walls/standard.json", position=Vector2D(400, 300)
+        )
+        self.world.add_game_object(obstacle)
+
     def initiate_rendering(self, screen: pygame.Surface) -> None:
         """
         Démarre le rendu graphique du jeu.
@@ -63,6 +69,7 @@ class Game:
         # Mettre à jour le monde (inputs + GameObjects + collisions)
         self.world.update(delta_time)
         self.world.update_collisions(delta_time)
+        self.world.collision_resolution_system.update(delta_time)
 
     def render(self) -> None:
         """

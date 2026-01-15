@@ -142,7 +142,8 @@ class GameObjectFactory:
         # Ajouter PhysicBodyComponent si présent dans physics
         if "physics" in template:
             speed = template["physics"].get("speed", 300.0)
-            physic_body = PhysicBodyComponent(speed=speed)
+            is_kinematic = template["physics"].get("is_kinematic", False)
+            physic_body = PhysicBodyComponent(speed=speed, is_kinematic=is_kinematic)
             game_object.add_component(physic_body)
 
         # Ajouter InputComponent pour le joueur
