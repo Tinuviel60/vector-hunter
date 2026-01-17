@@ -27,7 +27,8 @@ from .objects import GameObject, GameObjectFactory
 from .input import InputAction, ActionType, ActionState, InputSystem, InputTracker
 
 # Rendering
-from .rendering import Renderer, RenderComponent, BasicShape, Sprite
+from .rendering import Renderer, RenderComponent
+from vect_hunt.engine.components.rendering import BasicShape, Sprite
 from .rendering.font import FontStyle, FontSystem
 
 # Resources

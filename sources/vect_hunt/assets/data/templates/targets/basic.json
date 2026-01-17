@@ -1,35 +1,59 @@
 {
   "_comment": "Cible standard",
-  "type": "enemy",
   "name": "Target_Basic",
   "tags": ["ENEMY"],
   "transform": {
     "position": [400, 300],
     "rotation": 45.0
   },
-  "physics": {
-    "speed": 150.0,
-    "is_kinematic": false,
-    "is_controlled": true,
-    "mass": 1.0,
-    "use_gravity": true,
-    "material": "materials/default.json"
-  },
-  "collider": {
-    "type": "circle",
-    "radius": 20.0,
-    "solid": true,
-    "transform": {
-      "position": [0, 0],
-      "rotation": 0.0
+  "components": [
+    {
+      "component": "physics",
+      "data": {
+        "speed": 150.0,
+        "is_kinematic": false,
+        "is_controlled": true,
+        "mass": 1.0,
+        "use_gravity": true,
+        "material": "materials/default.json"
+      }
+    },
+    {
+      "component": "circle_collider",
+      "data": {
+        "radius": 20.0,
+        "solid": true,
+        "transform": {
+          "position": [0, 0],
+          "rotation": 0.0
+        }
+      }
+    },
+    {
+      "component": "circle_collider",
+      "data": {
+        "radius": 20.0,
+        "solid": true,
+        "transform": {
+          "position": [20, 0],
+          "rotation": 0.0
+        }
+      }
+    },
+    {
+      "component": "rendering",
+      "data": {
+        "type": "basic_shape",
+        "shape": "circle",
+        "color": "#FF6464",
+        "radius": 20,
+        "outline_color": "#8B0000",
+        "outline_width": 2
+      }
+    },
+    {
+      "component": "ai",
+      "data": {}
     }
-  },
-  "rendering": {
-    "type": "basic_shape",
-    "shape": "circle",
-    "color": "#FF6464",
-    "radius": 20,
-    "outline_color": "#8B0000",
-    "outline_width": 2
-  }
+  ]
 }

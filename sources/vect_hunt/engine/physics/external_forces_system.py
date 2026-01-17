@@ -1,7 +1,11 @@
 
-from vect_hunt.engine.physics.collider import Vector2D
-from vect_hunt.engine.worlds import World
+from vect_hunt.engine.core.math import Vector2D
 from vect_hunt.engine.components import PhysicBodyComponent
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from vect_hunt.engine.worlds.world import World
 
 class ExternalForcesSystem:
     """
@@ -16,7 +20,7 @@ class ExternalForcesSystem:
         pass
 
     @staticmethod
-    def apply_gravity(world:World, delta_time: float) -> None:
+    def apply_gravity(world: "World", delta_time: float) -> None:
         """
         Applique la gravité au corps physique donné.
 

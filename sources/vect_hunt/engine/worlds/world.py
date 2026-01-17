@@ -3,7 +3,7 @@ from typing import Set, Tuple
 from vect_hunt.engine.objects import GameObject
 from vect_hunt.engine.physics import ColliderSystem, CollisionTracker
 from vect_hunt.engine.input import InputSystem
-from vect_hunt.engine.components.collider_component import ColliderComponent
+from vect_hunt.engine.components.collider import Collider
 from vect_hunt.engine.physics.collision_resolution_system import (
     CollisionResolutionSystem,
 )
@@ -192,15 +192,11 @@ class World:
             obj2 = self.game_objects.get(obj2_id)
             if obj1 and obj2:
                 # Déterminer qui est trigger
-                collider_comp1 = obj1.get_component(ColliderComponent)
-                collider_comp2 = obj2.get_component(ColliderComponent)
+                colliders1 = obj1.get_components(Collider)
+                colliders2 = obj2.get_components(Collider)
 
-                obj1_has_trigger = collider_comp1 and any(
-                    not c.solid for c in collider_comp1.colliders
-                )
-                obj2_has_trigger = collider_comp2 and any(
-                    not c.solid for c in collider_comp2.colliders
-                )
+                obj1_has_trigger = any(not c.solid for c in colliders1)
+                obj2_has_trigger = any(not c.solid for c in colliders2)
                 # Appeler on_trigger uniquement pour les objets qui ont des triggers
                 if obj1_has_trigger:
                     obj1.on_trigger(obj2)

@@ -1,29 +1,14 @@
+from typing import Any, Tuple
+
 import pygame
-from typing import Tuple
+
 from vect_hunt.engine.components.render_component import RenderComponent
 from vect_hunt.engine.core.math import Vector2D, hex_to_rgb
 
 
 class BasicShape(RenderComponent):
     """
-    Composant de rendu pour formes géométriques simples.
-
-    Attributes
-    ----------
-    game_object : GameObject | None
-        GameObject auquel ce composant est attaché.
-    active : bool
-        Indique si le composant est actif.
-    shape_type : str
-        Type de forme ("circle" ou "box").
-    size : Tuple[int, int] | int
-        Dimensions de la forme.
-    color : str
-        Couleur principale en hexadécimal.
-    outline_color : str | None
-        Couleur du contour.
-    outline_width : int
-        Épaisseur du contour.
+    Composant de rendu pour formes geometriques simples.
     """
 
     def __init__(
@@ -34,20 +19,6 @@ class BasicShape(RenderComponent):
         outline_color: str | None = None,
         outline_width: int = 1,
     ):
-        """
-        Parameters
-        ----------
-        shape_type : str
-            "circle" ou "box".
-        size : int | Tuple[int, int]
-            Rayon pour un cercle, (width, height) pour un rectangle.
-        color : str
-            Couleur principale en hexadécimal.
-        outline_color : str, optional
-            Couleur du contour.
-        outline_width : int
-            Épaisseur du contour.
-        """
         super().__init__()
         self.shape_type = shape_type
         self.size = size
@@ -55,15 +26,32 @@ class BasicShape(RenderComponent):
         self.outline_color = outline_color
         self.outline_width = outline_width
 
-    def render(self, surface) -> None:
-        """
-        Dessine la forme sur la surface donnée.
+    @classmethod
+    def from_data(
+        cls, data: dict[str, Any], game_object, context: dict[str, Any]
+    ) -> "BasicShape":
+        render_type = data.get("type")
+        if render_type != "basic_shape":
+            raise ValueError(f"Type de rendu inconnu : {render_type}")
 
-        Parameters
-        ----------
-        surface
-            Surface de rendu (ex: pygame.Surface).
-        """
+        shape = data["shape"]
+        color = data["color"]
+
+        if shape == "circle":
+            size = data["radius"]
+            shape_type = "circle"
+        elif shape in ("rectangle", "box"):
+            size = (data.get("width", 20), data.get("height", 20))
+            shape_type = "box"
+        else:
+            raise ValueError(f"Forme inconnue : {shape}")
+
+        outline_color = data.get("outline_color")
+        outline_width = data.get("outline_width", 1)
+
+        return cls(shape_type, size, color, outline_color, outline_width)
+
+    def render(self, surface) -> None:
         assert self.game_object is not None, "Component must be attached to GameObject"
         transform = self.game_object.transform
         pos = transform.position
@@ -86,27 +74,22 @@ class BasicShape(RenderComponent):
             assert isinstance(self.size, tuple), "Size must be a tuple for box shape"
             width, height = self.size
 
-            # Calculer les 4 coins du rectangle dans l'espace local
             half_w, half_h = width / 2, height / 2
             local_corners = [
-                Vector2D(-half_w, -half_h),  # Top-left
-                Vector2D(half_w, -half_h),  # Top-right
-                Vector2D(half_w, half_h),  # Bottom-right
-                Vector2D(-half_w, half_h),  # Bottom-left
+                Vector2D(-half_w, -half_h),
+                Vector2D(half_w, -half_h),
+                Vector2D(half_w, half_h),
+                Vector2D(-half_w, half_h),
             ]
 
-            # Appliquer la rotation et translater vers la position du GameObject
-            # (même logique que ColliderSystem.get_world_corners)
             world_corners = []
             for corner in local_corners:
                 corner_rotated = transform.rotation.apply(corner)
                 world_corner = transform.position + corner_rotated
                 world_corners.append(world_corner)
 
-            # Convertir en points pygame
             points = [(int(corner.x), int(corner.y)) for corner in world_corners]
 
-            # Dessiner le polygone
             pygame.draw.polygon(surface, hex_to_rgb(self.color), points)
             if self.outline_color:
                 pygame.draw.polygon(

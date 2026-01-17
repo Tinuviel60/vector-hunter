@@ -2,9 +2,12 @@
 Composant de corps physique pour gérer les déplacements et forces.
 """
 
+from typing import Any
+
 from vect_hunt.engine.components.component import Component
 from vect_hunt.engine.core.math import Vector2D
-from vect_hunt.engine.physics.physic_material import PhysicMaterial
+from vect_hunt.engine.physics.physic_material import CombineMode, PhysicMaterial
+from vect_hunt.engine.resources import DataLoader
 
 import logging
 logger = logging.getLogger(__name__)
@@ -80,6 +83,68 @@ class PhysicBodyComponent(Component):
         self.is_controlled = is_controlled  
 
         self.material = material if material is not None else PhysicMaterial()
+
+    @classmethod
+    def from_data(
+        cls, data: dict[str, Any], game_object, context: dict[str, Any]
+    ) -> "PhysicBodyComponent":
+        material = cls._create_physic_material(data.get("material"))
+        return cls(
+            mass=data.get("mass", 1.0),
+            speed=data.get("speed", 300.0),
+            is_kinematic=data.get("is_kinematic", False),
+            use_gravity=data.get("use_gravity", True),
+            is_controlled=data.get("is_controlled", False),
+            material=material,
+        )
+
+    @staticmethod
+    def _create_physic_material(material_ref: Any) -> PhysicMaterial:
+        if not material_ref:
+            return PhysicMaterial()
+
+        if isinstance(material_ref, dict):
+            return PhysicBodyComponent._material_from_data(material_ref)
+
+        material_path = str(material_ref)
+        if not material_path.endswith(".json"):
+            material_path = f"{material_path}.json"
+        if not material_path.startswith("materials/"):
+            material_path = f"materials/{material_path}"
+
+        material_data = DataLoader.load_json(material_path)
+        return PhysicBodyComponent._material_from_data(material_data)
+
+    @staticmethod
+    def _material_from_data(material_data: dict[str, Any]) -> PhysicMaterial:
+        friction = material_data.get("friction", 0.5)
+        restitution = material_data.get("restitution", 0.5)
+        linear_damping = material_data.get("linear_damping", 0.0)
+        bounciness_threshold = material_data.get("bounciness_threshold", 0.0)
+        friction_mode = PhysicBodyComponent._parse_combine_mode(
+            material_data.get("friction_mode"), CombineMode.MAX
+        )
+        restitution_mode = PhysicBodyComponent._parse_combine_mode(
+            material_data.get("restitution_mode"), CombineMode.MIN
+        )
+
+        return PhysicMaterial(
+            friction=friction,
+            restitution=restitution,
+            friction_mode=friction_mode,
+            restitution_mode=restitution_mode,
+            linear_damping=linear_damping,
+            bounciness_threshold=bounciness_threshold,
+        )
+
+    @staticmethod
+    def _parse_combine_mode(value: str | None, default: CombineMode) -> CombineMode:
+        if value is None:
+            return default
+        try:
+            return CombineMode[value.upper()]
+        except KeyError:
+            return default
 
     def update(self, delta_time: float) -> None:
         """

@@ -2,7 +2,13 @@
 
 ## 🔹 Must Have (prochaines étapes critiques)
 
+12. **Restructurer l'archicture de la boucle de jeu**
+   - Sortir tout de world vers une classe dédié, qui défini l'ordre (mouvement, collider, collision puis rendu...)
+   - Transformer world en scene
 
+13. **Revoir le system de RenderComponent**
+   - Transform
+   - Liste de render (qui peut etre sprite et/ou bsaic shape et/ou ...)
 
 ## 🔹 Important (prochaines fonctionnalités logiques)
 
@@ -11,25 +17,15 @@
    - Collider attaché  (done)
    - Comportement d’interaction (hit, score…)
 
-6. **PhysicMaterial**
-   - Friction, rebond
-   - Association avec Collider ou PhysicsSystem 
-   - Possibilité de charger depuis fichier pour réutilisation
+
 
 ## 🔹 Optional / Futur
 
-7. **Rendering minimal**
-   - Visualiser position et rotation des objets pour debug (done)
-
-8. **Gestion activation/desactivation d’objets**
-   - Utilisation du flag `active` dans GameObject (done)
 
 9. **Logger les collisions et événements**
    - Aide au debug et suivi des interactions
 
-10. **Préparer architecture ECS**
-    - GameObject + composants modulaires (done)
-    - Réflexion pour future extension, sans implémentation immédiate
+
 
 11. **Points d’optimisation pour Collision_tracking**
     - Spatial partitioning pour ColliderSystem (quadtree ou grille) pour réduire le nombre de paires testées.
@@ -56,3 +52,17 @@
    - Player reçoit des commandes via InputSystem
    - Déplacement et rotation du Player
    - Interaction avec le World et les Targets
+
+6. **PhysicMaterial**
+   - Friction, rebond
+   - Association avec Collider ou PhysicsSystem 
+   - Possibilité de charger depuis fichier pour réutilisation
+
+7. **Rendering minimal**
+   - Visualiser position et rotation des objets pour debug (done)
+
+8. **Gestion activation/desactivation d’objets**
+   - Utilisation du flag `active` dans GameObject (done)
+
+10. **Préparer architecture ECS**
+    - GameObject + composants modulaires (done)

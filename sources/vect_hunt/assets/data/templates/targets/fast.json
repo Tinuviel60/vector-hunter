@@ -1,35 +1,48 @@
 {
   "_comment": "Cible rapide et agile",
-  "type": "enemy",
   "name": "Target_Fast",
   "tags": ["ENEMY"],
   "transform": {
     "position": [600, 400],
     "rotation": 0.0
   },
-  "physics": {
-    "speed": 250.0,
-    "is_kinematic": false,
-    "is_controlled": true,
-    "mass": 1.0,
-    "use_gravity": true,
-    "material": "materials/ice.json"
-  },
-  "collider": {
-    "type": "circle",
-    "radius": 15.0,
-    "solid": true,
-    "transform": {
-      "position": [0, 0],
-      "rotation": 0.0
+  "components": [
+    {
+      "component": "physics",
+      "data": {
+        "speed": 250.0,
+        "is_kinematic": false,
+        "is_controlled": true,
+        "mass": 1.0,
+        "use_gravity": true,
+        "material": "materials/ice.json"
+      }
+    },
+    {
+      "component": "circle_collider",
+      "data": {
+        "radius": 15.0,
+        "solid": true,
+        "transform": {
+          "position": [0, 0],
+          "rotation": 0.0
+        }
+      }
+    },
+    {
+      "component": "rendering",
+      "data": {
+        "type": "basic_shape",
+        "shape": "circle",
+        "color": "#FF9900",
+        "radius": 15,
+        "outline_color": "#CC6600",
+        "outline_width": 2
+      }
+    },
+    {
+      "component": "ai",
+      "data": {}
     }
-  },
-  "rendering": {
-    "type": "basic_shape",
-    "shape": "circle",
-    "color": "#FF9900",
-    "radius": 15,
-    "outline_color": "#CC6600",
-    "outline_width": 2
-  }
+  ]
 }

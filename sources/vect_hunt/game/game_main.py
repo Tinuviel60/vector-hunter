@@ -40,22 +40,24 @@ class Game:
         """
         self.world = World()
 
-        # Créer le joueur via template avec InputComponent intégré
-        player = GameObjectFactory.from_template(
+        factory = GameObjectFactory()
+
+        # Creer le joueur via template avec InputComponent integre
+        player = factory.from_template(
             "player.json",
             position=Vector2D(100, 200),
             input_system=self.world.input_system,
         )
         self.world.add_game_object(player)
 
-        # Créer un ennemi via template
-        enemy = GameObjectFactory.from_template(
+        # Creer un ennemi via template
+        enemy = factory.from_template(
             "targets/basic.json", position=Vector2D(600, 200)
         )
         self.world.add_game_object(enemy)
 
-        # Créer un obstacle via template
-        obstacle = GameObjectFactory.from_template(
+        # Creer un obstacle via template
+        obstacle = factory.from_template(
             "walls/standard.json", position=Vector2D(400, 300)
         )
         self.world.add_game_object(obstacle)

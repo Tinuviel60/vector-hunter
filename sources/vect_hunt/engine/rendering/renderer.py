@@ -5,7 +5,7 @@ from vect_hunt.engine.core.math import hex_to_rgb
 from vect_hunt.engine.physics import ColliderSystem
 from vect_hunt.engine.rendering.font import FontSystem
 from vect_hunt.engine.components.render_component import RenderComponent
-from vect_hunt.engine.components.collider_component import ColliderComponent
+from vect_hunt.engine.components.collider import Collider
 from vect_hunt.engine.resources import DataLoader
 
 if TYPE_CHECKING:
@@ -121,8 +121,6 @@ class Renderer:
                 continue
 
             # DEBUG: Affiche le compteur de collisions
-            collider_comp = game_object.get_component(ColliderComponent)
-
             # Dessine le GameObject via son composant de rendu
             self.render_game_object(game_object)
             # Dessine le nom
@@ -130,14 +128,13 @@ class Renderer:
                 self.draw_name(game_object)
             # Dessine les colliders
             if self.draw_colliders:
-                collider_comp = game_object.get_component(ColliderComponent)
-                if collider_comp:
-                    for collider in collider_comp.colliders:
-                        self.draw_collider(
-                            collider,
-                            game_object.transform,
-                            collider_comp.nb_collision > 0,
-                        )
+                colliders = game_object.get_components(Collider)
+                for collider in colliders:
+                    self.draw_collider(
+                        collider,
+                        game_object.transform,
+                        collider.nb_collision > 0,
+                    )
 
     def draw_name(self, game_object: "GameObject") -> None:
         """

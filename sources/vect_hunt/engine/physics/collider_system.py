@@ -4,8 +4,7 @@ from vect_hunt.engine.core.tag_system import TagSystem
 from vect_hunt.engine.core import Geometry
 from vect_hunt.engine.core.math import Vector2D
 from vect_hunt.engine.core.transform import Transform
-from .collider import Collider, BoxCollider, CircleCollider
-from vect_hunt.engine.components.collider_component import ColliderComponent
+from vect_hunt.engine.components.collider import Collider, BoxCollider, CircleCollider
 from vect_hunt.engine.resources.loaders.data_loader import DataLoader
 
 if TYPE_CHECKING:
@@ -17,7 +16,7 @@ class ColliderSystem:
     """
     Système global de collision pour un ensemble de colliders.
 
-    - Interroge les GameObjects du World pour trouver ceux avec des ColliderComponents.
+    - Interroge les GameObjects du World pour trouver ceux avec des Colliders.
     - Calcule les AABB et collisions entre eux.
     - Utilise le système de tags pour filtrer les paires de collision.
 
@@ -412,8 +411,8 @@ class ColliderSystem:
         self, world: "World"
     ) -> Tuple[Set[Tuple[int, int]], Set[Tuple[int, int]], dict]:
         """
-        Détecte les collisions entre tous les GameObjects du monde
-        ayant des ColliderComponents.
+        Detecte les collisions entre tous les GameObjects du monde
+        ayant des colliders.
 
         Pour chaque paire de GameObjects :
         1. Vérifie si leurs tags permettent une collision (via TagSystem).
@@ -431,42 +430,40 @@ class ColliderSystem:
             Un tuple contenant (collisions, triggers) où chaque élément est un
             ensemble de paires (id_obj1, id_obj2) des GameObjects en interaction.
         """
-        # Récupérer tous les GameObjects actifs avec des ColliderComponents
+        # Recuperer tous les GameObjects actifs avec des colliders
         collidable_objects: List["GameObject"] = []
+        colliders_by_object: dict[int, list[Collider]] = {}
         for game_object in world.game_objects.values():
             if not game_object.active:
                 continue
-            if game_object.get_component(
-                ColliderComponent
-            ):  # Property qui retourne colliders du ColliderComponent
+            colliders = game_object.get_components(Collider)
+            if colliders:
                 collidable_objects.append(game_object)
+                colliders_by_object[game_object.id] = colliders
 
         current_collisions: Set[Tuple[int, int]] = set()
         current_triggers: Set[Tuple[int, int]] = set()
         collision_info: dict = {}
 
-        # Réinitialiser le compteur de collisions debug
+        # Reinitialiser le compteur de collisions debug
         for game_object in collidable_objects:
-            collider_comp = game_object.get_component(ColliderComponent)
-            if collider_comp:
-                collider_comp.nb_collision = 0
+            for collider in colliders_by_object[game_object.id]:
+                collider.nb_collision = 0
 
         # Tester toutes les paires de GameObjects
         for i, obj1 in enumerate(collidable_objects):
             next_i = i + 1
             for obj2 in collidable_objects[next_i:]:
-                collider_component1 = obj1.get_component(ColliderComponent)
-                collider_component2 = obj2.get_component(ColliderComponent)
+                colliders1 = colliders_by_object[obj1.id]
+                colliders2 = colliders_by_object[obj2.id]
 
                 # Filtrage par tags
                 if not TagSystem.can_collide(obj1.tags, obj2.tags):
                     continue
 
                 # Tester tous les colliders de obj1 contre tous les colliders de obj2
-                assert collider_component1 is not None
-                assert collider_component2 is not None
-                for c1 in collider_component1.colliders:
-                    for c2 in collider_component2.colliders:
+                for c1 in colliders1:
+                    for c2 in colliders2:
                         # AABB rapide (broad phase)
                         if not self.aabb_overlap(
                             self.compute_aabb(c1, obj1.transform),
@@ -483,8 +480,8 @@ class ColliderSystem:
                         if c1.solid and c2.solid:
                             current_collisions.add(pair)
                             collision_info[pair] = info
-                            collider_component1.nb_collision += 1
-                            collider_component2.nb_collision += 1
+                            c1.nb_collision += 1
+                            c2.nb_collision += 1
                         else:
                             # Au moins un des deux est un trigger
                             current_triggers.add(pair)

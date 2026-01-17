@@ -2,7 +2,7 @@
 Composant de gestion des inputs pour les entités contrôlées par le joueur.
 """
 
-from typing import TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 
 from vect_hunt.engine.core.math import Vector2D
 from vect_hunt.engine.components.component import Component
@@ -40,6 +40,15 @@ class InputComponent(Component):
         """
         super().__init__()
         self.input_system = input_system
+
+    @classmethod
+    def from_data(
+        cls, data: dict[str, Any], game_object, context: dict[str, Any]
+    ) -> "InputComponent":
+        input_system = context.get("input_system")
+        if input_system is None:
+            raise ValueError("InputSystem requis pour creer un composant 'input'.")
+        return cls(input_system)
 
     def update(self, delta_time: float) -> None:
         """

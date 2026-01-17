@@ -2,6 +2,8 @@
 Composant d'intelligence artificielle pour les ennemis.
 """
 
+from typing import Any
+
 from vect_hunt.engine.components.component import Component
 from vect_hunt.engine.components.physic_body_component import PhysicBodyComponent
 from vect_hunt.engine.core.math import Vector2D
@@ -44,6 +46,17 @@ class IaComponent(Component):
         super().__init__()
         self.top_left = top_left
         self.bottom_right = bottom_right
+
+    @classmethod
+    def from_data(
+        cls, data: dict[str, Any], game_object, context: dict[str, Any]
+    ) -> "IaComponent":
+        top_left = data.get("top_left", [100, 100])
+        bottom_right = data.get("bottom_right", [700, 500])
+        return cls(
+            Vector2D(top_left[0], top_left[1]),
+            Vector2D(bottom_right[0], bottom_right[1]),
+        )
 
     def update(self, delta_time: float) -> None:
         """
