@@ -7,6 +7,7 @@ from vect_hunt.engine.components.collider_component import ColliderComponent
 from vect_hunt.engine.physics.collision_resolution_system import (
     CollisionResolutionSystem,
 )
+from vect_hunt.engine.physics.external_forces_system import ExternalForcesSystem
 
 
 class World:
@@ -37,9 +38,8 @@ class World:
 
         self.collider_system = ColliderSystem()
         self.collision_tracker = CollisionTracker()
-        self.collision_resolution_system = CollisionResolutionSystem(
-            self.collision_tracker, self
-        )
+        self.collision_resolution_system = CollisionResolutionSystem(self)
+        self.external_forces_system = ExternalForcesSystem()
 
     def add_game_object(self, game_object: GameObject) -> None:
         """

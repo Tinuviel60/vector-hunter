@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING, Optional, Tuple
 
 from vect_hunt.engine.core.math.vector import Vector2D
-from vect_hunt.engine.physics import CollisionTracker
 from vect_hunt.engine.components import PhysicBodyComponent
 
 if TYPE_CHECKING:
@@ -19,50 +18,20 @@ class CollisionResolutionSystem:
 
     Attributes
     ----------
-    collision_tracker : CollisionTracker
-        Tracker de collisions associé.
     world : World
         Monde de jeu associé.
     """
 
-    def __init__(self, collision_tracker: CollisionTracker, world: "World") -> None:
+    def __init__(self, world: "World") -> None:
         """
         Initialise le système de résolution des collisions.
 
         Parameters
         ----------
-        collision_tracker : CollisionTracker
-            Système de suivi des collisions.
         world : World
             Le monde dans lequel les objets existent.
         """
-        self.collision_tracker = collision_tracker
         self.world = world
-
-    def update(self, delta_time: float) -> bool:
-        """
-        Met à jour le système de résolution des collisions.
-
-        Parameters
-        ----------
-        delta_time : float
-            Temps écoulé depuis la dernière frame (en secondes).
-
-        Returns
-        -------
-        bool
-            True si au moins une correction de collision a été appliquée, False sinon.
-        """
-        # Récupérer les collisions détectées
-        collisions = self.collision_tracker.get_all_collisions()
-
-        collision_info: dict = {}
-        for pair in collisions:
-            info = self.collision_tracker.get_collision_info(*pair)
-            if info is not None:
-                collision_info[pair] = info
-
-        return self.update_from_collisions(collisions, collision_info)
 
     def update_from_collisions(
         self,

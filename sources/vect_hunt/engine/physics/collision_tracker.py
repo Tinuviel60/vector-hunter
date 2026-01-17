@@ -21,7 +21,9 @@ class CollisionTracker:
     """
 
     def __init__(self):
-        """Initialise le tracker de collisions."""
+        """
+        Initialise le tracker de collisions.
+        """
         self._active_collisions: Dict[Tuple[int, int], float] = {}
         self._active_triggers: Dict[Tuple[int, int], float] = {}
         self._entered_this_frame: Set[Tuple[int, int]] = set()

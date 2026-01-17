@@ -80,6 +80,7 @@ def test_set_velocity(vx, vy):
 )
 def test_add_force(force_x, force_y):
     """Vérifie que add_force ajoute une force à l'accélération."""
+    # TODO : faire une variante avec une masse différente de 1.0
     component = PhysicBodyComponent()
     force = Vector2D(force_x, force_y)
 

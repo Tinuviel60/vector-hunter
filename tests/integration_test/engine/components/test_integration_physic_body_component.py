@@ -92,7 +92,7 @@ def test_physic_body_acceleration_affects_velocity_and_transform(
     # Vélocité initiale
     physic_body.set_velocity(Vector2D(100, 0))
 
-    # Ajouter une accélération
+    # Ajouter une force qui génère une accélération
     physic_body.add_force(Vector2D(50, 25))
 
     # Update avec delta_time = 0.1

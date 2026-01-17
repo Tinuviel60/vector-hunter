@@ -76,20 +76,24 @@ class Game:
         """
         Met à jour la logique du jeu.
 
-        Args:
-            delta_time: Temps écoulé depuis la dernière mise à jour (en secondes).
+        Parameters:
+        -----------
+        delta_time : float
+            Le temps écoulé depuis la dernière mise à jour (en secondes).
         """
         # Mettre à jour le monde (inputs + GameObjects + collisions)
         self.world.update(delta_time)
+
+        self.world.external_forces_system.apply_gravity(self.world, delta_time)
 
         # Détecter les collisions une fois pour les événements
         self.world.update_collisions(delta_time)
 
         max_passes = 6  # TODO : Mettre dans un json de config
         passes = 0
-        for _ in range(
-            max_passes
-        ):  # Itérer plusieurs fois pour une meilleure résolution
+
+         # Itérer plusieurs fois pour une meilleure résolution des collisions
+        for _ in range(max_passes): 
             passes += 1
             collisions, _, collision_info = (
                 self.world.collider_system.detect_collisions(self.world)

@@ -6,6 +6,8 @@ from vect_hunt.engine.components.component import Component
 from vect_hunt.engine.core.math import Vector2D
 from vect_hunt.engine.physics.physic_material import PhysicMaterial
 
+import logging
+logger = logging.getLogger(__name__)
 
 class PhysicBodyComponent(Component):
     """
@@ -21,6 +23,8 @@ class PhysicBodyComponent(Component):
         GameObject auquel ce composant est attaché.
     active : bool
         Indique si le composant est actif.
+    mass : float
+        Masse du corps physique.
     speed : float
         Vitesse de déplacement en pixels/seconde.
     velocity : Vector2D
@@ -29,14 +33,21 @@ class PhysicBodyComponent(Component):
         Accélération accumulée en pixels/seconde².
     is_kinematic : bool
         Indique si le corps est cinématique.
+    use_gravity : bool
+        Indique si le corps est affecté par la gravité.
+    is_controlled : bool
+        Indique si le corps est contrôlé par un composant externe.
     material : PhysicMaterial
         Matériau physique associé.
     """
 
     def __init__(
         self,
+        mass: float = 1.0,
         speed: float = 300.0,
         is_kinematic: bool = False,
+        use_gravity: bool = True,
+        is_controlled: bool = False,
         material: PhysicMaterial | None = None,
     ):
         """
@@ -44,17 +55,30 @@ class PhysicBodyComponent(Component):
 
         Parameters
         ----------
+        mass : float, optional
+            Masse du corps physique (par défaut 1.0).
         speed : float, optional
-            Vitesse de déplacement en pixels/seconde. Par défaut 300.0.
+            Vitesse de déplacement en pixels/seconde (par défaut 300.0).
         is_kinematic : bool, optional
-            Indique si le corps est cinématique (non affecté par la physique).
-            Par défaut False.
+            Indique si le corps est cinématique (par défaut False).
+        material : PhysicMaterial | None, optional
+            Matériau physique à utiliser (par défaut PhysicMaterial standard).
         """
         super().__init__()
+        if mass <= 0:
+            logger.warning("La masse doit être positive. \
+                           Valeur par défaut 1.0 utilisée.")
+            mass = 1.0
+
+        self.mass = mass
         self.speed = speed  # TODO : A déplacer
         self.velocity = Vector2D(0, 0)
         self.acceleration = Vector2D(0, 0)
+
         self.is_kinematic = is_kinematic
+        self.use_gravity = use_gravity
+        self.is_controlled = is_controlled  
+
         self.material = material if material is not None else PhysicMaterial()
 
     def update(self, delta_time: float) -> None:
@@ -107,18 +131,40 @@ class PhysicBodyComponent(Component):
         velocity : Vector2D
             Vecteur de vélocité en pixels/seconde.
         """
+        if not self.is_controlled:
+            logger.debug("Le corps physique n'est pas contrôlé. \
+                         La vélocité ne peut pas être définie.")
+            return
+        if self.is_kinematic:
+            logger.debug("Le corps physique est cinématique. \
+                         La vélocité ne peut pas être définie.")
+            return
+        
         self.velocity = velocity
 
     def add_force(self, force: Vector2D) -> None:
         """
-        Ajoute une force (accélération) au corps physique.
+        Ajoute une force au corps physique.
+
+        La force est convertie en accélération en fonction de la masse.
 
         Parameters
         ----------
         force : Vector2D
-            Force à ajouter (accélération en pixels/seconde²).
+            Force à appliquer en newtons (pixels*kg/s²).
         """
-        self.acceleration += force
+        self.acceleration += force / self.mass
+
+    def add_acceleration(self, acceleration: Vector2D) -> None:
+        """
+        Ajoute une accélération au corps physique.
+
+        Parameters
+        ----------
+        acceleration : Vector2D
+            Accélération à ajouter en pixels/seconde².
+        """
+        self.acceleration += acceleration
 
     def stop(self) -> None:
         """
