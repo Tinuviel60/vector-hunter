@@ -8,8 +8,8 @@ class Tag(IntFlag):
     Chaque tag correspond à un bit unique dans un entier de 32 bits.
     Limite de 32 tags différents.
 
-    Attributs
-    ---------
+    Attributes
+    ----------
     NONE : Tag
         Aucun tag.
     PLAYER : Tag

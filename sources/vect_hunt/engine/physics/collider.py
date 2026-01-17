@@ -13,6 +13,15 @@ class Collider:
     """
     Classe de base pour les colliders.
     Utilisée dans les systèmes de collision pour définir des zones de collision.
+
+    Attributes
+    ----------
+    parent : GameObject | None
+        GameObject parent du collider.
+    transform : Transform
+        Transform local du collider.
+    solid : bool
+        Indique si le collider est solide.
     """
 
     def __init__(
@@ -57,6 +66,25 @@ class BoxCollider(Collider):
     """
     Classe de collider rectangulaire.
     Utilisée dans les systèmes de collision pour définir des zones rectangulaires.
+
+    Attributes
+    ----------
+    parent : GameObject | None
+        GameObject parent du collider.
+    transform : Transform
+        Transform local du collider.
+    solid : bool
+        Indique si le collider est solide.
+    width : float
+        Largeur du collider.
+    height : float
+        Hauteur du collider.
+    cos_orientation : float
+        Cosinus de l'orientation locale.
+    sin_orientation : float
+        Sinus de l'orientation locale.
+    corners : list[Vector2D]
+        Coins locaux du collider.
     """
 
     def __init__(
@@ -173,6 +201,17 @@ class CircleCollider(Collider):
     """
     Classe de collider circulaire.
     Utilisée dans les systèmes de collision pour définir des zones circulaires.
+
+    Attributes
+    ----------
+    parent : GameObject | None
+        GameObject parent du collider.
+    transform : Transform
+        Transform local du collider.
+    solid : bool
+        Indique si le collider est solide.
+    radius : float
+        Rayon du collider.
     """
 
     def __init__(

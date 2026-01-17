@@ -7,6 +7,23 @@ from vect_hunt.engine.core.math import Vector2D, hex_to_rgb
 class BasicShape(RenderComponent):
     """
     Composant de rendu pour formes géométriques simples.
+
+    Attributes
+    ----------
+    game_object : GameObject | None
+        GameObject auquel ce composant est attaché.
+    active : bool
+        Indique si le composant est actif.
+    shape_type : str
+        Type de forme ("circle" ou "box").
+    size : Tuple[int, int] | int
+        Dimensions de la forme.
+    color : str
+        Couleur principale en hexadécimal.
+    outline_color : str | None
+        Couleur du contour.
+    outline_width : int
+        Épaisseur du contour.
     """
 
     def __init__(

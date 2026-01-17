@@ -12,6 +12,17 @@ class ColliderComponent(Component):
 
     Un ColliderComponent peut contenir plusieurs Collider (cercles, rectangles, etc.)
     pour permettre des formes de collision complexes.
+
+    Attributes
+    ----------
+    game_object : GameObject | None
+        GameObject auquel ce composant est attaché.
+    active : bool
+        Indique si le composant est actif.
+    colliders : List[Collider]
+        Liste des colliders attachés.
+    nb_collision : int
+        Compteur de collisions pour le debug rendering.
     """
 
     def __init__(self):

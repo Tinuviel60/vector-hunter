@@ -13,6 +13,17 @@ class IaComponent(Component):
 
     Prend des décisions de mouvement et génère des intentions
     qui seront transmises au PhysicBodyComponent.
+
+    Attributes
+    ----------
+    game_object : GameObject | None
+        GameObject auquel ce composant est attaché.
+    active : bool
+        Indique si le composant est actif.
+    top_left : Vector2D
+        Limite supérieure gauche de la zone de mouvement.
+    bottom_right : Vector2D
+        Limite inférieure droite de la zone de mouvement.
     """
 
     def __init__(

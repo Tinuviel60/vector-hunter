@@ -5,6 +5,13 @@ from vect_hunt.engine.core.math.vector import Vector2D
 class Position2D:
     """
     Répresente une position 2D.
+
+    Attributes
+    ----------
+    x : float
+        Composante x de la position.
+    y : float
+        Composante y de la position.
     """
 
     def __init__(self, x: float = 0.0, y: float = 0.0):

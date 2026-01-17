@@ -18,6 +18,15 @@ class InputComponent(Component):
 
     Récupère les inputs du InputSystem et génère des intentions de mouvement
     qui seront transmises au PhysicBodyComponent.
+
+    Attributes
+    ----------
+    game_object : GameObject | None
+        GameObject auquel ce composant est attaché.
+    active : bool
+        Indique si le composant est actif.
+    input_system : InputSystem
+        Référence au système d'inputs.
     """
 
     def __init__(self, input_system: "InputSystem"):

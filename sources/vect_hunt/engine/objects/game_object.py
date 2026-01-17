@@ -28,6 +28,8 @@ class GameObject:
         Transformation spatiale de l'objet.
     active : bool
         Indique si l'objet est actif dans le monde.
+    tags : Tag
+        Tags associés à l'objet.
     components : List[Component]
         Liste des composants attachés à cet objet.
     """

@@ -6,6 +6,19 @@ from vect_hunt.engine.resources import ImageLoader
 class Sprite(RenderComponent):
     """
     Composant de rendu basé sur une image bitmap.
+
+    Attributes
+    ----------
+    game_object : GameObject | None
+        GameObject auquel ce composant est attaché.
+    active : bool
+        Indique si le composant est actif.
+    original_image : pygame.Surface
+        Image source chargée.
+    image : pygame.Surface
+        Image mise à l'échelle si nécessaire.
+    scale : float
+        Facteur d'échelle.
     """
 
     def __init__(self, image_path: str, scale: float = 1.0):

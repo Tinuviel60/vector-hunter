@@ -8,7 +8,20 @@ import pygame
 
 class Game:
     """
-    Main game class that handles initialization, update loop, and rendering.
+    Classe principale du jeu.
+
+    Gère l'initialisation, la boucle d'update, et le rendu.
+
+    Attributes
+    ----------
+    start_render : bool
+        Indique si le rendu a été initialisé.
+    gameObjects : dict[str, GameObject]
+        Dictionnaire des objets de jeu du gameplay.
+    world : World
+        Monde de jeu contenant les systèmes et objets.
+    renderer : Renderer | None
+        Renderer associé, défini après initiate_rendering.
     """
 
     def __init__(self):
@@ -69,18 +82,24 @@ class Game:
         # Mettre à jour le monde (inputs + GameObjects + collisions)
         self.world.update(delta_time)
 
+        # Détecter les collisions une fois pour les événements
+        self.world.update_collisions(delta_time)
+
         max_passes = 6  # TODO : Mettre dans un json de config
         passes = 0
         for _ in range(
             max_passes
         ):  # Itérer plusieurs fois pour une meilleure résolution
             passes += 1
-            self.world.update_collisions(delta_time)
-            moved = self.world.collision_resolution_system.update(delta_time)
+            collisions, _, collision_info = (
+                self.world.collider_system.detect_collisions(self.world)
+            )
+            moved = self.world.collision_resolution_system.update_from_collisions(
+                list(collisions),
+                collision_info,
+            )
             if not moved:
                 break
-
-        print(f"Collision resolution passes: {passes}")
 
     def render(self) -> None:
         """

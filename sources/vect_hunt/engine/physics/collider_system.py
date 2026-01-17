@@ -20,6 +20,13 @@ class ColliderSystem:
     - Interroge les GameObjects du World pour trouver ceux avec des ColliderComponents.
     - Calcule les AABB et collisions entre eux.
     - Utilise le système de tags pour filtrer les paires de collision.
+
+    Attributes
+    ----------
+    physic_config : dict
+        Configuration physique chargée depuis les assets.
+    min_penetration_depth : float
+        Profondeur minimale de pénétration pour valider une collision.
     """
 
     physic_config = DataLoader.load_json("configs/game.json")["physics"]
@@ -256,7 +263,6 @@ class ColliderSystem:
         if direction.dot(normal) < 0:
             normal = -1 * normal
 
-        normal = smallest_axis.normalized()
         return {"normal": normal, "depth": penetration}
 
     @staticmethod

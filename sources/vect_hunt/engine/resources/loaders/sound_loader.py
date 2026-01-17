@@ -8,6 +8,14 @@ Chargement et mise en cache des sons.
 
 
 class SoundLoader:
+    """
+    Gestionnaire de chargement des sons.
+
+    Attributes
+    ----------
+    None
+    """
+
     _cache: dict[Path, pygame.mixer.Sound] = {}
 
     @classmethod

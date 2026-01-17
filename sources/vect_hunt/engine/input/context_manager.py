@@ -33,6 +33,10 @@ class ContextManager:
     Notes
     -----
     Le contexte GLOBAL est toujours actif, indépendamment de la pile.
+
+    Attributes
+    ----------
+    None
     """
 
     def __init__(self, initial_context: GameContext = GameContext.PLAYING):

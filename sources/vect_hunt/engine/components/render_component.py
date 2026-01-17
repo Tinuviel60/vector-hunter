@@ -8,6 +8,13 @@ class RenderComponent(Component):
 
     Un RenderComponent est responsable de dessiner un GameObject
     en fonction de son Transform, sans logique métier.
+
+    Attributes
+    ----------
+    game_object : GameObject | None
+        GameObject auquel ce composant est attaché.
+    active : bool
+        Indique si le composant est actif.
     """
 
     def __init__(self):

@@ -19,6 +19,13 @@ class Transform:
     -----
     Structure fixe : __slots__ est utilisé pour limiter la mémoire
     et éviter les attributs dynamiques.
+
+    Attributes
+    ----------
+    position : Vector2D
+        Position de l'objet dans le monde.
+    rotation : Rotation
+        Rotation de l'objet en radians.
     """
 
     __slots__ = ("position", "rotation")

@@ -17,6 +17,10 @@ class FontSystem:
 
     Ce système ne s'occupe PAS du rendu, seulement de la gestion
     et de la création des styles.
+
+    Attributes
+    ----------
+    None
     """
 
     _styles: dict[str, FontStyle] = {}

@@ -13,6 +13,10 @@ class FontLoader:
 
     Les polices sont identifiées par leur chemin relatif
     et leur taille, car pygame génère une instance par taille.
+
+    Attributes
+    ----------
+    None
     """
 
     _cache: dict[tuple[Path, int], pygame.font.Font] = {}

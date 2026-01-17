@@ -28,6 +28,10 @@ class InputTracker:
     - on_press : transition OFF → ON (première frame)
     - on_hold : maintenu (frames suivantes tant que l'action est active)
     - on_release : transition ON → OFF (frame de relâchement)
+
+    Attributes
+    ----------
+    None
     """
 
     def __init__(self):

@@ -18,6 +18,19 @@ class CombineMode(Enum):
     AVERAGE : Utilise la moyenne des deux valeurs.
     MULTIPLY : Multiplie les deux valeurs.
     MAX : Utilise la valeur maximale des deux matériaux.
+
+    Attributes
+    ----------
+    MIN : CombineMode
+        Utilise la valeur minimale des deux matériaux.
+    AVERAGE : CombineMode
+        Utilise la moyenne des deux valeurs.
+    MULTIPLY : CombineMode
+        Multiplie les deux valeurs.
+    MAX : CombineMode
+        Utilise la valeur maximale des deux matériaux.
+    priority : int
+        Priorité de combinaison (plus grand = plus prioritaire).
     """
 
     MIN = 1
@@ -40,24 +53,40 @@ class PhysicMaterial:
     friction : float, optional
         Coefficient de friction (0.0 à 1.0).
         Correspond à la résistance au glissement entre surfaces.
-        Par défaut 1.0.
+        Par défaut 0.6.
     restitution : float, optional
         Coefficient de restitution (0.0 à 1.0).
         Correspond à la restitution d'énergie lors des collisions.
         Par défaut 0.0.
-    linear_damping : float, optional
-        Amortissement linéaire (0.0 à 1.0).
-        Correspond à la perte de vélocité au fil du temps.
-        Par défaut 0.0.
-    bounciness_threshold : float, optional
-        Vitesse minimale (valeur absolue) pour autoriser un rebond.
-        En dessous, la restitution est ignorée. Par défaut 0.0.
     friction_mode : CombineMode, optional
         Mode de combinaison de la friction entre deux matériaux.
         Par défaut CombineMode.MAX.
     restitution_mode : CombineMode, optional
         Mode de combinaison de la restitution entre deux matériaux.
         Par défaut CombineMode.MIN.
+    linear_damping : float, optional
+        Amortissement linéaire (0.0 à 1.0).
+        Correspond à la perte de vélocité au fil du temps.
+        Par défaut 0.0.
+    bounciness_threshold : float, optional
+        Vitesse minimale (valeur absolue) pour autoriser un rebond.
+        En dessous, la restitution est ignorée.
+        Par défaut 10.0.
+
+    Attributes
+    ----------
+    friction : float
+        Coefficient de friction (0.0 à 1.0).
+    restitution : float
+        Coefficient de restitution (0.0 à 1.0).
+    friction_mode : CombineMode
+        Mode de combinaison de la friction.
+    restitution_mode : CombineMode
+        Mode de combinaison de la restitution.
+    linear_damping : float
+        Amortissement linéaire (0.0 à 1.0).
+    bounciness_threshold : float
+        Seuil de vitesse pour autoriser un rebond.
     """
 
     friction: float = 0.6
@@ -65,7 +94,7 @@ class PhysicMaterial:
     friction_mode: CombineMode = CombineMode.MAX
     restitution_mode: CombineMode = CombineMode.MIN
     linear_damping: float = 0.0
-    bounciness_threshold: float = 0.0
+    bounciness_threshold: float = 10.0
 
     # TODO : Nouveau paramètre pour plus tard très probable
     # self.static_friction:
@@ -79,8 +108,6 @@ class PhysicMaterial:
     #   Pour définir le type de surface (ex: glace, caoutchouc, métal)
     # self.rolling_friction:
     #   Pour gérer la friction de roulement pour les objets sphériques
-    # self.bounciness_threshold:
-    #   Pour définir un seuil de vitesse en dessous duquel un objet ne rebondit pas
 
     def __post_init__(self) -> None:
         """

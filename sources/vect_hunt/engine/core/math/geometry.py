@@ -6,6 +6,10 @@ class Geometry:
     """
     Fournit des fonctions géométriques utilitaires pour la détection de collisions
     et d'autres opérations géométriques.
+
+    Attributes
+    ----------
+    None
     """
 
     @staticmethod

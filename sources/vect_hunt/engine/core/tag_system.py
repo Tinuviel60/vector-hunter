@@ -44,6 +44,10 @@ CAN_PICKUP = _build_mask(_config.get("pickup_matrix", {}))
 class TagSystem:
     """
     Système utilitaire pour gérer les tags et tester les collisions.
+
+    Attributes
+    ----------
+    None
     """
 
     @staticmethod

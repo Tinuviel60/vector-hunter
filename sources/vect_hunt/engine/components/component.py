@@ -14,6 +14,13 @@ class Component(ABC):
 
     Il est attaché à un unique GameObject et peut réagir aux événements
     du cycle de vie de l'objet (update, collisions, triggers).
+
+    Attributes
+    ----------
+    game_object : GameObject | None
+        GameObject auquel ce composant est attaché.
+    active : bool
+        Indique si le composant est actif.
     """
 
     def __init__(self) -> None:

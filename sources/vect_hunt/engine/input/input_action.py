@@ -40,6 +40,31 @@ class InputAction:
     'right': [...]}.
 
     Pour les autres types, keys est une liste de touches.
+
+    Attributes
+    ----------
+    name : str
+        Nom de l'action.
+    action_type : ActionType
+        Type d'action.
+    keys : list[str] | dict[str, list[str]]
+        Touches associées à l'action.
+    mouse_buttons : list[str]
+        Boutons de souris associés.
+    mouse_delta : bool
+        Active la lecture du delta souris.
+    mouse_position : bool
+        Active la lecture de la position souris.
+    mouse_wheel : bool
+        Active la lecture de la molette.
+    normalize : bool
+        Indique si le vecteur doit être normalisé.
+    sensitivity : float
+        Sensibilité appliquée côté gameplay.
+    modifiers : list[str]
+        Modificateurs requis.
+    description : str
+        Description textuelle de l'action.
     """
 
     name: str
@@ -72,6 +97,19 @@ class ActionState:
     Notes
     -----
     Seule la valeur correspondant au type de l'action est significative.
+
+    Attributes
+    ----------
+    action_name : str
+        Nom de l'action.
+    action_type : ActionType
+        Type d'action.
+    bool_value : bool
+        Valeur booléenne actuelle.
+    float_value : float
+        Valeur scalaire actuelle.
+    vector_value : Vector2D | None
+        Valeur vectorielle actuelle.
     """
 
     action_name: str

@@ -12,16 +12,7 @@ class CollisionTracker:
 
     Attributes
     ----------
-    _active_collisions : Dict[Tuple[int, int], float]
-        Dictionnaire des collisions actives.
-        Le couple d'objets est la clé, la valeur est le temps écoulé en secondes.
-    _active_triggers : Dict[Tuple[int, int], float]
-        Dictionnaire des triggers actifs.
-        Le couple d'objets est la clé, la valeur est le temps écoulé en secondes.
-    _entered_this_frame : Set[Tuple[int, int]]
-        Ensemble des nouvelles collisions détectées cette frame
-    _exited_this_frame : Set[Tuple[int, int]]
-        Ensemble des collisions terminées cette frame
+    None
 
     Notes
     -----
@@ -35,6 +26,8 @@ class CollisionTracker:
         self._active_triggers: Dict[Tuple[int, int], float] = {}
         self._entered_this_frame: Set[Tuple[int, int]] = set()
         self._exited_this_frame: Set[Tuple[int, int]] = set()
+        self._exited_collisions: Set[Tuple[int, int]] = set()
+        self._exited_triggers: Set[Tuple[int, int]] = set()
         self._collision_info: Dict[Tuple[int, int], dict] = {}
 
     def _normalize_pair(self, obj1_id: int, obj2_id: int) -> Tuple[int, int]:
@@ -79,6 +72,8 @@ class CollisionTracker:
         # Réinitialiser les événements de la frame
         self._entered_this_frame.clear()
         self._exited_this_frame.clear()
+        self._exited_collisions.clear()
+        self._exited_triggers.clear()
 
         # Séparer et normaliser les paires, construire le mapping infos
         self._collision_info.clear()
@@ -97,17 +92,26 @@ class CollisionTracker:
 
         # Traiter les collisions
         self._update_category(
-            normalized_collisions, self._active_collisions, delta_time
+            normalized_collisions,
+            self._active_collisions,
+            delta_time,
+            self._exited_collisions,
         )
 
         # Traiter les triggers
-        self._update_category(normalized_triggers, self._active_triggers, delta_time)
+        self._update_category(
+            normalized_triggers,
+            self._active_triggers,
+            delta_time,
+            self._exited_triggers,
+        )
 
     def _update_category(
         self,
         current: Set[Tuple[int, int]],
         active: Dict[Tuple[int, int], float],
         delta_time: float,
+        exited_store: Set[Tuple[int, int]],
     ):
         """
         Met à jour une catégorie de collisions (collisions ou triggers).
@@ -120,6 +124,8 @@ class CollisionTracker:
             Dictionnaire des paires actives de la catégorie avec durée en secondes
         delta_time : float
             Temps écoulé depuis la dernière frame en secondes
+        exited_store : Set[Tuple[int, int]]
+            Ensemble dans lequel stocker les paires sorties cette frame
         """
         # Détecter les nouvelles entrées
         for pair in current:
@@ -134,6 +140,7 @@ class CollisionTracker:
         for pair in active:
             if pair not in current:
                 self._exited_this_frame.add(pair)
+                exited_store.add(pair)
                 pairs_to_remove.append(pair)
 
         # Retirer les paires inactives
@@ -279,6 +286,28 @@ class CollisionTracker:
         """
         return list(self._exited_this_frame)
 
+    def get_all_exited_collisions(self) -> List[Tuple[int, int]]:
+        """
+        Retourne la liste de toutes les collisions terminées cette frame.
+
+        Returns
+        -------
+        List[Tuple[int, int]]
+            Liste des paires d'IDs qui viennent de quitter une collision
+        """
+        return list(self._exited_collisions)
+
+    def get_all_exited_triggers(self) -> List[Tuple[int, int]]:
+        """
+        Retourne la liste de tous les triggers terminés cette frame.
+
+        Returns
+        -------
+        List[Tuple[int, int]]
+            Liste des paires d'IDs qui viennent de quitter un trigger
+        """
+        return list(self._exited_triggers)
+
     def get_collision_duration(self, obj1_id: int, obj2_id: int) -> Optional[float]:
         """
         Retourne la durée d'une collision en secondes.
@@ -388,9 +417,57 @@ class CollisionTracker:
                 result.append(pair[0])
         return result
 
+    def get_exited_collision_objects(self, obj_id: int) -> List[int]:
+        """
+        Retourne la liste des objets qui viennent de quitter une collision
+        avec l'objet spécifié cette frame.
+
+        Parameters
+        ----------
+        obj_id : int
+            ID de l'objet
+
+        Returns
+        -------
+        List[int]
+            Liste des IDs d'objets qui viennent de quitter une collision
+        """
+        result = []
+        for pair in self._exited_collisions:
+            if pair[0] == obj_id:
+                result.append(pair[1])
+            elif pair[1] == obj_id:
+                result.append(pair[0])
+        return result
+
+    def get_exited_trigger_objects(self, obj_id: int) -> List[int]:
+        """
+        Retourne la liste des objets qui viennent de quitter un trigger
+        avec l'objet spécifié cette frame.
+
+        Parameters
+        ----------
+        obj_id : int
+            ID de l'objet
+
+        Returns
+        -------
+        List[int]
+            Liste des IDs d'objets qui viennent de quitter un trigger
+        """
+        result = []
+        for pair in self._exited_triggers:
+            if pair[0] == obj_id:
+                result.append(pair[1])
+            elif pair[1] == obj_id:
+                result.append(pair[0])
+        return result
+
     def clear(self):
         """Réinitialise complètement le tracker."""
         self._active_collisions.clear()
         self._active_triggers.clear()
         self._entered_this_frame.clear()
         self._exited_this_frame.clear()
+        self._exited_collisions.clear()
+        self._exited_triggers.clear()

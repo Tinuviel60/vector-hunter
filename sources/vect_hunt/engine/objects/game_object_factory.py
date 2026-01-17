@@ -31,6 +31,10 @@ class GameObjectFactory:
 
     Charge les définitions depuis assets/data/templates/ et instancie
     des GameObjects configurés avec tous leurs composants.
+
+    Attributes
+    ----------
+    None
     """
 
     @staticmethod
@@ -73,7 +77,7 @@ class GameObjectFactory:
 
         # Créer le GameObject avec transform et tags
         game_object = GameObjectFactory._create_base_object(
-            template, position, math.radians(rotation) if rotation is not None else None
+            template, position, rotation
         )
 
         # Ajouter les composants selon le template
@@ -97,7 +101,7 @@ class GameObjectFactory:
         position : Vector2D, optional
             Position initiale (override)
         rotation : float, optional
-            Rotation initiale (override)
+            Rotation initiale en degrés (override)
 
         Returns
         -------
@@ -111,9 +115,10 @@ class GameObjectFactory:
             if position is not None
             else Vector2D(transform_data["position"][0], transform_data["position"][1])
         )
-        rot = rotation if rotation is not None else transform_data["rotation"]
+        rot_deg = rotation if rotation is not None else transform_data["rotation"]
+        rot_rad = math.radians(rot_deg)
 
-        transform = Transform(position=pos, rotation=rot)
+        transform = Transform(position=pos, rotation=rot_rad)
 
         # Créer les tags
         tags = GameObjectFactory._parse_tags(template.get("tags", []))

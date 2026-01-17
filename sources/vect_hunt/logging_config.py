@@ -14,6 +14,10 @@ class NumberedRotatingFileHandler(RotatingFileHandler):
     """
     RotatingFileHandler avec numérotation avant l'extension :
     simulation_0.log, simulation_1.log, etc.
+
+    Attributes
+    ----------
+    None
     """
 
     def doRollover(self) -> None:

@@ -14,6 +14,10 @@ class DataLoader:
 
     Les fichiers sont chargés depuis assets/data/ et mis en cache
     pour éviter des lectures multiples.
+
+    Attributes
+    ----------
+    None
     """
 
     _cache: dict[Path, dict[str, Any]] = {}

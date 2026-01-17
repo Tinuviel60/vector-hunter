@@ -18,11 +18,15 @@ class Rotation:
 
     Notes
     -----
-    Structure fixe : __slots__ limite les attributs aux coefficients
-    de la matrice.
+    Structure fixe : __slots__ limite les attributs.
+
+    Attributes
+    ----------
+    angle : float
+        Angle de rotation en radians.
     """
 
-    __slots__ = ("m00", "m01", "m10", "m11")
+    __slots__ = ("m00", "m01", "m10", "m11", "_angle")
 
     def __init__(self, angle: float = 0.0):
         """
@@ -34,6 +38,7 @@ class Rotation:
             Angle de rotation en radians.
             Une rotation positive correspond à une rotation anti-horaire.
         """
+        self._angle = angle
         cos_a = math.cos(angle)
         sin_a = math.sin(angle)
 
@@ -81,6 +86,7 @@ class Rotation:
         inv.m01 = self.m10
         inv.m10 = self.m01
         inv.m11 = self.m11
+        inv._angle = -self._angle
 
         return inv
 
@@ -107,23 +113,21 @@ class Rotation:
         result.m01 = self.m00 * other.m01 + self.m01 * other.m11
         result.m10 = self.m10 * other.m00 + self.m11 * other.m10
         result.m11 = self.m10 * other.m01 + self.m11 * other.m11
+        result._angle = self._angle + other._angle
 
         return result
 
-    def to_angle(self) -> float:
+    @property
+    def angle(self) -> float:
         """
         Retourne l'angle équivalent de la rotation.
-
-        Attention : cette opération est principalement destinée
-        au debug ou à l'affichage. La valeur retournée dépend
-        de la précision flottante.
 
         Returns
         -------
         float
             Angle de rotation en radians.
         """
-        return math.atan2(self.m10, self.m00)
+        return self._angle
 
     def reflect(self, normal: Vector2D) -> "Rotation":
         """
@@ -145,7 +149,7 @@ class Rotation:
             Rotation correspondant à la direction réfléchie.
         """
         # Obtenir le vecteur de direction actuel
-        direction = self.apply(Vector2D(0, -1))  # Direction forward
+        direction = self.apply(Vector2D.top())  # Direction forward
 
         # Calculer le produit scalaire direction · normal
         dot = direction.dot(normal)
@@ -161,4 +165,5 @@ class Rotation:
             math.atan2(reflected.y, reflected.x) + math.pi / 2
         )  # +π/2 car forward est (0, -1)
 
-        return Rotation(new_angle)
+        reflected_rotation = Rotation(new_angle)
+        return reflected_rotation

@@ -12,6 +12,19 @@ from vect_hunt.engine.physics.collision_resolution_system import (
 class World:
     """
     Répresente le monde du jeu, contenant les cibles et le joueur.
+
+    Attributes
+    ----------
+    game_objects : dict[int, GameObject]
+        GameObjects présents dans le monde.
+    input_system : InputSystem
+        Système d'inputs du monde.
+    collider_system : ColliderSystem
+        Système global de détection des collisions.
+    collision_tracker : CollisionTracker
+        Tracker des collisions pour les événements.
+    collision_resolution_system : CollisionResolutionSystem
+        Système de résolution des collisions.
     """
 
     def __init__(self):
@@ -144,16 +157,17 @@ class World:
         selon le type d'interaction qui vient de se terminer cette frame.
         """
         for obj_id, obj in self.game_objects.items():
-            for other_id in self.collision_tracker.get_exited_objects(obj_id):
+            for other_id in self.collision_tracker.get_exited_collision_objects(obj_id):
                 other = self.game_objects.get(other_id)
                 if not other:
                     continue
-                # Pour exit, on considère l'état précédent (active ou trigger)
-                # comme la clé pour déterminer le type
-                if self.collision_tracker.is_collision_active(obj_id, other_id):
-                    obj.on_exit_collision(other)
-                else:
-                    obj.on_exit_trigger(other)
+                obj.on_exit_collision(other)
+
+            for other_id in self.collision_tracker.get_exited_trigger_objects(obj_id):
+                other = self.game_objects.get(other_id)
+                if not other:
+                    continue
+                obj.on_exit_trigger(other)
 
     def _handle_stays(
         self,

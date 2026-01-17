@@ -16,6 +16,13 @@ class CollisionResolutionSystem:
 
     Dépendant d'un physic body, d'un sytème de collision, et de la physique d'un
     GameObject (masse, friction, rebond...).
+
+    Attributes
+    ----------
+    collision_tracker : CollisionTracker
+        Tracker de collisions associé.
+    world : World
+        Monde de jeu associé.
     """
 
     def __init__(self, collision_tracker: CollisionTracker, world: "World") -> None:
@@ -49,15 +56,40 @@ class CollisionResolutionSystem:
         # Récupérer les collisions détectées
         collisions = self.collision_tracker.get_all_collisions()
 
+        collision_info: dict = {}
+        for pair in collisions:
+            info = self.collision_tracker.get_collision_info(*pair)
+            if info is not None:
+                collision_info[pair] = info
+
+        return self.update_from_collisions(collisions, collision_info)
+
+    def update_from_collisions(
+        self,
+        collisions: list[tuple[int, int]],
+        collision_info: dict[tuple[int, int], dict],
+    ) -> bool:
+        """
+        Applique la résolution à partir d'un jeu de collisions déjà détectées.
+
+        Parameters
+        ----------
+        collisions : list[tuple[int, int]]
+            Paires d'IDs d'objets en collision.
+        collision_info : dict[tuple[int, int], dict]
+            Informations de collision associées aux paires.
+
+        Returns
+        -------
+        bool
+            True si au moins une correction de collision a été appliquée, False sinon.
+        """
         correction_applied = False
         # Résoudre chaque collision
         for id_obj_a, id_obj_b in collisions:
-            info_collision = self.collision_tracker.get_collision_info(
-                id_obj_a, id_obj_b
-            )
-            assert (
-                info_collision is not None
-            ), "Les informations de collision doivent être disponibles"
+            info_collision = collision_info.get((id_obj_a, id_obj_b))
+            if info_collision is None:
+                continue
 
             if self._resolve_collision(id_obj_a, id_obj_b, info_collision):
                 correction_applied = True

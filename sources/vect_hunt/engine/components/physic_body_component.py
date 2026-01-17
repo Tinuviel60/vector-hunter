@@ -14,6 +14,23 @@ class PhysicBodyComponent(Component):
     Reçoit des intentions de mouvement (vélocité, forces) et applique
     les déplacements sur le Transform du GameObject.
     Le système de collision se charge des limitations.
+
+    Attributes
+    ----------
+    game_object : GameObject | None
+        GameObject auquel ce composant est attaché.
+    active : bool
+        Indique si le composant est actif.
+    speed : float
+        Vitesse de déplacement en pixels/seconde.
+    velocity : Vector2D
+        Vitesse actuelle en pixels/seconde.
+    acceleration : Vector2D
+        Accélération accumulée en pixels/seconde².
+    is_kinematic : bool
+        Indique si le corps est cinématique.
+    material : PhysicMaterial
+        Matériau physique associé.
     """
 
     def __init__(

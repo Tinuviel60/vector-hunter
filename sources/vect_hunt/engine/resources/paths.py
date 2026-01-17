@@ -17,7 +17,24 @@ FONTS_DIR = ASSETS_ROOT / "font"  # Note: le dossier s'appelle "font" pas "fonts
 
 
 class Paths:
-    """Classe wrapper pour accès aux chemins."""
+    """
+    Classe wrapper pour accès aux chemins.
+
+    Attributes
+    ----------
+    PROJECT_ROOT : Path
+        Racine du projet.
+    ASSETS_ROOT : Path
+        Racine des assets.
+    IMAGES_DIR : Path
+        Dossier des images.
+    SOUNDS_DIR : Path
+        Dossier des sons.
+    DATA_DIR : Path
+        Dossier des données.
+    FONTS_DIR : Path
+        Dossier des polices.
+    """
 
     PROJECT_ROOT = PROJECT_ROOT
     ASSETS_ROOT = ASSETS_ROOT

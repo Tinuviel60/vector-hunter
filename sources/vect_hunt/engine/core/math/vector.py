@@ -13,6 +13,13 @@ class Vector2D:
     -----
     Cette classe utilise __slots__ pour fixer la structure et limiter
     l'usage mémoire par instance.
+
+    Attributes
+    ----------
+    x : float
+        Composante x du vecteur.
+    y : float
+        Composante y du vecteur.
     """
 
     __slots__ = ("_x", "_y")
@@ -325,19 +332,7 @@ class Vector2D:
     @staticmethod
     def top() -> "Vector2D":
         """
-        Retourne le vecteur unitaire pointant vers le haut (0, 1).
-
-        Returns
-        -------
-        Vector2D
-            Vecteur unitaire (0, 1).
-        """
-        return Vector2D(0.0, 1.0)
-
-    @staticmethod
-    def bottom() -> "Vector2D":
-        """
-        Retourne le vecteur unitaire pointant vers le bas (0, -1).
+        Retourne le vecteur unitaire pointant vers le haut (0, -1).
 
         Returns
         -------
@@ -345,6 +340,18 @@ class Vector2D:
             Vecteur unitaire (0, -1).
         """
         return Vector2D(0.0, -1.0)
+
+    @staticmethod
+    def bottom() -> "Vector2D":
+        """
+        Retourne le vecteur unitaire pointant vers le bas (0, 1).
+
+        Returns
+        -------
+        Vector2D
+            Vecteur unitaire (0, 1).
+        """
+        return Vector2D(0.0, 1.0)
 
     @staticmethod
     def left() -> "Vector2D":

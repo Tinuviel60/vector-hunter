@@ -31,6 +31,10 @@ class InputSystem:
     -----
     Toutes les actions dépendent du contexte actif (GameContext).
     Les actions GLOBAL sont toujours disponibles.
+
+    Attributes
+    ----------
+    None
     """
 
     def __init__(self, config_path: str = "configs/inputs.json"):

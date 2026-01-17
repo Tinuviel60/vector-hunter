@@ -12,6 +12,10 @@ class ImageLoader:
     Gestionnaire de chargement d'images.
 
     Centralise le chargement pygame et évite les rechargements multiples.
+
+    Attributes
+    ----------
+    None
     """
 
     _cache: dict[Path, pygame.Surface] = {}

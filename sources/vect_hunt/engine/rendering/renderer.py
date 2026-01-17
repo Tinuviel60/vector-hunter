@@ -22,6 +22,29 @@ class Renderer:
     """
     Classe responsable du rendu graphique du jeu.
     Gère l'affichage du fond de carte, du joueur et des entités.
+
+    Attributes
+    ----------
+    screen : pygame.Surface
+        Surface Pygame de rendu.
+    width : int
+        Largeur de la surface en pixels.
+    height : int
+        Hauteur de la surface en pixels.
+    background_color : str
+        Couleur de fond en hexadécimal.
+    draw_colliders : bool
+        Indique si les colliders sont dessinés en debug.
+    print_names : bool
+        Indique si les noms des GameObjects sont affichés.
+    print_fps : bool
+        Indique si les FPS sont affichés.
+    collider_color : str
+        Couleur des colliders en hexadécimal.
+    collider_thickness : int
+        Épaisseur des colliders en pixels.
+    debug_font_style : FontStyle
+        Style de police pour le debug.
     """
 
     def __init__(self, screen: pygame.Surface):
