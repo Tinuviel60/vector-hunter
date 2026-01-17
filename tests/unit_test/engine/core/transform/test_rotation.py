@@ -117,7 +117,7 @@ def test_rotation_to_angle(angle):
     rot = Rotation(angle)
     tol = 1e-9
     # La conversion en angle doit retrouver l'angle initial à tolérance près
-    assert math.isclose(rot.to_angle(), angle, abs_tol=tol)
+    assert math.isclose(rot.angle, angle, abs_tol=tol)
 
 
 # --------------------
@@ -173,4 +173,4 @@ def test_rotation_reflect_twice(angle, normal_x, normal_y):
     normal = Vector2D(normal_x, normal_y)
 
     reflected_twice = rot.reflect(normal).reflect(normal)
-    assert math.isclose(rot.to_angle(), reflected_twice.to_angle())
+    assert math.isclose(rot.angle, reflected_twice.angle)

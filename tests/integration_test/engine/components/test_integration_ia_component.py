@@ -41,19 +41,19 @@ def test_ia_component_sets_velocity_based_on_forward_direction(game_object_with_
 
     ia_comp.update(0.016)
 
-    # La direction forward avec rotation 0 est (0, 1) donc vers le bas
-    # Vélocité attendue = (0, 1) * 150.0 = (0, 150)
+    # La direction forward avec rotation 0 est (0, -1) donc vers le haut
+    # Vélocité attendue = (0, -1) * 150.0 = (0, -150)
     assert physic_body.velocity.x == pytest.approx(0.0, abs=0.01)
-    assert physic_body.velocity.y == pytest.approx(150.0, abs=0.01)
+    assert physic_body.velocity.y == pytest.approx(-150.0, abs=0.01)
 
 
 @pytest.mark.parametrize(
     "rotation, expected_vx, expected_vy",
     [
-        (0, 0, 150),  # Bas
-        (math.pi / 2, -150, 0),  # Gauche
-        (math.pi, 0, -150),  # Haut
-        (-math.pi / 2, 150, 0),  # Droite
+        (0, 0, -150),  # Haut
+        (math.pi / 2, 150, 0),  # Droite
+        (math.pi, 0, 150),  # Bas
+        (-math.pi / 2, -150, 0),  # Gauche
     ],
 )
 def test_ia_respects_transform_rotation(
@@ -89,18 +89,18 @@ def test_ia_reflects_on_boundary_and_updates_rotation(game_object_with_ia):
 
     # Position très proche du bord gauche (1px), direction gauche
     # Limites du fixture: (0, 0) à (800, 600)
-    # Convention: rotation 0 = bas, π/2 = gauche, π = haut, -π/2 = droite
+    # Convention: rotation 0 = haut, π/2 = droite, π = bas, -π/2 = gauche
     game_object.transform.translate(Vector2D(1, 300))
-    game_object.transform.set_rotation(math.pi / 2)  # Gauche (-1, 0)
+    game_object.transform.set_rotation(-math.pi / 2)  # Gauche (-1, 0)
 
-    initial_rotation = game_object.transform.rotation.to_angle()
+    initial_rotation = game_object.transform.rotation.angle
 
     # Update l'IA - future_position sera < 0, donc réflexion
     ia_comp = game_object.get_component(IaComponent)
     ia_comp.update(0.016)
 
     # La rotation devrait avoir changé (réflexion: π/2 → -π/2)
-    new_rotation = game_object.transform.rotation.to_angle()
+    new_rotation = game_object.transform.rotation.angle
     assert new_rotation != pytest.approx(initial_rotation, abs=0.01)
 
 

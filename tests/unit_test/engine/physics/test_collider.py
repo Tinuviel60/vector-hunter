@@ -47,7 +47,7 @@ def test_box_collider_initialization(width, height, center_x, center_y, orientat
     assert box.width == width
     assert box.height == height
     assert box.transform.position == center
-    assert math.isclose(box.transform.rotation.to_angle(), orientation)
+    assert math.isclose(box.transform.rotation.angle, orientation)
     assert box.solid is True
     assert len(box.corners) == 4
     for corner in box.corners:

@@ -73,14 +73,14 @@ def test_update_calculates_velocity_from_input(
     mock_physic_body,
     input_x,
     input_y,
-    max_speed,
+    speed,
     expected_velocity_x,
     expected_velocity_y,
 ):
     """Vérifie que update calcule correctement la vélocité à partir de l'input."""
     # Setup
     mock_input_system.get_vector.return_value = Vector2D(input_x, input_y)
-    mock_physic_body.max_speed = max_speed
+    mock_physic_body.speed = speed
     mock_game_object.get_component.return_value = mock_physic_body
 
     component = InputComponent(mock_input_system)
