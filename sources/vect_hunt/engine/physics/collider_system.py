@@ -6,6 +6,7 @@ from vect_hunt.engine.core.math import Vector2D
 from vect_hunt.engine.core.transform import Transform
 from .collider import Collider, BoxCollider, CircleCollider
 from vect_hunt.engine.components.collider_component import ColliderComponent
+from vect_hunt.engine.resources.loaders.data_loader import DataLoader
 
 if TYPE_CHECKING:
     from vect_hunt.engine.objects import GameObject
@@ -21,9 +22,11 @@ class ColliderSystem:
     - Utilise le système de tags pour filtrer les paires de collision.
     """
 
+    physic_config = DataLoader.load_json("configs/game.json")["physics"]
+    min_penetration_depth = physic_config["min_penetration_depth"]
+
     def __init__(self):
         """Initialise le système de collision."""
-        pass  # Plus besoin de maintenir une liste de colliders
 
     # --------------------
     # AABB Mondial
@@ -117,7 +120,8 @@ class ColliderSystem:
     @staticmethod
     def check_collision(c1: Collider, c2: Collider) -> dict | None:
         """
-        Détecte la collision fine entre deux colliders et retourne un dictionnaire d'information ou None.
+        Détecte la collision fine entre deux colliders et retourne un dictionnaire
+        d'information ou None.
 
         Parameters
         ----------
@@ -129,7 +133,8 @@ class ColliderSystem:
         Returns
         -------
         dict | None
-            Un dictionnaire d'information de collision (normal, depth, point, etc.) si collision, sinon None.
+            Un dictionnaire d'information de collision (normal, depth, point, etc.)
+            si collision, sinon None.
         """
         # Circle / Circle
         if isinstance(c1, CircleCollider) and isinstance(c2, CircleCollider):
@@ -137,7 +142,9 @@ class ColliderSystem:
         elif isinstance(c1, BoxCollider) and isinstance(c2, BoxCollider):
             return ColliderSystem._sat_collision_info(c1, c2)
         elif isinstance(c1, BoxCollider) and isinstance(c2, CircleCollider):
-            return ColliderSystem._circle_box_collision_info(c2, c1)
+            return ColliderSystem._circle_box_collision_info(
+                c2, c1, reverse_normal=True
+            )
         elif isinstance(c1, CircleCollider) and isinstance(c2, BoxCollider):
             return ColliderSystem._circle_box_collision_info(c1, c2)
         else:
@@ -173,13 +180,22 @@ class ColliderSystem:
         if dist < radius_sum:
             normal = delta.normalized() if dist != 0 else Vector2D(1, 0)
             penetration = radius_sum - dist
-            return {"normal": normal, "depth": penetration, "point": c2_world_pos + normal * c2.radius}
+
+            if penetration < ColliderSystem.min_penetration_depth:
+                return None
+
+            return {
+                "normal": normal,
+                "depth": penetration,
+                "point": c2_world_pos + normal * c2.radius,
+            }
         return None
 
     @staticmethod
     def _sat_collision_info(box1: BoxCollider, box2: BoxCollider):
         """
-        Détecte et retourne les informations de collision entre deux BoxCollider (méthode SAT).
+        Détecte et retourne les informations de collision
+        entre deux BoxCollider (méthode SAT).
 
         Parameters
         ----------
@@ -199,8 +215,10 @@ class ColliderSystem:
 
         corners1 = ColliderSystem.get_world_corners(box1.corners, box1.parent.transform)
         corners2 = ColliderSystem.get_world_corners(box2.corners, box2.parent.transform)
-        axes = Geometry.get_polygon_normals(corners1) + Geometry.get_polygon_normals(corners2)
-        min_overlap = float('inf')
+        axes = Geometry.get_polygon_normals(corners1) + Geometry.get_polygon_normals(
+            corners2
+        )
+        penetration = float("inf")
         smallest_axis = None
 
         for axis in axes:
@@ -208,19 +226,43 @@ class ColliderSystem:
             min2, max2 = Geometry.project_polygon_on_axis(corners2, axis)
             if not Geometry.intervals_overlap(min1, max1, min2, max2):
                 return None
-            
+
             overlap = min(max1, max2) - max(min1, min2)
-            if overlap < min_overlap:
-                min_overlap = overlap
+            if overlap < penetration:
+                penetration = overlap
                 smallest_axis = axis
-                
-        if smallest_axis is not None:
-            normal = smallest_axis.normalized()
-            return {"normal": normal, "depth": min_overlap}
-        return None
+
+        if penetration < ColliderSystem.min_penetration_depth:
+            return None
+
+        if smallest_axis is None:
+            return None
+
+        # Normale unitaire (mais direction arbitraire à ce stade)
+        normal = smallest_axis.normalized()
+
+        # Calcul des centres (moyenne des corners)
+        center1 = Vector2D(
+            sum(c.x for c in corners1) / len(corners1),
+            sum(c.y for c in corners1) / len(corners1),
+        )
+        center2 = Vector2D(
+            sum(c.x for c in corners2) / len(corners2),
+            sum(c.y for c in corners2) / len(corners2),
+        )
+
+        # Orientation déterministe : normal doit pointer de box2 vers box1
+        direction = center1 - center2
+        if direction.dot(normal) < 0:
+            normal = -1 * normal
+
+        normal = smallest_axis.normalized()
+        return {"normal": normal, "depth": penetration}
 
     @staticmethod
-    def _circle_box_collision_info(circle: CircleCollider, box: BoxCollider):
+    def _circle_box_collision_info(
+        circle: CircleCollider, box: BoxCollider, reverse_normal: bool = False
+    ):
         """
         Détecte et retourne les informations de collision entre un cercle et un box.
 
@@ -230,6 +272,10 @@ class ColliderSystem:
             Le cercle.
         box : BoxCollider
             Le box.
+        reverse_normal : bool, optional
+            Indique si la normale doit être inversée,
+            si l'ordre des paramètres est inversé.
+            Par défaut False.
 
         Returns
         -------
@@ -246,11 +292,16 @@ class ColliderSystem:
 
         if dist < circle.radius:
             normal = delta.normalized() if dist != 0 else Vector2D(1, 0)
+            if reverse_normal:
+                normal = -1 * normal
             penetration = circle.radius - dist
+
+            if penetration < ColliderSystem.min_penetration_depth:
+                return None
+
             return {"normal": normal, "depth": penetration, "point": closest}
         return None
 
-  
     @staticmethod
     def get_world_corners(corners: List[Vector2D], parent: Transform) -> list[Vector2D]:
         """
@@ -393,7 +444,7 @@ class ColliderSystem:
             collider_comp = game_object.get_component(ColliderComponent)
             if collider_comp:
                 collider_comp.nb_collision = 0
-        
+
         # Tester toutes les paires de GameObjects
         for i, obj1 in enumerate(collidable_objects):
             next_i = i + 1

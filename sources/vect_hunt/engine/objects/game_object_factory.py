@@ -15,6 +15,7 @@ from vect_hunt.engine.core import Tag
 from vect_hunt.engine.core.math import Vector2D
 from vect_hunt.engine.core.transform import Transform
 from vect_hunt.engine.physics.collider import BoxCollider, CircleCollider
+from vect_hunt.engine.physics.physic_material import CombineMode, PhysicMaterial
 from vect_hunt.engine.rendering.basic_shape import BasicShape
 from vect_hunt.engine.resources import DataLoader
 
@@ -143,7 +144,12 @@ class GameObjectFactory:
         if "physics" in template:
             speed = template["physics"].get("speed", 300.0)
             is_kinematic = template["physics"].get("is_kinematic", False)
-            physic_body = PhysicBodyComponent(speed=speed, is_kinematic=is_kinematic)
+            material = GameObjectFactory._create_physic_material(template["physics"])
+            physic_body = PhysicBodyComponent(
+                speed=speed,
+                is_kinematic=is_kinematic,
+                material=material,
+            )
             game_object.add_component(physic_body)
 
         # Ajouter InputComponent pour le joueur
@@ -265,6 +271,96 @@ class GameObjectFactory:
 
         else:
             raise ValueError(f"Type de collider inconnu : {collider_type}")
+
+    @staticmethod
+    def _create_physic_material(physics_data: dict) -> PhysicMaterial:
+        """
+        Crée un PhysicMaterial depuis les données de physique du template.
+
+        Parameters
+        ----------
+        physics_data : dict
+            Données de physique du template.
+
+        Returns
+        -------
+        PhysicMaterial
+            Matériau physique configuré ou défaut si non défini.
+        """
+        material_ref = physics_data.get("material")
+        if not material_ref:
+            return PhysicMaterial()
+
+        material_path = material_ref
+        if not material_path.endswith(".json"):
+            material_path = f"{material_path}.json"
+        if not material_path.startswith("materials/"):
+            material_path = f"materials/{material_path}"
+
+        material_data = DataLoader.load_json(material_path)
+        return GameObjectFactory._material_from_data(material_data)
+
+    @staticmethod
+    def _material_from_data(material_data: dict) -> PhysicMaterial:
+        """
+        Convertit des données JSON de matériau en PhysicMaterial.
+
+        Parameters
+        ----------
+        material_data : dict
+            Données du matériau.
+
+        Returns
+        -------
+        PhysicMaterial
+            Matériau physique instancié.
+        """
+        friction = material_data.get("friction", 0.5)
+        restitution = material_data.get("restitution", 0.5)
+        linear_damping = material_data.get("linear_damping", 0.0)
+        bounciness_threshold = material_data.get("bounciness_threshold", 0.0)
+        friction_mode = GameObjectFactory._parse_combine_mode(
+            material_data.get("friction_mode"),
+            CombineMode.MAX,
+        )
+        restitution_mode = GameObjectFactory._parse_combine_mode(
+            material_data.get("restitution_mode"),
+            CombineMode.MIN,
+        )
+
+        return PhysicMaterial(
+            friction=friction,
+            restitution=restitution,
+            friction_mode=friction_mode,
+            restitution_mode=restitution_mode,
+            linear_damping=linear_damping,
+            bounciness_threshold=bounciness_threshold,
+        )
+
+    @staticmethod
+    def _parse_combine_mode(value: Optional[str], default: CombineMode) -> CombineMode:
+        """
+        Résout un CombineMode depuis une chaîne.
+
+        Parameters
+        ----------
+        value : str, optional
+            Nom du mode de combinaison.
+        default : CombineMode
+            Valeur par défaut si la chaîne est absente ou invalide.
+
+        Returns
+        -------
+        CombineMode
+            Mode de combinaison résolu.
+        """
+        if value is None:
+            return default
+
+        try:
+            return CombineMode[value.upper()]
+        except KeyError:
+            return default
 
     @staticmethod
     def _create_renderer(rendering_data: dict) -> "RenderComponent":

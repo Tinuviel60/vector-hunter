@@ -1,11 +1,12 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional, Tuple
 
 from vect_hunt.engine.core.math.vector import Vector2D
 from vect_hunt.engine.physics import CollisionTracker
 from vect_hunt.engine.components import PhysicBodyComponent
 
 if TYPE_CHECKING:
-    from vect_hunt.engine.worlds.world import World
+    from vect_hunt.engine.worlds import World
+    from vect_hunt.engine.objects import GameObject
 
 
 class CollisionResolutionSystem:
@@ -13,7 +14,7 @@ class CollisionResolutionSystem:
     Système de correction des collisions. Applique des ajustements de position
     pour résoudre les collisions détectées par le CollisionSystem.
 
-    Dépendant d'un physic body, d'un sytème de collision, et de la physique d'un 
+    Dépendant d'un physic body, d'un sytème de collision, et de la physique d'un
     GameObject (masse, friction, rebond...).
     """
 
@@ -31,7 +32,7 @@ class CollisionResolutionSystem:
         self.collision_tracker = collision_tracker
         self.world = world
 
-    def update(self, delta_time: float) -> None:
+    def update(self, delta_time: float) -> bool:
         """
         Met à jour le système de résolution des collisions.
 
@@ -39,20 +40,35 @@ class CollisionResolutionSystem:
         ----------
         delta_time : float
             Temps écoulé depuis la dernière frame (en secondes).
+
+        Returns
+        -------
+        bool
+            True si au moins une correction de collision a été appliquée, False sinon.
         """
         # Récupérer les collisions détectées
         collisions = self.collision_tracker.get_all_collisions()
 
+        correction_applied = False
         # Résoudre chaque collision
         for id_obj_a, id_obj_b in collisions:
-            info_collision = self.collision_tracker.get_collision_info(id_obj_a, id_obj_b)
-            assert info_collision is not None, "Les informations de collision doivent être disponibles"
-            self._resolve_collision(id_obj_a, id_obj_b, info_collision)
+            info_collision = self.collision_tracker.get_collision_info(
+                id_obj_a, id_obj_b
+            )
+            assert (
+                info_collision is not None
+            ), "Les informations de collision doivent être disponibles"
 
-    def _resolve_collision(self, obj_a: int, obj_b: int, collision_info: dict) -> None:
+            if self._resolve_collision(id_obj_a, id_obj_b, info_collision):
+                correction_applied = True
+
+        return correction_applied
+
+    def _resolve_collision(self, obj_a: int, obj_b: int, collision_info: dict) -> bool:
         """
         Résout une collision entre deux GameObjects avec correction de position
-        et annulation de la composante normale de la vélocité, en utilisant les infos détaillées.
+        et annulation de la composante normale de la vélocité, en utilisant
+        les infos détaillées.
 
         Parameters
         ----------
@@ -62,23 +78,105 @@ class CollisionResolutionSystem:
             ID du deuxième objet en collision.
         collision_info : dict
             Informations supplémentaires sur la collision (normal, depth, point, ...).
+
+        returns
+        -------
+        bool
+            True si une correction a été appliquée, False sinon.
+        """
+        # Recupérer les GameObjects et leurs PhysicBodyComponents
+        context = self._get_collision_context(obj_a, obj_b)
+        if context is None:
+            return False
+
+        game_object_a, game_object_b, body_a, body_b = context
+
+        # Résoudre la normale et la profondeur de collision
+        normal, depth = self._resolve_normal_and_depth(
+            collision_info,
+            game_object_a.transform.position,
+            game_object_b.transform.position,
+        )
+
+        # Si pas de pénétration, ne rien faire
+        if depth <= 0:
+            return False
+
+        # Appliquer la correction de position
+        self._apply_position_correction(
+            body_a,
+            body_b,
+            game_object_a,
+            game_object_b,
+            normal,
+            depth,
+        )
+        # Appliquer la réponse de vélocité (restitution + friction)
+        self._apply_velocity_response(body_a, body_b, normal)
+
+        return True
+
+    def _get_collision_context(
+        self,
+        obj_a: int,
+        obj_b: int,
+    ) -> Optional[
+        Tuple["GameObject", "GameObject", PhysicBodyComponent, PhysicBodyComponent]
+    ]:
+        """
+        Récupère le contexte de collision (objets et PhysicBody associés).
+
+        Parameters
+        ----------
+        obj_a : int
+            ID du premier objet en collision.
+        obj_b : int
+            ID du deuxième objet en collision.
+
+        Returns
+        -------
+        tuple or None
+            (game_object_a, game_object_b, body_a, body_b) si disponible,
+            sinon None si un PhysicBody manque.
         """
         game_object_a = self.world.game_objects[obj_a]
         game_object_b = self.world.game_objects[obj_b]
 
-        physic_body_a = game_object_a.get_component(PhysicBodyComponent)
-        physic_body_b = game_object_b.get_component(PhysicBodyComponent)
+        body_a = game_object_a.get_component(PhysicBodyComponent)
+        body_b = game_object_b.get_component(PhysicBodyComponent)
 
-        if not physic_body_a or not physic_body_b:
-            return
+        if not body_a or not body_b:
+            return None
 
-        # --- Correction de position ---
+        return game_object_a, game_object_b, body_a, body_b
+
+    def _resolve_normal_and_depth(
+        self,
+        collision_info: dict,
+        pos_a: Vector2D,
+        pos_b: Vector2D,
+    ) -> Tuple[Vector2D, float]:
+        """
+        Résout la normale et la profondeur de collision, avec fallback.
+
+        Parameters
+        ----------
+        collision_info : dict
+            Informations supplémentaires sur la collision (normal, depth, ...).
+        pos_a : Vector2D
+            Position du premier objet.
+        pos_b : Vector2D
+            Position du deuxième objet.
+
+        Returns
+        -------
+        tuple
+            (normal, depth) validés, avec valeurs par défaut si absentes.
+        """
         normal = collision_info.get("normal")
         depth = collision_info.get("depth")
+
         if normal is None or depth is None:
-            # Fallback arbitraire si info manquante
-            pos_a = game_object_a.transform.position
-            pos_b = game_object_b.transform.position
             delta = pos_a - pos_b
             if delta.magnitude() == 0:
                 normal = Vector2D(1, 0)
@@ -86,30 +184,137 @@ class CollisionResolutionSystem:
                 normal = delta.normalized()
             depth = 1.0
 
-        # Correction proportionnelle à la profondeur
-            # Correction proportionnelle à la profondeur
-            correction = normal * (depth / 2)
-            # Gestion des objets kinematic : ne pas déplacer si is_kinematic
-            is_kinematic_a = physic_body_a.is_kinematic
-            is_kinematic_b = physic_body_b.is_kinematic
-            if is_kinematic_a and is_kinematic_b:
-                # Aucun déplacement si les deux sont kinematic
-                pass
-            elif is_kinematic_a:
-                # Seul B bouge
-                game_object_b.transform.move(-1 * normal * depth)
-            elif is_kinematic_b:
-                # Seul A bouge
-                game_object_a.transform.move(normal * depth)
-            else:
-                # Les deux bougent
-                game_object_a.transform.move(correction)
-                game_object_b.transform.move(-1 * correction)
+        return normal, depth
 
-        # --- Annulation de la composante normale de la vélocité ---
-        v_a = physic_body_a.velocity
-        v_b = physic_body_b.velocity
-        v_a_normal = normal * v_a.dot(normal)
-        v_b_normal = normal * v_b.dot(normal)
-        physic_body_a.velocity = v_a - v_a_normal
-        physic_body_b.velocity = v_b - v_b_normal
+    def _apply_position_correction(
+        self,
+        body_a: PhysicBodyComponent,
+        body_b: PhysicBodyComponent,
+        game_object_a: "GameObject",
+        game_object_b: "GameObject",
+        normal: Vector2D,
+        depth: float,
+    ) -> None:
+        """
+        Corrige la position des objets en fonction de la profondeur de collision.
+
+        Parameters
+        ----------
+        body_a : PhysicBodyComponent
+            PhysicBody du premier objet.
+        body_b : PhysicBodyComponent
+            PhysicBody du deuxième objet.
+        game_object_a : GameObject
+            Le premier objet de jeu.
+        game_object_b : GameObject
+            Le deuxième objet de jeu.
+        normal : Vector2D
+            Normale de collision (pointant de B vers A).
+        depth : float
+            Profondeur de pénétration.
+        """
+        if depth <= 0:
+            return
+
+        correction = normal * depth
+
+        is_kinematic_a = body_a.is_kinematic
+        is_kinematic_b = body_b.is_kinematic
+
+        if is_kinematic_a and is_kinematic_b:
+            return
+        if is_kinematic_a:
+            game_object_b.transform.move(-1 * correction)
+            return
+        if is_kinematic_b:
+            game_object_a.transform.move(correction)
+            return
+
+        # Les deux objets sont dynamiques, partager la correction
+        correction = correction * 0.5
+        game_object_a.transform.move(correction)
+        game_object_b.transform.move(-1 * correction)
+
+    def _apply_velocity_response(
+        self,
+        body_a: PhysicBodyComponent,
+        body_b: PhysicBodyComponent,
+        normal: Vector2D,
+    ) -> None:
+        """
+        Applique la réponse de vitesse (restitution + friction) d'une collision.
+
+        Parameters
+        ----------
+        body_a : PhysicBodyComponent
+            PhysicBody du premier objet.
+        body_b : PhysicBodyComponent
+            PhysicBody du deuxième objet.
+        normal : Vector2D
+            Normale de collision (pointant de B vers A).
+        """
+        if normal.magnitude() == 0:
+            return
+        else:
+            normal = normal.normalized()
+
+        contact_material = body_a.material.combine_with(body_b.material)
+
+        # Calcul des masses inverses (0 si cinématique)
+        # pour l'application des impulsions
+        inv_mass_a = 0.0 if body_a.is_kinematic else 1.0
+        inv_mass_b = 0.0 if body_b.is_kinematic else 1.0
+        inv_mass_sum = inv_mass_a + inv_mass_b
+
+        if inv_mass_sum == 0.0:
+            return
+
+        v_a = body_a.velocity
+        v_b = body_b.velocity
+
+        relative_velocity = v_a - v_b
+        rel_normal_speed = relative_velocity.dot(normal)
+
+        # Si les objets s'éloignent, ne pas appliquer d'impulsion normale.
+        # Epsilon pour éviter les micro-artefacts.
+        if rel_normal_speed > 1e-6:
+            return
+
+        restitution = contact_material.restitution
+        if abs(rel_normal_speed) < contact_material.bounciness_threshold:
+            restitution = 0.0
+
+        normal_impulse_magnitude = (
+            -(1.0 + restitution) * rel_normal_speed / inv_mass_sum
+        )
+        normal_impulse = normal * normal_impulse_magnitude
+
+        if not body_a.is_kinematic:
+            body_a.velocity = body_a.velocity + normal_impulse
+        if not body_b.is_kinematic:
+            body_b.velocity = body_b.velocity - normal_impulse
+
+        relative_velocity = body_a.velocity - body_b.velocity
+        tangent = relative_velocity - normal * relative_velocity.dot(normal)
+
+        if tangent.magnitude() == 0:
+            return
+
+        tangent_dir = tangent.normalized()
+        rel_tangent_speed = relative_velocity.dot(tangent_dir)
+
+        friction = contact_material.friction
+        tangent_impulse_magnitude = -rel_tangent_speed / inv_mass_sum
+
+        max_friction_impulse = friction * normal_impulse_magnitude
+        tangent_impulse_magnitude = max(
+            -max_friction_impulse,
+            min(tangent_impulse_magnitude, max_friction_impulse),
+        )
+
+        tangent_impulse = tangent_dir * tangent_impulse_magnitude
+
+        if not body_a.is_kinematic:
+            body_a.velocity = body_a.velocity + tangent_impulse
+        if not body_b.is_kinematic:
+            body_b.velocity = body_b.velocity - tangent_impulse

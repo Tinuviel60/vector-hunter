@@ -8,7 +8,14 @@ if TYPE_CHECKING:
 class Vector2D:
     """
     Répresente un vecteur 2D.
+
+    Notes
+    -----
+    Cette classe utilise __slots__ pour fixer la structure et limiter
+    l'usage mémoire par instance.
     """
+
+    __slots__ = ("_x", "_y")
 
     def __init__(self, x: float = 0.0, y: float = 0.0):
         """

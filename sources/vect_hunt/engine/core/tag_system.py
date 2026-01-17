@@ -1,4 +1,3 @@
-
 from .tag import Tag
 from typing import Dict
 import json
@@ -7,19 +6,22 @@ import os
 # Chemin du fichier de configuration JSON
 CONFIG_PATH = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-    "assets/data/configs/collision.json"
+    "assets/data/configs/collision.json",
 )
+
 
 def _load_collision_config():
     with open(CONFIG_PATH, "r", encoding="utf-8") as f:
         data = json.load(f)
     return data
 
+
 def _tag_from_str(tag_str: str) -> Tag:
     try:
         return Tag[tag_str]
     except KeyError:
         return Tag.NONE
+
 
 def _build_mask(matrix_dict) -> Dict[Tag, Tag]:
     mask = {}
@@ -30,6 +32,7 @@ def _build_mask(matrix_dict) -> Dict[Tag, Tag]:
             value |= _tag_from_str(t)
         mask[tag] = value
     return mask
+
 
 # Charger la configuration JSON
 _config = _load_collision_config()
@@ -48,7 +51,10 @@ class TagSystem:
         """
         Vérifie si deux tags peuvent collisionner selon la matrice chargée.
         """
-        return bool(CAN_COLLIDE.get(tag1, Tag.NONE) & tag2 or CAN_COLLIDE.get(tag2, Tag.NONE) & tag1)
+        return bool(
+            CAN_COLLIDE.get(tag1, Tag.NONE) & tag2
+            or CAN_COLLIDE.get(tag2, Tag.NONE) & tag1
+        )
 
     @staticmethod
     def can_destroy(tag1: Tag, tag2: Tag) -> bool:

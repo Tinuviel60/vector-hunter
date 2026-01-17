@@ -68,8 +68,19 @@ class Game:
         """
         # Mettre à jour le monde (inputs + GameObjects + collisions)
         self.world.update(delta_time)
-        self.world.update_collisions(delta_time)
-        self.world.collision_resolution_system.update(delta_time)
+
+        max_passes = 6  # TODO : Mettre dans un json de config
+        passes = 0
+        for _ in range(
+            max_passes
+        ):  # Itérer plusieurs fois pour une meilleure résolution
+            passes += 1
+            self.world.update_collisions(delta_time)
+            moved = self.world.collision_resolution_system.update(delta_time)
+            if not moved:
+                break
+
+        print(f"Collision resolution passes: {passes}")
 
     def render(self) -> None:
         """

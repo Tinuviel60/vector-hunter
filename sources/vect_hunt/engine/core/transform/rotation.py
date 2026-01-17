@@ -15,7 +15,14 @@ class Rotation:
 
         [ cos(a)  -sin(a) ]
         [ sin(a)   cos(a) ]
+
+    Notes
+    -----
+    Structure fixe : __slots__ limite les attributs aux coefficients
+    de la matrice.
     """
+
+    __slots__ = ("m00", "m01", "m10", "m11")
 
     def __init__(self, angle: float = 0.0):
         """

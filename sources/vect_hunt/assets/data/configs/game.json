@@ -4,6 +4,7 @@
     "gravity": 0.0,
     "friction": 0.98,
     "bounce_damping": 0.8,
+    "min_penetration_depth": 1e-9,
     "_comment_bounce": "Coefficient de restitution lors des rebonds"
   },
   "player": {

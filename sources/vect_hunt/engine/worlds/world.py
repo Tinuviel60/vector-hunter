@@ -4,7 +4,9 @@ from vect_hunt.engine.objects import GameObject
 from vect_hunt.engine.physics import ColliderSystem, CollisionTracker
 from vect_hunt.engine.input import InputSystem
 from vect_hunt.engine.components.collider_component import ColliderComponent
-from vect_hunt.engine.physics.collision_resolution_system import CollisionResolutionSystem
+from vect_hunt.engine.physics.collision_resolution_system import (
+    CollisionResolutionSystem,
+)
 
 
 class World:
@@ -22,7 +24,9 @@ class World:
 
         self.collider_system = ColliderSystem()
         self.collision_tracker = CollisionTracker()
-        self.collision_resolution_system = CollisionResolutionSystem(self.collision_tracker, self)
+        self.collision_resolution_system = CollisionResolutionSystem(
+            self.collision_tracker, self
+        )
 
     def add_game_object(self, game_object: GameObject) -> None:
         """
@@ -105,12 +109,14 @@ class World:
             Temps écoulé depuis la dernière frame en secondes
         """
         # Détecter toutes les collisions et triggers pour cette frame
-        current_collisions, current_triggers, collision_info = self.collider_system.detect_collisions(
-            self
+        current_collisions, current_triggers, collision_info = (
+            self.collider_system.detect_collisions(self)
         )
 
         # Mettre à jour le tracker (CollisionTracker)
-        self.collision_tracker.update(current_collisions, current_triggers, collision_info, delta_time)
+        self.collision_tracker.update(
+            current_collisions, current_triggers, collision_info, delta_time
+        )
 
         # Gestion des événements
         self._handle_enters()

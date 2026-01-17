@@ -14,7 +14,14 @@ class Transform:
 
     Cette classe sert de source de vérité spatiale pour les systèmes
     (collisions, rendu, physique).
+
+    Notes
+    -----
+    Structure fixe : __slots__ est utilisé pour limiter la mémoire
+    et éviter les attributs dynamiques.
     """
+
+    __slots__ = ("position", "rotation")
 
     def __init__(self, position: Optional[Vector2D] = None, rotation: float = 0.0):
         """

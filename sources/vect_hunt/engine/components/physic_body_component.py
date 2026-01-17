@@ -4,6 +4,7 @@ Composant de corps physique pour gérer les déplacements et forces.
 
 from vect_hunt.engine.components.component import Component
 from vect_hunt.engine.core.math import Vector2D
+from vect_hunt.engine.physics.physic_material import PhysicMaterial
 
 
 class PhysicBodyComponent(Component):
@@ -15,7 +16,12 @@ class PhysicBodyComponent(Component):
     Le système de collision se charge des limitations.
     """
 
-    def __init__(self, speed: float = 300.0, is_kinematic: bool = False):
+    def __init__(
+        self,
+        speed: float = 300.0,
+        is_kinematic: bool = False,
+        material: PhysicMaterial | None = None,
+    ):
         """
         Initialise le composant de corps physique.
 
@@ -24,17 +30,24 @@ class PhysicBodyComponent(Component):
         speed : float, optional
             Vitesse de déplacement en pixels/seconde. Par défaut 300.0.
         is_kinematic : bool, optional
-            Indique si le corps est cinématique (non affecté par la physique). Par défaut False.
+            Indique si le corps est cinématique (non affecté par la physique).
+            Par défaut False.
         """
         super().__init__()
-        self.speed = speed
+        self.speed = speed  # TODO : A déplacer
         self.velocity = Vector2D(0, 0)
         self.acceleration = Vector2D(0, 0)
         self.is_kinematic = is_kinematic
+        self.material = material if material is not None else PhysicMaterial()
 
     def update(self, delta_time: float) -> None:
         """
         Met à jour la position du GameObject en fonction de la vélocité.
+
+        Applique :
+            - intégration de l'accélération (forces ponctuelles)
+            - amortissement linéaire (linear damping)
+            - déplacement via le Transform
 
         Parameters
         ----------
@@ -45,8 +58,20 @@ class PhysicBodyComponent(Component):
             self.game_object is not None
         ), "PhysicBodyComponent doit être attaché à un GameObject"
 
+        # Un corps cinématique peut être déplacé par une logique dédiée,
+        # mais ne subit pas intégration des forces ici.
+        if self.is_kinematic:
+            self.acceleration = Vector2D(0, 0)
+            return
+
         # Appliquer l'accélération à la vélocité
         self.velocity += self.acceleration * delta_time
+
+        # Appliquer l'amortissement linéaire (perte de vitesse au fil du temps)
+        damping = self.material.linear_damping
+        if damping > 0.0:
+            damping_factor = max(0.0, 1.0 - damping * delta_time)
+            self.velocity *= damping_factor
 
         # Appliquer la vélocité au déplacement
         if self.velocity.magnitude() > 0:

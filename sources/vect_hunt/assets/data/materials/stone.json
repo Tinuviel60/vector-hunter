@@ -1,0 +1,9 @@
+{
+  "_comment": "Materiau rigide",
+  "friction": 0.6,
+  "restitution": 0.2,
+  "linear_damping": 0.0,
+  "friction_mode": "MAX",
+  "restitution_mode": "MIN",
+  "bounciness_threshold": 350.0
+}

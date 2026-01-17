@@ -93,7 +93,6 @@ class CollisionTracker:
             if info is not None:
                 self._collision_info[norm_pair] = info
 
-
         normalized_triggers = {self._normalize_pair(*pair) for pair in current_triggers}
 
         # Traiter les collisions
@@ -227,7 +226,7 @@ class CollisionTracker:
             Liste des paires d'IDs en collision
         """
         return list(self._active_collisions.keys())
-    
+
     def get_all_triggers(self) -> List[Tuple[int, int]]:
         """
         Retourne la liste de tous les triggers actifs.
@@ -238,7 +237,7 @@ class CollisionTracker:
             Liste des paires d'IDs en trigger
         """
         return list(self._active_triggers.keys())
-    
+
     def get_collision_info(self, obj1_id: int, obj2_id: int) -> Optional[dict]:
         """
         Retourne les informations de collision pour une paire d'objets.
@@ -257,7 +256,7 @@ class CollisionTracker:
         """
         pair = self._normalize_pair(obj1_id, obj2_id)
         return self._collision_info.get(pair)
-    
+
     def get_all_entered(self) -> List[Tuple[int, int]]:
         """
         Retourne la liste de toutes les collisions/triggers commencées cette frame.
@@ -268,7 +267,7 @@ class CollisionTracker:
             Liste des paires d'IDs qui viennent d'entrer en interaction
         """
         return list(self._entered_this_frame)
-    
+
     def get_all_exited(self) -> List[Tuple[int, int]]:
         """
         Retourne la liste de toutes les collisions/triggers terminées cette frame.
@@ -279,7 +278,6 @@ class CollisionTracker:
             Liste des paires d'IDs qui viennent de quitter l'interaction
         """
         return list(self._exited_this_frame)
-
 
     def get_collision_duration(self, obj1_id: int, obj2_id: int) -> Optional[float]:
         """

@@ -1,0 +1,9 @@
+{
+  "_comment": "Materiau par defaut",
+  "friction": 0.8,
+  "restitution": 0.1,
+  "linear_damping": 0.0,
+  "friction_mode": "MAX",
+  "restitution_mode": "MIN",
+  "bounciness_threshold": 5.0
+}
