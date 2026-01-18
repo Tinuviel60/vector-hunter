@@ -1,5 +1,7 @@
 import pygame
+from collections import OrderedDict
 from pathlib import Path
+from vect_hunt.engine.resources.loaders.base_loader import BaseLoader
 from vect_hunt.engine.resources.paths import FONTS_DIR
 
 """
@@ -7,7 +9,7 @@ Chargement et mise en cache des polices de caractères.
 """
 
 
-class FontLoader:
+class FontLoader(BaseLoader):
     """
     Gestionnaire de chargement des polices.
 
@@ -19,7 +21,11 @@ class FontLoader:
     None
     """
 
-    _cache: dict[tuple[Path, int], pygame.font.Font] = {}
+    _cache: "OrderedDict[tuple[Path, int], pygame.font.Font]" = OrderedDict()
+    # Taille maximale d'un fichier de police (2 Mo)
+    _max_bytes = 2 * 1024 * 1024
+    # Nombre maximal d'entrees en cache
+    _max_items = 64
 
     @classmethod
     def load(cls, relative_path: str, size: int) -> pygame.font.Font:
@@ -38,10 +44,18 @@ class FontLoader:
         pygame.font.Font
             Instance de la police chargée
         """
-        path = FONTS_DIR / relative_path
+        path = cls._resolve_path(
+            FONTS_DIR,
+            relative_path,
+            allowed_extensions={".ttf", ".otf"},
+            max_bytes=cls._max_bytes,
+        )
         key = (path, size)
 
-        if key not in cls._cache:
-            cls._cache[key] = pygame.font.Font(path, size)
+        cached = cls._cache_get(key)
+        if cached is not cls._MISSING:
+            return cached
 
-        return cls._cache[key]
+        font = pygame.font.Font(path, size)
+        cls._cache_put(key, font, cls._max_items)
+        return font

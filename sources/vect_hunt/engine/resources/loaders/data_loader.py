@@ -1,6 +1,8 @@
 import json
+from collections import OrderedDict
 from pathlib import Path
 from typing import Any
+from vect_hunt.engine.resources.loaders.base_loader import BaseLoader
 from vect_hunt.engine.resources.paths import DATA_DIR
 
 """
@@ -8,7 +10,7 @@ Chargement des données non graphiques avec système de cache.
 """
 
 
-class DataLoader:
+class DataLoader(BaseLoader):
     """
     Gestionnaire de chargement des fichiers JSON avec mise en cache.
 
@@ -20,7 +22,11 @@ class DataLoader:
     None
     """
 
-    _cache: dict[Path, dict[str, Any]] = {}
+    _cache: "OrderedDict[Path, dict[str, Any]]" = OrderedDict()
+    # Taille maximale d'un fichier JSON (1 Mo)
+    _max_bytes = 1 * 1024 * 1024
+    # Nombre maximal d'entrees en cache
+    _max_items = 256
 
     @classmethod
     def load_json(cls, relative_path: str, use_cache: bool = True) -> dict[str, Any]:
@@ -34,25 +40,29 @@ class DataLoader:
             Exemple : "configs/app.json", "templates/player.json"
         use_cache : bool, optional
             Si True, utilise le cache. Si False, force le rechargement.
-
         Returns
         -------
         dict[str, Any]
             Données JSON chargées
         """
-        path = DATA_DIR / relative_path
 
-        if use_cache and path in cls._cache:
-            return cls._cache[path]
+        path = cls._resolve_path(
+            DATA_DIR,
+            relative_path,
+            allowed_extensions={".json"},
+            max_bytes=cls._max_bytes,
+        )
 
-        if not path.exists():
-            raise FileNotFoundError(f"Fichier JSON non trouvé : {path}")
+        if use_cache:
+            cached = cls._cache_get(path)
+            if cached is not cls._MISSING:
+                return cached
 
         with open(path, "r", encoding="utf-8") as f:
             data = json.load(f)
 
         if use_cache:
-            cls._cache[path] = data
+            cls._cache_put(path, data, cls._max_items)
 
         return data
 

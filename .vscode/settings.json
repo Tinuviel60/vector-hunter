@@ -50,5 +50,6 @@
 
     "codeLens.enableCodeLens": true,
     "codeLens.filterImports": false,
-    "codeLens.filterDefinitions": true
+    "codeLens.filterDefinitions": true,
+    "chatgpt.commentCodeLensEnabled": false
 }
