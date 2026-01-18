@@ -75,7 +75,7 @@ def main() -> None:
             if event.type == pygame.QUIT:
                 running = False
             # Transmettre les événements à l'InputSystem
-            game.world.input_system.process_event(event)
+            game.simulation_scheduler.input_system.process_event(event)
 
         # Temps réel écoulé depuis la dernière frame (en secondes)
         frame_time = clock.tick(FPS) / 1000.0
@@ -108,6 +108,8 @@ def main() -> None:
             TICK_LIMIT -= 1
             if TICK_LIMIT <= 0:
                 running = False
+                
+    pygame.quit()
 
 
 if __name__ == "__main__":

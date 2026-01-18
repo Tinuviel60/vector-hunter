@@ -13,14 +13,14 @@ from vect_hunt.engine.resources.loaders.data_loader import DataLoader
 
 if TYPE_CHECKING:
     from vect_hunt.engine.objects import GameObject
-    from vect_hunt.engine.worlds import World
+    from vect_hunt.engine.scenes import Scene
 
 
 class ColliderSystem:
     """
     Système global de collision pour un ensemble de colliders.
 
-    - Interroge les GameObjects du World pour trouver ceux avec des Colliders.
+    - Interroge les GameObjects de la scène pour trouver ceux avec des Colliders.
     - Calcule les AABB et collisions entre eux.
     - Utilise le système de tags pour filtrer les paires de collision.
 
@@ -88,11 +88,11 @@ class ColliderSystem:
         tuple
             L'AABB sous la forme (min_x, min_y, max_x, max_y
         """
-        world_corners = ColliderSystem.get_world_corners(
+        scene_corners = ColliderSystem.get_scene_corners(
             collider.corners, parent_transform
         )
-        xs = [c.x for c in world_corners]
-        ys = [c.y for c in world_corners]
+        xs = [c.x for c in scene_corners]
+        ys = [c.y for c in scene_corners]
         return (min(xs), min(ys), max(xs), max(ys))
 
     @staticmethod
@@ -194,10 +194,10 @@ class ColliderSystem:
         assert c1.game_object is not None
         assert c2.game_object is not None
 
-        c1_world_pos = c1.transform.position + c1.game_object.transform.position
-        c2_world_pos = c2.transform.position + c2.game_object.transform.position
+        c1_scene_pos = c1.transform.position + c1.game_object.transform.position
+        c2_scene_pos = c2.transform.position + c2.game_object.transform.position
 
-        delta = c1_world_pos - c2_world_pos
+        delta = c1_scene_pos - c2_scene_pos
         dist = delta.magnitude()
         radius_sum = c1.radius + c2.radius
 
@@ -211,7 +211,7 @@ class ColliderSystem:
             return {
                 "normal": normal,
                 "depth": penetration,
-                "point": c2_world_pos + normal * c2.radius,
+                "point": c2_scene_pos + normal * c2.radius,
             }
         return None
 
@@ -237,10 +237,10 @@ class ColliderSystem:
         assert box1.game_object is not None
         assert box2.game_object is not None
 
-        corners1 = ColliderSystem.get_world_corners(
+        corners1 = ColliderSystem.get_scene_corners(
             box1.corners, box1.game_object.transform
         )
-        corners2 = ColliderSystem.get_world_corners(
+        corners2 = ColliderSystem.get_scene_corners(
             box2.corners, box2.game_object.transform
         )
         axes = Geometry.get_polygon_normals(corners1) + Geometry.get_polygon_normals(
@@ -314,11 +314,11 @@ class ColliderSystem:
         assert circle.game_object is not None
         assert box.game_object is not None
 
-        circle_world_pos = (
+        circle_scene_pos = (
             circle.transform.position + circle.game_object.transform.position
         )
-        closest = ColliderSystem.get_closest_point_on_box(box, circle_world_pos)
-        delta = circle_world_pos - closest
+        closest = ColliderSystem.get_closest_point_on_box(box, circle_scene_pos)
+        delta = circle_scene_pos - closest
         dist = delta.magnitude()
 
         if dist < circle.radius:
@@ -334,7 +334,7 @@ class ColliderSystem:
         return None
 
     @staticmethod
-    def get_world_corners(corners: List[Vector2D], parent: Transform) -> list[Vector2D]:
+    def get_scene_corners(corners: List[Vector2D], parent: Transform) -> list[Vector2D]:
         """
         Calcule les coins mondiaux d'un BoxCollider orienté.
 
@@ -350,19 +350,19 @@ class ColliderSystem:
         list[Vector2D]
             La liste des coins mondiaux du BoxCollider.
         """
-        world_corners = []
+        scene_corners = []
 
         for corner in corners:
             # rotation par le parent
             corner_rotated = parent.rotation.apply(corner)
             # translation locale
 
-            world_corner = parent.position + corner_rotated
+            scene_corner = parent.position + corner_rotated
 
-            world_corners.append(world_corner)
+            scene_corners.append(scene_corner)
             # Appliquer rotation du parent
 
-        return world_corners
+        return scene_corners
 
     @staticmethod
     def get_closest_point_on_box(
@@ -425,20 +425,20 @@ class ColliderSystem:
         # ----------------------------
         # Repasser en coordonnées mondiales
         # ----------------------------
-        point_world = (
+        point_scene = (
             parent_tr.rotation.apply(point_in_parent_space) + parent_tr.position
         )
 
-        return point_world
+        return point_scene
 
     # --------------------
     # Détection globale
     # --------------------
     def detect_collisions(
-        self, world: "World"
+        self, scene: "Scene"
     ) -> Tuple[Set[Tuple[int, int]], Set[Tuple[int, int]], dict]:
         """
-        Detecte les collisions entre tous les GameObjects du monde
+        Detecte les collisions entre tous les GameObjects de la scène
         ayant des colliders.
 
         Pour chaque paire de GameObjects :
@@ -448,8 +448,8 @@ class ColliderSystem:
 
         Parameters
         ----------
-        world : World
-            Le monde contenant les GameObjects à tester.
+        scene : Scene
+            La scène contenant les GameObjects à tester.
 
         Returns
         -------
@@ -460,7 +460,7 @@ class ColliderSystem:
         # Recuperer tous les GameObjects actifs avec des colliders
         collidable_objects: List["GameObject"] = []
         colliders_by_object: dict[int, list[ColliderComponent]] = {}
-        for game_object in world.game_objects.values():
+        for game_object in scene.game_objects.values():
             if not game_object.active:
                 continue
             colliders = game_object.get_components(ColliderComponent)

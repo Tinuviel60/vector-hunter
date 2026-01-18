@@ -20,7 +20,7 @@ Regles simples
 --------------
 1) Importer les modules concrets (pas les agrégateurs).
 2) `__init__.py` = API publique uniquement, exports stables.
-3) Respecter la direction: core -> components -> systems -> worlds/game.
+3) Respecter la direction: core -> components -> systems -> scenes/game.
 4) Typing sans runtime import: `TYPE_CHECKING`, annotations en string.
 5) Re-export public seulement au package racine.
 

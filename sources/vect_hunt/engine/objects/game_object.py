@@ -27,7 +27,7 @@ class GameObject:
     transform : Transform
         Transformation spatiale de l'objet.
     active : bool
-        Indique si l'objet est actif dans le monde.
+        Indique si l'objet est actif dans la scène.
     tags : Tag
         Tags associés à l'objet.
     components : List[Component]

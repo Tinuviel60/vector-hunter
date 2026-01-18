@@ -1,7 +1,8 @@
-from vect_hunt.engine.worlds import World
+from vect_hunt.engine.scenes import Scene
 from vect_hunt.engine.rendering import Renderer
 from vect_hunt.engine.objects import GameObject, GameObjectFactory
 from vect_hunt.engine.core import Vector2D
+from vect_hunt.engine.simulation import SimulationScheduler
 
 import pygame
 
@@ -18,8 +19,10 @@ class Game:
         Indique si le rendu a été initialisé.
     gameObjects : dict[str, GameObject]
         Dictionnaire des objets de jeu du gameplay.
-    world : World
-        Monde de jeu contenant les systèmes et objets.
+    scene : Scene
+        Scène de jeu contenant les objets.
+    simulation_scheduler : SimulationScheduler
+        Orchestrateur de la simulation.
     renderer : Renderer | None
         Renderer associé, défini après initiate_rendering.
     """
@@ -38,7 +41,8 @@ class Game:
         """
         Initialise les composants du jeu.
         """
-        self.world = World()
+        self.scene = Scene()
+        self.simulation_scheduler = SimulationScheduler(self.scene)
 
         factory = GameObjectFactory()
 
@@ -46,23 +50,23 @@ class Game:
         player = factory.from_template(
             "player.json",
             position=Vector2D(100, 200),
-            input_system=self.world.input_system,
+            input_system=self.simulation_scheduler.input_system,
         )
-        self.world.add_game_object(player)
+        self.scene.add_game_object(player)
 
         # Creer un ennemi via template
         enemy = factory.from_template("targets/basic.json", position=Vector2D(600, 200))
-        self.world.add_game_object(enemy)
+        self.scene.add_game_object(enemy)
 
         # Creer un obstacle via template
         obstacle = factory.from_template(
             "walls/standard.json", position=Vector2D(400, 300)
         )
-        self.world.add_game_object(obstacle)
+        self.scene.add_game_object(obstacle)
 
         # Creer une caisse via template
         crate = factory.from_template("objects/crate.json", position=Vector2D(400, 100))
-        self.world.add_game_object(crate)
+        self.scene.add_game_object(crate)
 
     def initiate_rendering(self, screen: pygame.Surface) -> None:
         """
@@ -85,33 +89,11 @@ class Game:
         delta_time : float
             Le temps écoulé depuis la dernière mise à jour (en secondes).
         """
-        # Mettre à jour le monde (inputs + GameObjects + collisions)
-        self.world.update(delta_time)
-
-        self.world.external_forces_system.apply_gravity(self.world, delta_time)
-
-        # Détecter les collisions une fois pour les événements
-        self.world.update_collisions(delta_time)
-
-        max_passes = 6  # TODO : Mettre dans un json de config
-        passes = 0
-
-        # Itérer plusieurs fois pour une meilleure résolution des collisions
-        for _ in range(max_passes):
-            passes += 1
-            collisions, _, collision_info = (
-                self.world.collider_system.detect_collisions(self.world)
-            )
-            moved = self.world.collision_resolution_system.update_from_collisions(
-                list(collisions),
-                collision_info,
-            )
-            if not moved:
-                break
+        self.simulation_scheduler.update(delta_time)
 
     def render(self) -> None:
         """
         Rendu graphique du jeu.
         """
 
-        self.renderer.render(self.world)
+        self.renderer.render(self.scene)

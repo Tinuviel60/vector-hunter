@@ -3,7 +3,7 @@
   "level_name": "Tutorial",
   "level_number": 1,
   "description": "Apprenez les bases : propulsion et rebonds",
-  "world": {
+  "scene": {
     "width": 1200,
     "height": 800,
     "background_color": "#414141"

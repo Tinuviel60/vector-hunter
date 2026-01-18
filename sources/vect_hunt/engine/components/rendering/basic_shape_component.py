@@ -99,13 +99,13 @@ class BasicShapeComponent(RenderComponent):
                 Vector2D(-half_w, half_h),
             ]
 
-            world_corners = []
+            scene_corners = []
             for corner in local_corners:
                 corner_rotated = transform.rotation.apply(corner)
-                world_corner = transform.position + corner_rotated
-                world_corners.append(world_corner)
+                scene_corner = transform.position + corner_rotated
+                scene_corners.append(scene_corner)
 
-            points = [(int(corner.x), int(corner.y)) for corner in world_corners]
+            points = [(int(corner.x), int(corner.y)) for corner in scene_corners]
 
             pygame.draw.polygon(surface, hex_to_rgb(self.color), points)
             if self.outline_color:

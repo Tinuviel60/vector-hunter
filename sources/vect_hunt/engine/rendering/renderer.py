@@ -10,7 +10,7 @@ from vect_hunt.engine.resources.loaders.data_loader import DataLoader
 
 if TYPE_CHECKING:
     from vect_hunt.engine.objects import GameObject
-    from vect_hunt.engine.worlds import World
+    from vect_hunt.engine.scenes import Scene
 
 """
 Module de rendu pour le jeu Vector Hunter.
@@ -184,7 +184,7 @@ class Renderer:
 
         elif geom["type"] == "box":
             # Pour les polygones, les points incluent déjà la position absolue
-            points = ColliderSystem.get_world_corners(geom["points"], transform)
+            points = ColliderSystem.get_scene_corners(geom["points"], transform)
             pygame.draw.polygon(
                 self.screen,
                 color,
@@ -209,17 +209,17 @@ class Renderer:
         # Le composant utilise directement game_object.transform
         render_component.render(self.screen)
 
-    def render(self, world: "World") -> None:
+    def render(self, scene: "Scene") -> None:
         """
         Rend une frame complète du jeu.
 
         Parameters
         ----------
-        world : World
-            L'état actuel du monde du jeu, contenant les informations des objets de jeu.
+        scene : Scene
+            L'état actuel de la scène du jeu, contenant les informations des objets de jeu.
         """
         self.draw_background()
-        self.draw_game_objects(world.game_objects)
+        self.draw_game_objects(scene.game_objects)
         pygame.display.flip()
 
     def set_background_color(self, color: str = "#414141") -> None:

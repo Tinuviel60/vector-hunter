@@ -167,7 +167,7 @@ class Game:
                 self.toggle_pause()
             
             # 4. Update gameplay
-            self.world.update(delta_time)
+            self.scene.update(delta_time)
 ```
 
 ### Dans Player

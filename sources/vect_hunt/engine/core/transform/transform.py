@@ -23,7 +23,7 @@ class Transform:
     Attributes
     ----------
     position : Vector2D
-        Position de l'objet dans le monde.
+        Position de l'objet dans la scène.
     rotation : Rotation
         Rotation de l'objet en radians.
     """
@@ -37,7 +37,7 @@ class Transform:
         Parameters
         ----------
         position : Vector2D
-            Position initiale dans le monde. Si None, la position
+            Position initiale dans la scène. Si None, la position
             est initialisée à (0, 0).
         rotation : float
             Orientation en radians. 0 correspond à aucune rotation.

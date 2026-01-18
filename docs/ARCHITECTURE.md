@@ -68,8 +68,8 @@ sources/vect_hunt/
 │   │       ├── sound_loader.py      # Chargement de sons
 │   │       └── font__loader.py      # Chargement de polices
 │   │
-│   └── worlds/                      # Gestion du monde
-│       └── world.py                 # Classe World (conteneur d'objets)
+│   └── scenes/                      # Gestion du monde
+│       └── scene.py                 # Classe World (conteneur d'objets)
 │
 ├── game/                            # GAMEPLAY SPÉCIFIQUE
 │   ├── components/                  # Composants de gameplay

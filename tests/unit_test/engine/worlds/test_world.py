@@ -1,29 +1,29 @@
 import pytest
 
-from vect_hunt.engine.worlds import World
+from vect_hunt.engine.scenes import Scene
 from vect_hunt.engine.objects import GameObject
 
 
 @pytest.fixture
-def empty_world():
+def empty_scene():
     """
-    Retourne un World vide pour tests.
+    Retourne une Scene vide pour tests.
     """
-    return World()
+    return Scene()
 
 
 @pytest.mark.parametrize(
     "object_name", ["Player", "Enemy", "Wall", "Target", "Item_123"]
 )
-def test_add_game_object_registers_in_world(empty_world, object_name):
-    world = empty_world
+def test_add_game_object_registers_in_scene(empty_scene, object_name):
+    scene = empty_scene
     obj = GameObject(object_name)
 
-    world.add_game_object(obj)
+    scene.add_game_object(obj)
 
     # Vérifie que l'objet est ajouté au dictionnaire (par ID)
-    assert obj.id in world.game_objects
-    assert world.game_objects[obj.id] is obj
+    assert obj.id in scene.game_objects
+    assert scene.game_objects[obj.id] is obj
 
 
 @pytest.mark.parametrize(
@@ -35,19 +35,19 @@ def test_add_game_object_registers_in_world(empty_world, object_name):
         ("Item", 1, ["Item"]),
     ],
 )
-def test_add_game_object_same_name(empty_world, base_name, count, expected_names):
-    world = empty_world
+def test_add_game_object_same_name(empty_scene, base_name, count, expected_names):
+    scene = empty_scene
     objects = [GameObject(base_name) for _ in range(count)]
 
     for obj in objects:
-        world.add_game_object(obj)
+        scene.add_game_object(obj)
 
     # Vérifie que les noms ont été ajustés pour éviter les conflits
-    assert len(world.game_objects) == count
+    assert len(scene.game_objects) == count
 
     for obj, expected_name in zip(objects, expected_names):
         assert obj.name == expected_name
-        assert world.game_objects[obj.id] is obj
+        assert scene.game_objects[obj.id] is obj
 
 
 @pytest.mark.parametrize(
@@ -58,31 +58,31 @@ def test_add_game_object_same_name(empty_world, base_name, count, expected_names
         (["Item1", "Item2", "Item3", "Item4"]),
     ],
 )
-def test_remove_game_object_unregisters_from_world(empty_world, object_names):
-    world = empty_world
+def test_remove_game_object_unregisters_from_scene(empty_scene, object_names):
+    scene = empty_scene
     objects = [GameObject(name) for name in object_names]
 
     # Ajouter tous les objets
     for obj in objects:
-        world.add_game_object(obj)
+        scene.add_game_object(obj)
 
     # Retirer le premier objet
-    world.remove_game_object(objects[0])
+    scene.remove_game_object(objects[0])
 
     # Vérifie que l'objet n'est plus dans le dictionnaire
-    assert objects[0].id not in world.game_objects
+    assert objects[0].id not in scene.game_objects
 
     # Vérifie que les autres sont toujours là
     for obj in objects[1:]:
-        assert obj.id in world.game_objects
+        assert obj.id in scene.game_objects
 
 
 @pytest.mark.parametrize(
     "name", ["UniqueObject", "Player", "AnotherOne", "X", "VeryLongNameForAnObject"]
 )
-def test_validate_name_returns_same_if_unique(empty_world, name):
-    world = empty_world
-    validated = world.validate_name(name)
+def test_validate_name_returns_same_if_unique(empty_scene, name):
+    scene = empty_scene
+    validated = scene.validate_name(name)
     assert validated == name
 
 
@@ -96,27 +96,27 @@ def test_validate_name_returns_same_if_unique(empty_world, name):
     ],
 )
 def test_validate_name_appends_suffix_if_conflict(
-    empty_world, base_name, existing_count, expected_suffix
+    empty_scene, base_name, existing_count, expected_suffix
 ):
-    world = empty_world
+    scene = empty_scene
 
     # Ajouter des objets existants
     for i in range(existing_count):
         obj = GameObject(base_name)
-        world.add_game_object(obj)
+        scene.add_game_object(obj)
 
     # Valider un nouveau nom qui devrait avoir un suffixe
-    new_name = world.validate_name(base_name)
+    new_name = scene.validate_name(base_name)
     assert new_name == f"{base_name}{expected_suffix}"
 
 
-def test_game_object_gets_unique_id(empty_world):
+def test_game_object_gets_unique_id(empty_scene):
     """Vérifie que chaque GameObject reçoit un ID unique."""
-    world = empty_world
+    scene = empty_scene
     objects = [GameObject(f"Obj{i}") for i in range(5)]
 
     for obj in objects:
-        world.add_game_object(obj)
+        scene.add_game_object(obj)
 
     # Vérifier que tous les IDs sont uniques
     ids = [obj.id for obj in objects]
@@ -124,13 +124,13 @@ def test_game_object_gets_unique_id(empty_world):
 
     # Vérifier que tous sont dans le dictionnaire
     for obj in objects:
-        assert world.game_objects[obj.id] is obj
+        assert scene.game_objects[obj.id] is obj
 
 
-def test_world_has_collision_tracker(empty_world):
-    """Vérifie que World initialise un CollisionTracker."""
-    world = empty_world
-    assert hasattr(world, "collision_tracker")
+def test_scene_has_collision_tracker(empty_scene):
+    """Vérifie que Scene initialise un CollisionTracker."""
+    scene = empty_scene
+    assert hasattr(scene, "collision_tracker")
     from vect_hunt.engine.physics import CollisionTracker
 
-    assert isinstance(world.collision_tracker, CollisionTracker)
+    assert isinstance(scene.collision_tracker, CollisionTracker)

@@ -4,7 +4,7 @@ from vect_hunt.engine.components.physic_body_component import PhysicBodyComponen
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from vect_hunt.engine.worlds.world import World
+    from vect_hunt.engine.scenes.scene import Scene
 
 
 class ExternalForcesSystem:
@@ -20,7 +20,7 @@ class ExternalForcesSystem:
         pass
 
     @staticmethod
-    def apply_gravity(world: "World", delta_time: float) -> None:
+    def apply_gravity(scene: "Scene", delta_time: float) -> None:
         """
         Applique la gravité au corps physique donné.
 
@@ -32,7 +32,7 @@ class ExternalForcesSystem:
             Temps écoulé depuis la dernière frame (en secondes).
         """
 
-        for game_object in world.game_objects.values():
+        for game_object in scene.game_objects.values():
             if not game_object.active:
                 continue
 
@@ -41,8 +41,8 @@ class ExternalForcesSystem:
                 continue
 
             if body.use_gravity and not body.is_kinematic:
-                # TODO : Faire de la gravité une propriété du monde ou du système
-                units = world.units
+                # TODO : Faire de la gravité une propriété de la scène ou du système
+                units = scene.units
                 gravity_m_s2 = units.get("gravity_m_s2", 9.81)
                 pixels_per_meter = units.get("pixels_per_meter", 100.0)
                 gravity_accel = Vector2D(0, gravity_m_s2 * pixels_per_meter)

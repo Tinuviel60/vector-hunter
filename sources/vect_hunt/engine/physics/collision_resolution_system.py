@@ -4,7 +4,7 @@ from vect_hunt.engine.core.math.vector import Vector2D
 from vect_hunt.engine.components.physic_body_component import PhysicBodyComponent
 
 if TYPE_CHECKING:
-    from vect_hunt.engine.worlds import World
+    from vect_hunt.engine.scenes import Scene
     from vect_hunt.engine.objects import GameObject
 
 
@@ -18,20 +18,20 @@ class CollisionResolutionSystem:
 
     Attributes
     ----------
-    world : World
-        Monde de jeu associé.
+    scene : Scene
+        Scène de jeu associé.
     """
 
-    def __init__(self, world: "World") -> None:
+    def __init__(self, scene: "Scene") -> None:
         """
         Initialise le système de résolution des collisions.
 
         Parameters
         ----------
-        world : World
-            Le monde dans lequel les objets existent.
+        scene : Scene
+            La scène dans laquelle les objets existent.
         """
-        self.world = world
+        self.scene = scene
 
     def update_from_collisions(
         self,
@@ -140,8 +140,8 @@ class CollisionResolutionSystem:
             (game_object_a, game_object_b, body_a, body_b) si disponible,
             sinon None si un PhysicBody manque.
         """
-        game_object_a = self.world.game_objects[obj_a]
-        game_object_b = self.world.game_objects[obj_b]
+        game_object_a = self.scene.game_objects[obj_a]
+        game_object_b = self.scene.game_objects[obj_b]
 
         body_a = game_object_a.get_component(PhysicBodyComponent)
         body_b = game_object_b.get_component(PhysicBodyComponent)
