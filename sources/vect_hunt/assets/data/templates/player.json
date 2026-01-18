@@ -3,7 +3,7 @@
   "name": "Player",
   "tags": ["PLAYER"],
   "transform": {
-    "position": [100, 200],
+    "position": [0, 0],
     "rotation": 0.0
   },
   "components": [

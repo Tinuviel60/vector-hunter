@@ -1,6 +1,6 @@
 {
-  "_comment": "Mur standard solide",
-  "name": "Wall_Standard",
+  "_comment": "Caisse standard en bois",
+  "name": "Crate_Standard",
   "tags": ["WALL"],
   "transform": {
     "position": [0, 0],
@@ -11,18 +11,18 @@
       "component": "physic_body",
       "data": {
         "speed": 0.0,
-        "is_kinematic": true,
+        "is_kinematic": false,
         "is_controlled": false,
         "mass": 1.0,
-        "use_gravity": false,
+        "use_gravity": true,
         "material": "materials/stone.json"
       }
     },
     {
       "component": "box_collider",
       "data": {
-        "width": 100.0,
-        "height": 20.0,
+        "width": 40.0,
+        "height": 40.0,
         "solid": true,
         "transform": {
           "position": [0, 0],
@@ -35,10 +35,10 @@
       "data": {
         "type": "basic_shape",
         "shape": "rectangle",
-        "color": "#888888",
-        "width": 100,
-        "height": 20,
-        "outline_color": "#444444",
+        "color": "#B2910C",
+        "width": 40,
+        "height": 40,
+        "outline_color": "#8B7314",
         "outline_width": 2
       }
     }

@@ -18,7 +18,7 @@ class DummyColliderComponent(ColliderComponent):
         super().__init__()
 
     @classmethod
-    def from_data(cls, data, game_object, context):
+    def from_data(cls, data, context):
         return cls()
 
     def get_geometry(self) -> dict:

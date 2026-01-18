@@ -92,7 +92,7 @@ class PhysicBodyComponent(Component):
 
     @classmethod
     def from_data(
-        cls, data: dict[str, Any], game_object, context: dict[str, Any]
+        cls, data: dict[str, Any], context: dict[str, Any]
     ) -> "PhysicBodyComponent":
         """
         Crée une instance de PhysicBodyComponent à partir de données sérialisées.
@@ -101,8 +101,6 @@ class PhysicBodyComponent(Component):
         ----------
         data : dict[str, Any]
             Données de configuration.
-        game_object : GameObject
-            Le GameObject auquel ce composant sera attaché.
         context : dict[str, Any]
             Contexte additionnel pour la création (ex: références aux systèmes).
 

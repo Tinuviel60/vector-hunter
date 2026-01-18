@@ -30,8 +30,23 @@ class BasicShapeComponent(RenderComponent):
 
     @classmethod
     def from_data(
-        cls, data: dict[str, Any], game_object, context: dict[str, Any]
+        cls, data: dict[str, Any], context: dict[str, Any]
     ) -> "BasicShapeComponent":
+        """
+        Cree un BasicShapeComponent a partir des données sérialisées.
+
+        Parameters
+        ----------
+        data : dict[str, Any]
+            Données de configuration.
+        context : dict[str, Any]
+            Contexte additionnel pour la création (ex: références aux systèmes).
+
+        Returns
+        -------
+        BasicShapeComponent
+            Instance du composant créé.
+        """
         render_type = data.get("type")
         if render_type != "basic_shape":
             raise ValueError(f"Type de rendu inconnu : {render_type}")

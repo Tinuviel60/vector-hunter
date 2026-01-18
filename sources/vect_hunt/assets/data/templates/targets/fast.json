@@ -3,7 +3,7 @@
   "name": "Target_Fast",
   "tags": ["ENEMY"],
   "transform": {
-    "position": [600, 400],
+    "position": [0, 0],
     "rotation": 0.0
   },
   "components": [

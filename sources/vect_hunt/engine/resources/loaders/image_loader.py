@@ -59,7 +59,8 @@ class ImageLoader(BaseLoader):
         width, height = surface.get_size()
         if width > cls._max_width or height > cls._max_height:
             raise ValueError(
-                f"Image trop grande: {width}x{height} (max {cls._max_width}x{cls._max_height})"
+                f"Image trop grande: {width}x{height} / "
+                f"(max {cls._max_width}x{cls._max_height})"
             )
         cls._cache_put(path, surface, cls._max_items)
         return surface

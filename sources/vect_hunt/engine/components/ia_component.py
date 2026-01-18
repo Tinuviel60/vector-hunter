@@ -50,9 +50,7 @@ class IaComponent(Component):
         self.bottom_right = bottom_right
 
     @classmethod
-    def from_data(
-        cls, data: dict[str, Any], game_object, context: dict[str, Any]
-    ) -> "IaComponent":
+    def from_data(cls, data: dict[str, Any], context: dict[str, Any]) -> "IaComponent":
         """
         Crée un IaComponent à partir de données sérialisées.
 
@@ -60,8 +58,6 @@ class IaComponent(Component):
         ----------
         data : dict[str, Any]
             Données de configuration.
-        game_object : GameObject
-            Le GameObject auquel ce composant sera attaché.
         context : dict[str, Any]
             Contexte additionnel pour la création (ex: références aux systèmes).
 

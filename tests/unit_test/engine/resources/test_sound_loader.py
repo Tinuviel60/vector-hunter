@@ -17,7 +17,9 @@ def clear_cache():
 @pytest.fixture
 def mock_pygame():
     with patch("vect_hunt.engine.resources.loaders.sound_loader.pygame") as mock_pg:
-        mock_pg.mixer.Sound.return_value = MagicMock()
+        mock_sound = MagicMock()
+        mock_sound.get_length.return_value = 1.0
+        mock_pg.mixer.Sound.return_value = mock_sound
         yield mock_pg
 
 
@@ -25,8 +27,8 @@ def mock_pygame():
 # Chargement basique
 # --------------------
 def test_load_basic(mock_pygame):
-    with patch(
-        "vect_hunt.engine.resources.loaders.sound_loader.SOUNDS_DIR", Path("/fake")
+    with patch.object(
+        SoundLoader, "_resolve_path", return_value=Path("/fake/jump.wav")
     ):
         sound = SoundLoader.load("jump.wav")
 
@@ -35,22 +37,17 @@ def test_load_basic(mock_pygame):
 
 
 def test_load_file_not_found():
-    with patch(
-        "vect_hunt.engine.resources.loaders.sound_loader.SOUNDS_DIR", Path("/fake")
-    ):
-        with patch("vect_hunt.engine.resources.loaders.sound_loader.pygame") as mock_pg:
-            mock_pg.mixer.Sound.side_effect = FileNotFoundError()
-
-            with pytest.raises(FileNotFoundError):
-                SoundLoader.load("nonexistent.wav")
+    with patch.object(SoundLoader, "_resolve_path", side_effect=FileNotFoundError()):
+        with pytest.raises(FileNotFoundError):
+            SoundLoader.load("nonexistent.wav")
 
 
 # --------------------
 # Cache
 # --------------------
 def test_cache_works(mock_pygame):
-    with patch(
-        "vect_hunt.engine.resources.loaders.sound_loader.SOUNDS_DIR", Path("/fake")
+    with patch.object(
+        SoundLoader, "_resolve_path", return_value=Path("/fake/jump.wav")
     ):
         sound1 = SoundLoader.load("jump.wav")
         sound2 = SoundLoader.load("jump.wav")
@@ -60,11 +57,14 @@ def test_cache_works(mock_pygame):
 
 
 def test_different_sounds_separate_cache(mock_pygame):
-    mock_pygame.mixer.Sound.side_effect = [MagicMock(name="s1"), MagicMock(name="s2")]
+    s1 = MagicMock(name="s1")
+    s2 = MagicMock(name="s2")
+    s1.get_length.return_value = 1.0
+    s2.get_length.return_value = 1.0
+    mock_pygame.mixer.Sound.side_effect = [s1, s2]
 
-    with patch(
-        "vect_hunt.engine.resources.loaders.sound_loader.SOUNDS_DIR", Path("/fake")
-    ):
+    with patch.object(SoundLoader, "_resolve_path") as resolve_path:
+        resolve_path.side_effect = [Path("/fake/jump.wav"), Path("/fake/shoot.wav")]
         sound1 = SoundLoader.load("jump.wav")
         sound2 = SoundLoader.load("shoot.wav")
 

@@ -103,7 +103,7 @@ class GameObjectFactory:
             if component_cls is None:
                 raise ValueError(f"Composant inconnu : {component_name}")
 
-            component = component_cls.from_data(data, game_object, context)
+            component = component_cls.from_data(data, context)
             game_object.add_component(component)
 
     @staticmethod

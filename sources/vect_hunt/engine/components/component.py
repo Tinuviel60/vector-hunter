@@ -164,9 +164,7 @@ class Component(ABC):
 
     @classmethod
     @abstractmethod
-    def from_data(
-        cls, data: dict[str, Any], game_object, context: dict[str, Any]
-    ) -> "Component":
+    def from_data(cls, data: dict[str, Any], context: dict[str, Any]) -> "Component":
         """
         Crée une instance du composant à partir de données sérialisées.
 
@@ -174,8 +172,6 @@ class Component(ABC):
         ----------
         data : dict[str, Any]
             Données de configuration du composant.
-        game_object : GameObject
-            Le GameObject auquel ce composant sera attaché.
         context : dict[str, Any]
             Contexte additionnel pour la création (ex: références aux systèmes).
 

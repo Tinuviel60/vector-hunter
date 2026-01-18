@@ -1,11 +1,8 @@
 from abc import abstractmethod
-from typing import Optional, TYPE_CHECKING
+from typing import Optional
 
 from vect_hunt.engine.components.component import Component
 from vect_hunt.engine.core.transform import Transform
-
-if TYPE_CHECKING:
-    from vect_hunt.engine.objects import GameObject
 
 
 class ColliderComponent(Component):
@@ -27,7 +24,6 @@ class ColliderComponent(Component):
 
     def __init__(
         self,
-        game_object: Optional["GameObject"] = None,
         transform: Optional[Transform] = None,
         solid: bool = True,
     ):
@@ -36,42 +32,15 @@ class ColliderComponent(Component):
 
         Parameters
         ----------
-        game_object : GameObject, optional
-            L'objet de jeu auquel le collider appartient.
         transform : Transform
             Le transform associe au collider (offset et orientation locaux).
         solid : bool
             Indique si le collider interagit avec d'autres colliders ou non.
         """
         super().__init__()
-        self.game_object = game_object
         self.transform = transform if transform is not None else Transform()
         self.solid = solid
         self.nb_collision = 0
-
-    def on_attach(self, game_object: "GameObject") -> None:
-        """
-        Appelé lorsque le composant est attaché à un GameObject.
-
-        Parameters
-        ----------
-        game_object : GameObject
-            Le GameObject auquel ce composant est attaché.
-        """
-        super().on_attach(game_object)
-        self.game_object = game_object
-
-    def on_detach(self) -> None:
-        """ "
-        Appelé lorsque le composant est détaché de son GameObject.
-
-        Parameters
-        ----------
-        game_object : GameObject
-            Le GameObject auquel ce composant était attaché.
-        """
-        super().on_detach()
-        self.game_object = None
 
     def update(self, delta_time: float) -> None:
         """
