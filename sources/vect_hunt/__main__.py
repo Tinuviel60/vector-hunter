@@ -3,25 +3,13 @@ import pygame
 from vect_hunt.game import Game
 from vect_hunt.engine.resources.loaders import DataLoader
 from vect_hunt.engine.resources.paths import Paths
+from vect_hunt.engine.simulation import GameLoop
 from .logging_config import setup_logging
 
 # Import dynamique des components
 from vect_hunt.engine.utils.component_loader import load_all_components
 
 logger = logging.getLogger(__name__)
-
-# Charger la configuration de l'application
-app_config = DataLoader.load_json("configs/app.json")
-
-# Configuration du profiling
-PROFILING = app_config["profiling"]["enabled"]
-
-if PROFILING:
-    import cProfile
-    import pstats
-
-    TICK_LIMIT = app_config["profiling"]["tick_limit"]
-    REPORT_NB = app_config["profiling"]["report_lines"]
 
 """
 Configuration globale de l'application et mise en place de
@@ -31,95 +19,68 @@ Les paramètres graphiques et de simulation sont chargés depuis
 assets/data/configs/app.json
 """
 
-# Extraire les paramètres depuis la config
-WINDOW_WIDTH = app_config["window"]["width"]
-WINDOW_HEIGHT = app_config["window"]["height"]
-WINDOW_TITLE = app_config["window"]["title"]
-FPS = app_config["simulation"]["fps"]
-SIM_DT = app_config["simulation"]["fixed_timestep"]
+def bootstrap() -> dict:
+    """
+    Charge la configuration et prépare le logging.
 
-# Convertir le niveau de log string en constante logging
-log_level_str = app_config["logging"]["level"]
-log_level = getattr(logging, log_level_str, logging.WARNING)
+    Returns
+    -------
+    dict
+        Configuration de l'application.
+    """
+    app_config = DataLoader.load_json("configs/app.json")
+    log_level_str = app_config["logging"]["level"]
+    log_level = getattr(logging, log_level_str, logging.WARNING)
+    setup_logging(
+        log_level=log_level,
+        enable_console=app_config["logging"]["enable_console"],
+    )
+    return app_config
 
-setup_logging(
-    log_level=log_level,
-    enable_console=app_config["logging"]["enable_console"],
-)
 
-
-def main() -> None:
+def main(app_config: dict) -> None:
     """
     Fonction principale de l'application.
     Initialise Pygame, crée la fenêtre,
     et lance la boucle principale du jeu.
+
+    Parameters
+    ----------
+    app_config : dict
+        Configuration de l'application.
     """
 
     # Charger dynamiquement tous les components du moteur et du jeu
     load_all_components([str(Paths.COMPONENTS_DIR), str(Paths.GAME_DIR)])
 
+    window_width = app_config["window"]["width"]
+    window_height = app_config["window"]["height"]
+    window_title = app_config["window"]["title"]
+    fps = app_config["simulation"]["fps"]
+    sim_dt = app_config["simulation"]["fixed_timestep"]
+
     pygame.init()
-    screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-    pygame.display.set_caption(WINDOW_TITLE)
-    clock = pygame.time.Clock()
+    try:
+        screen = pygame.display.set_mode((window_width, window_height))
+        pygame.display.set_caption(window_title)
+        clock = pygame.time.Clock()
 
-    game = Game()
-    game.initiate_rendering(screen)
-
-    running = True
-    accumulator = 0.0  # Accumulateur de temps réel
-
-    while running:
-        # Gestion des événements
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            # Transmettre les événements à l'InputSystem
-            game.simulation_scheduler.input_system.process_event(event)
-
-        # Temps réel écoulé depuis la dernière frame (en secondes)
-        frame_time = clock.tick(FPS) / 1000.0
-
-        # Accumuler le temps réel
-        accumulator += frame_time
-
-        if accumulator > SIM_DT * 4:
-            logger.warning(
-                "Temps d'execution trop long, limitation de l'accumulateur | "
-                "accumulator=%f | frame_time=%f",
-                accumulator,
-                frame_time,
-            )
-            accumulator = (
-                SIM_DT * 4
-            )  # Limiter l'accumulateur pour éviter les spirales de la mort
-
-        while accumulator >= SIM_DT:
-            # Mettre à jour la simulation avec un pas de temps fixe
-            game.update(SIM_DT)
-            accumulator -= SIM_DT
-
-        # Rendu graphique
-        game.render()
-
-        # Utiliser pour stopper la boucle lors du profiling
-        if PROFILING:
-            global TICK_LIMIT
-            TICK_LIMIT -= 1
-            if TICK_LIMIT <= 0:
-                running = False
-                
-    pygame.quit()
+        game = Game()
+        game.initiate_rendering(screen)
+        loop = GameLoop(
+            game=game,
+            scheduler=game.simulation_scheduler,
+            clock=clock,
+            fps=fps,
+            sim_dt=sim_dt,
+            logger=logger,
+        )
+        loop.run()
+    finally:
+        pygame.quit()
 
 
 if __name__ == "__main__":
-    # Lancer l'application principale avec ou sans profiling
-    if not PROFILING:
-        main()
-    else:
-        profiler = cProfile.Profile()
-        profiler.enable()
-        main()
-        profiler.disable()
-        stats = pstats.Stats(profiler).sort_stats("cumtime")
-        stats.print_stats(REPORT_NB)
+    # Lancer l'application principale
+    app_config = bootstrap()
+    main(app_config)

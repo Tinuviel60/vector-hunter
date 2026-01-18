@@ -33,6 +33,7 @@ class Game:
 
         """
         self.start_render: bool = False
+        self.renderer: Renderer | None = None
 
         self.gameObjects: dict[str, GameObject] = {}
         self.initialize()
@@ -95,5 +96,6 @@ class Game:
         """
         Rendu graphique du jeu.
         """
-
+        if self.renderer is None:
+            return
         self.renderer.render(self.scene)

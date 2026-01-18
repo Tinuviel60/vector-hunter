@@ -37,6 +37,12 @@ class SimulationScheduler:
         self.collision_resolution_system = CollisionResolutionSystem(scene)
         self.external_forces_system = ExternalForcesSystem()
 
+    def handle_event(self, event) -> None:
+        """
+        Traite un événement d'entrée via l'InputSystem.
+        """
+        self.input_system.process_event(event)
+
     def update(self, delta_time: float) -> None:
         """
         Met a jour la scene et ses systemes.
