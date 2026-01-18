@@ -74,7 +74,7 @@ Paramètres **globaux** de l'application et du gameplay.
 - `game.json` – Paramètres de gameplay (physique, propulsion)
 - `collision.json` – Masques de collision par tags
 
-**Usage** : chargés au démarrage via `ConfigLoader`
+**Usage** : chargés au démarrage via `DataLoader`
 
 #### `templates/`
 Modèles **réutilisables** d'entités du jeu.
@@ -107,7 +107,7 @@ Chaque niveau référence des templates et définit leur placement.
 
 ---
 
-### fonts/
+### font/
 
 Polices de caractères utilisées par le jeu.
 
@@ -134,7 +134,7 @@ Polices de caractères utilisées par le jeu.
 
 ### ✅ Bonnes pratiques
 
-- Tous les accès passent par `vect_hunt.resources`
+- Tous les accès passent par `vect_hunt.engine.resources` ou les loaders directs
 - Utiliser les loaders appropriés (ImageLoader, FontLoader, etc.)
 - Les configs sont en JSON avec validation
 - Documenter les templates avec des commentaires inline

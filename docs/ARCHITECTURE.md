@@ -25,9 +25,11 @@ sources/vect_hunt/
 │   │   └── tag_system.py            # Système de gestion des tags
 │   │
 │   ├── physics/                     # Moteur physique
-│   │   ├── collider.py              # Colliders (Box, Circle)
 │   │   ├── collider_system.py       # Système de détection de collision
-│   │   └── collision_tracker.py     # Suivi des collisions (enter/stay/exit)
+│   │   ├── collision_resolution_system.py # Résolution des collisions
+│   │   ├── collision_tracker.py     # Suivi des collisions (enter/stay/exit)
+│   │   ├── external_forces_system.py # Forces externes (gravité)
+│   │   └── physic_material.py       # Matériaux physiques
 │   │
 │   ├── objects/                     # Objets de jeu de base
 │   │   ├── game_object.py           # Classe de base GameObject
@@ -42,16 +44,25 @@ sources/vect_hunt/
 │   │
 │   ├── rendering/                   # Système de rendu
 │   │   ├── renderer.py              # Renderer principal
-│   │   ├── render_component.py      # Interface pour les composants de rendu
-│   │   ├── basic_shape.py           # Formes géométriques simples
-│   │   ├── sprite.py                # Sprites bitmap
 │   │   └── font/                    # Système de polices
 │   │       ├── font_style.py        # Style de police
 │   │       └── font_system.py       # Gestionnaire de polices
 │   │
+│   ├── components/                  # Composants
+│   │   ├── component.py             # Base Component
+│   │   ├── render_component.py      # Base pour rendu
+│   │   ├── physic_body_component.py # Corps physique
+│   │   ├── collider/                # Colliders
+│   │   │   ├── box_collider_component.py
+│   │   │   └── circle_collider_component.py
+│   │   └── rendering/               # Rendu
+│   │       ├── basic_shape_component.py
+│   │       └── sprite_component.py
+│   │
 │   ├── resources/                   # Gestion des ressources
 │   │   ├── paths.py                 # Chemins vers les assets
 │   │   └── loaders/                 # Loaders pour différents types
+│   │       ├── base_loader.py       # Sécurité + cache
 │   │       ├── data_loader.py       # Chargement de JSON
 │   │       ├── image_loader.py      # Chargement d'images
 │   │       ├── sound_loader.py      # Chargement de sons
@@ -61,9 +72,9 @@ sources/vect_hunt/
 │       └── world.py                 # Classe World (conteneur d'objets)
 │
 ├── game/                            # GAMEPLAY SPÉCIFIQUE
-│   ├── actors/                      # Acteurs du jeu
-│   │   ├── player.py                # Classe Player (hérite de GameObject)
-│   │   └── enemy.py                 # Classe Enemy (hérite de GameObject)
+│   ├── components/                  # Composants de gameplay
+│   │   ├── ia_component.py
+│   │   └── input_component.py
 │   └── game_main.py                 # Classe principale Game
 │
 ├── assets/                          # Ressources (partagées)
@@ -102,21 +113,19 @@ Les systèmes sont placés selon leur portée :
 ```python
 from vect_hunt.engine import Vector2D, GameObject, Transform
 from vect_hunt.engine.core import Tag
-from vect_hunt.engine.physics import Collider, BoxCollider
 ```
 
 #### Depuis le game
 ```python
-from vect_hunt.game import Game, Player, Enemy
+from vect_hunt.game import Game, IaComponent
 from vect_hunt.engine import GameObject  # Le game peut importer l'engine
 ```
 
 #### Imports internes (dans l'engine)
 ```python
-# Dans engine/objects/game_object.py
-from ..core import Tag
-from ..core.math import Vector2D
-from ..physics.collider import Collider
+from vect_hunt.engine.core import Tag
+from vect_hunt.engine.core.math import Vector2D
+from vect_hunt.engine.components.collider.box_collider_component import BoxColliderComponent
 ```
 
 ### 4. Éviter les imports circulaires

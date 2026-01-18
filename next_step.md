@@ -1,68 +1,24 @@
 # Vector-Hunter Roadmap
 
-## 🔹 Must Have (prochaines étapes critiques)
+## En cours (trié par priorité)
 
-12. **Restructurer l'archicture de la boucle de jeu**
-   - Sortir tout de world vers une classe dédié, qui défini l'ordre (mouvement, collider, collision puis rendu...)
-   - Transformer world en scene
+| Item | Détails | Priorité | Status |
+| --- | --- | --- | --- |
+| Restructurer la boucle de jeu | Sortir la logique de `World` vers une classe dédiée (ordre: mouvement, collisions, rendu). Transformer `World` en scène. | haute | todo |
+| Revoir le système de RenderComponent | Clarifier la relation au `Transform`. Gérer une liste de rendu (sprite et/ou basic shape, etc.). | haute | todo |
+| Targets | Position, mouvement simple ou scripté. Collider attaché. Comportement d’interaction (hit, score...). | moyenne | in_progress |
+| Logger les collisions et événements | Aide au debug et suivi des interactions. | faible | todo |
+| Optimiser le CollisionSystem | Spatial partitioning (quadtree ou grille). Découpler on_trigger et on_collision vers le tracker (done). Option: collisions/triggers par collider plutôt que par GameObject. | faible | in_progress |
 
-13. **Revoir le system de RenderComponent**
-   - Transform
-   - Liste de render (qui peut etre sprite et/ou bsaic shape et/ou ...)
+## Fini (trié par priorité)
 
-## 🔹 Important (prochaines fonctionnalités logiques)
-
-5. **Target**
-   - Position, mouvement simple ou scripté (done)
-   - Collider attaché  (done)
-   - Comportement d’interaction (hit, score…)
-
-
-
-## 🔹 Optional / Futur
-
-
-9. **Logger les collisions et événements**
-   - Aide au debug et suivi des interactions
-
-
-
-11. **Points d’optimisation pour Collision_tracking**
-    - Spatial partitioning pour ColliderSystem (quadtree ou grille) pour réduire le nombre de paires testées.
-    - Découpler on_trigger et on_collision pour que les callbacks soient déclenchés dans le tracker plutôt que dans World.update_collisions, ce qui rend World plus léger. (done)
-    - Possibilité de stocker les collisions/triggers par collider plutôt que par GameObject si tu veux des interactions plus fines.
-
-# Fini 
-
-1. **Intégration des GameObjects dans le World**
-   - Gestion des références des objets dans le monde
-   - Mise à jour, rendu et collisions centralisés
-
-2. **Premier test de collisions**
-   - Scenario simple avec BoxCollider et CircleCollider
-   - Vérification AABB puis collisions réelles
-   - Affichage console ou rendu minimal pour visualisation
-
-3. **Mise en place des tests unitaires**
-   -GameObject + Game + TagSystem (unitaires)
-   -ColliderSystem avancé (unitaires)
-   -Quelques tests d’intégration simples sur Game + GameObject + Transform + Collider
-
-4. **Player et InputSystem**
-   - Player reçoit des commandes via InputSystem
-   - Déplacement et rotation du Player
-   - Interaction avec le World et les Targets
-
-6. **PhysicMaterial**
-   - Friction, rebond
-   - Association avec Collider ou PhysicsSystem 
-   - Possibilité de charger depuis fichier pour réutilisation
-
-7. **Rendering minimal**
-   - Visualiser position et rotation des objets pour debug (done)
-
-8. **Gestion activation/desactivation d’objets**
-   - Utilisation du flag `active` dans GameObject (done)
-
-10. **Préparer architecture ECS**
-    - GameObject + composants modulaires (done)
+| Item | Détails | Priorité | Status |
+| --- | --- | --- | --- |
+| Intégration des GameObjects dans le World | Gestion des références des objets dans le monde. Mise à jour, rendu et collisions centralisés. | moyenne | done |
+| Premier test de collisions | Scénario simple avec BoxCollider et CircleCollider. Vérification AABB puis collisions réelles. Affichage console ou rendu minimal. | moyenne | done |
+| Mise en place des tests unitaires | GameObject + Game + TagSystem. ColliderSystem avancé. Tests d’intégration simples sur Game + GameObject + Transform + Collider. | moyenne | done |
+| Player et InputSystem | Player reçoit des commandes via InputSystem. Déplacement et rotation. Interaction avec le World et les Targets. | moyenne | done |
+| PhysicMaterial | Friction, rebond. Association avec Collider ou PhysicsSystem. Chargement depuis fichier pour réutilisation. | moyenne | done |
+| Gestion activation/désactivation d’objets | Utilisation du flag `active` dans GameObject. | moyenne | done |
+| Rendering minimal | Visualiser position et rotation des objets pour debug. | faible | done |
+| Préparer architecture ECS | GameObject + composants modulaires. | faible | done |

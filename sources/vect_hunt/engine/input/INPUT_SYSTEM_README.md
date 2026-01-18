@@ -46,7 +46,7 @@ player.position += velocity * delta_time
 - **PLAYING** : Gameplay
 
 ```python
-from vect_hunt.systems import InputSystem, GameContext
+from vect_hunt.engine.input import InputSystem, GameContext
 
 # Changer de contexte
 input_system.set_context(GameContext.PLAYING)
@@ -144,7 +144,7 @@ Les modifiers fonctionnent sur **BOOL**, **FLOAT** et **VECTOR2D** :
 ### Dans Game
 
 ```python
-from vect_hunt.systems import InputSystem, GameContext
+from vect_hunt.engine.input import InputSystem, GameContext
 
 class Game:
     def __init__(self):
@@ -235,4 +235,3 @@ pop_context() -> Optional[InputContext]
 - Lire `pygame.key.get_pressed()` directement
 - Mélanger gameplay et input
 - Ignorer les états temporels
-

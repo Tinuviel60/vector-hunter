@@ -18,7 +18,7 @@ du workflow actuel.
 
 - Framework de tests : pytest
 - Les tests unitaires sont regroupés dans le dossier tests
-- Un squelette de tests est généré par un script externe au projet
+- Les tests unitaires sont maintenus dans le dépôt
 
 Les tests sont exécutés à partir de la racine du projet à l’aide des outils
 standards de l’écosystème Python ou de visual studio code.
