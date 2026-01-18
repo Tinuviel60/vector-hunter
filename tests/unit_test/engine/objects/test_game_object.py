@@ -1,20 +1,28 @@
 import pytest
 
 from vect_hunt.engine.objects import GameObject
-from vect_hunt.engine.physics import Collider
 from vect_hunt.engine.core import Tag, Transform, Vector2D
-from vect_hunt.engine.components.collider_component import ColliderComponent
+from vect_hunt.engine.components.collider import ColliderComponent
 
 
-class DummyCollider(Collider):
+class DummyColliderComponent(ColliderComponent):
     """
     Collider minimal pour les tests unitaires.
 
     Aucune logique de collision n'est utilisée ici.
     """
 
+    component_name = "dummy_collider"
+
     def __init__(self):
-        pass
+        super().__init__()
+
+    @classmethod
+    def from_data(cls, data, game_object, context):
+        return cls()
+
+    def get_geometry(self) -> dict:
+        return {"type": "dummy"}
 
 
 def test_game_object_initialization_defaults():
@@ -48,15 +56,12 @@ def test_game_object_initialization(name, position, rotation, tags):
 @pytest.mark.parametrize("nb_colliders", [0, 1, 10])
 def test_add_collider(nb_colliders):
     obj = GameObject("Wall")
-    collider_comp = ColliderComponent()
-    obj.add_component(collider_comp)
-
     for _ in range(nb_colliders):
-        collider = DummyCollider()
-        collider_comp.add_collider(collider)
-        assert collider in collider_comp.colliders
+        collider = DummyColliderComponent()
+        obj.add_component(collider)
+        assert collider in obj.components
 
-    assert len(collider_comp.colliders) == nb_colliders
+    assert len(obj.get_components(DummyColliderComponent)) == nb_colliders
 
 
 @pytest.mark.parametrize(
@@ -64,32 +69,29 @@ def test_add_collider(nb_colliders):
 )
 def test_remove_existing_collider(nb_initial_colliders, nb_colliders_to_remove):
     obj = GameObject("Wall")
-    collider_comp = ColliderComponent()
-    obj.add_component(collider_comp)
-    colliders = [DummyCollider() for _ in range(nb_initial_colliders)]
+    colliders = [DummyColliderComponent() for _ in range(nb_initial_colliders)]
 
     for collider in colliders:
-        collider_comp.add_collider(collider)
+        obj.add_component(collider)
 
     for i in range(nb_colliders_to_remove):
-        collider_comp.remove_collider(colliders[i])
+        obj.remove_component(colliders[i])
 
-    assert len(collider_comp.colliders) == nb_initial_colliders - nb_colliders_to_remove
+    remaining = obj.get_components(DummyColliderComponent)
+    assert len(remaining) == nb_initial_colliders - nb_colliders_to_remove
     for i in range(nb_colliders_to_remove):
-        assert colliders[i] not in collider_comp.colliders
+        assert colliders[i] not in remaining
     for i in range(nb_colliders_to_remove, nb_initial_colliders):
-        assert colliders[i] in collider_comp.colliders
+        assert colliders[i] in remaining
 
 
 def test_remove_non_existing_collider():
     obj = GameObject("Wall")
-    collider_comp = ColliderComponent()
-    obj.add_component(collider_comp)
-    collider = DummyCollider()
+    collider = DummyColliderComponent()
 
-    collider_comp.remove_collider(collider)
+    obj.remove_component(collider)
 
-    assert collider_comp.colliders == []
+    assert obj.get_components(DummyColliderComponent) == []
 
 
 @pytest.mark.parametrize(

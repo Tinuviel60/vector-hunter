@@ -45,4 +45,3 @@ def test_can_pickup_matches_config(tag1: Tag, tag2: Tag) -> None:
     Vérifie que can_pickup reflète la configuration chargée.
     """
     assert TagSystem.can_pickup(tag1, tag2) is _expected_can_pickup(tag1, tag2)
-

@@ -6,10 +6,12 @@ from vect_hunt.engine.components.render_component import RenderComponent
 from vect_hunt.engine.core.math import Vector2D, hex_to_rgb
 
 
-class BasicShape(RenderComponent):
+class BasicShapeComponent(RenderComponent):
     """
     Composant de rendu pour formes geometriques simples.
     """
+
+    component_name = "basic_shape"
 
     def __init__(
         self,
@@ -29,7 +31,7 @@ class BasicShape(RenderComponent):
     @classmethod
     def from_data(
         cls, data: dict[str, Any], game_object, context: dict[str, Any]
-    ) -> "BasicShape":
+    ) -> "BasicShapeComponent":
         render_type = data.get("type")
         if render_type != "basic_shape":
             raise ValueError(f"Type de rendu inconnu : {render_type}")
@@ -98,3 +100,14 @@ class BasicShape(RenderComponent):
                     points,
                     self.outline_width,
                 )
+
+    def update(self, delta_time: float) -> None:
+        """
+        Met a jour le composant de forme basique si necessaire.
+
+        Parameters
+        ----------
+        delta_time : float
+            Temps écoulé depuis la dernière frame (en secondes).
+        """
+        pass

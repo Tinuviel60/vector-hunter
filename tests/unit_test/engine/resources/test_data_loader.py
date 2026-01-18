@@ -30,7 +30,8 @@ def test_load_json_basic(sample_data):
         with patch(
             "vect_hunt.engine.resources.loaders.data_loader.DATA_DIR", Path("/fake")
         ):
-            result = DataLoader.load_json("test.json")
+            with patch("pathlib.Path.exists", return_value=True):
+                result = DataLoader.load_json("test.json")
 
     assert result == sample_data
 
@@ -48,8 +49,9 @@ def test_load_json_invalid_json():
         with patch(
             "vect_hunt.engine.resources.loaders.data_loader.DATA_DIR", Path("/fake")
         ):
-            with pytest.raises(json.JSONDecodeError):
-                DataLoader.load_json("invalid.json")
+            with patch("pathlib.Path.exists", return_value=True):
+                with pytest.raises(json.JSONDecodeError):
+                    DataLoader.load_json("invalid.json")
 
 
 # --------------------
@@ -63,8 +65,9 @@ def test_cache_works(sample_data):
         with patch(
             "vect_hunt.engine.resources.loaders.data_loader.DATA_DIR", Path("/fake")
         ):
-            result1 = DataLoader.load_json("test.json")
-            result2 = DataLoader.load_json("test.json")
+            with patch("pathlib.Path.exists", return_value=True):
+                result1 = DataLoader.load_json("test.json")
+                result2 = DataLoader.load_json("test.json")
 
     assert mock_file.call_count == 1
     assert result1 == result2
@@ -78,8 +81,9 @@ def test_clear_cache_works(sample_data):
         with patch(
             "vect_hunt.engine.resources.loaders.data_loader.DATA_DIR", Path("/fake")
         ):
-            DataLoader.load_json("test.json")
-            DataLoader.clear_cache()
-            DataLoader.load_json("test.json")
+            with patch("pathlib.Path.exists", return_value=True):
+                DataLoader.load_json("test.json")
+                DataLoader.clear_cache()
+                DataLoader.load_json("test.json")
 
     assert mock_file.call_count == 2

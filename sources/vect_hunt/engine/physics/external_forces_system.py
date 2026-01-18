@@ -1,4 +1,3 @@
-
 from vect_hunt.engine.core.math import Vector2D
 from vect_hunt.engine.components import PhysicBodyComponent
 
@@ -7,9 +6,10 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from vect_hunt.engine.worlds.world import World
 
+
 class ExternalForcesSystem:
     """
-    Classe représentant un système de gestion des forces externes 
+    Classe représentant un système de gestion des forces externes
     appliquées aux corps physiques.
     """
 
@@ -39,7 +39,7 @@ class ExternalForcesSystem:
             body = game_object.get_component(PhysicBodyComponent)
             if body is None:
                 continue
-            
+
             if body.use_gravity and not body.is_kinematic:
                 # TODO : Faire de la gravité une propriété du monde ou du système
                 gravity_force = Vector2D(0, 9.81) * body.mass * delta_time

@@ -12,13 +12,6 @@ class CombineMode(Enum):
     Enumération des modes de combinaison des propriétés physiques.
     Ils sont classés par priorité.
 
-    Notes
-    -----
-    MIN : Utilise la valeur minimale des deux matériaux.
-    AVERAGE : Utilise la moyenne des deux valeurs.
-    MULTIPLY : Multiplie les deux valeurs.
-    MAX : Utilise la valeur maximale des deux matériaux.
-
     Attributes
     ----------
     MIN : CombineMode

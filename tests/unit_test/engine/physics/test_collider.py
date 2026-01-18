@@ -1,7 +1,11 @@
 import math
 import pytest
 from vect_hunt.engine.core import Vector2D
-from vect_hunt.engine.physics import Collider, BoxCollider, CircleCollider
+from vect_hunt.engine.physics import (
+    BoxColliderComponent,
+    CircleColliderComponent,
+    ColliderComponent,
+)
 
 
 # --------------------
@@ -18,10 +22,8 @@ class DummyGameObject:
 # --------------------
 def test_collider_geometry_not_implemented():
     parent = DummyGameObject()
-    collider = Collider(parent)  # type: ignore
-
-    with pytest.raises(NotImplementedError):
-        collider.get_geometry()
+    with pytest.raises(TypeError):
+        ColliderComponent(parent)  # type: ignore
 
 
 # --------------------
@@ -40,7 +42,7 @@ def test_collider_geometry_not_implemented():
 def test_box_collider_initialization(width, height, center_x, center_y, orientation):
     parent = DummyGameObject()
     center = Vector2D(center_x, center_y)
-    box = BoxCollider(
+    box = BoxColliderComponent(
         parent, width, height, center, orientation, solid=True  # type: ignore
     )
 
@@ -66,7 +68,7 @@ def test_box_collider_initialization(width, height, center_x, center_y, orientat
 )
 def test_box_collider_area(width, height, expected_area):
     parent = DummyGameObject()
-    box = BoxCollider(parent, width, height)  # type: ignore
+    box = BoxColliderComponent(parent, width, height)  # type: ignore
     assert math.isclose(box.get_area(), expected_area)
 
 
@@ -83,7 +85,7 @@ def test_box_collider_geometry_returns_polygon(
 ):
     parent = DummyGameObject()
     center = Vector2D(center_x, center_y)
-    box = BoxCollider(parent, width, height, center, orientation)  # type: ignore
+    box = BoxColliderComponent(parent, width, height, center, orientation)  # type: ignore
     geo = box.get_geometry()
 
     assert geo["type"] == "box"
@@ -108,7 +110,7 @@ def test_box_collider_geometry_returns_polygon(
 def test_circle_collider_initialization(radius, center_x, center_y, solid):
     parent = DummyGameObject()
     center = Vector2D(center_x, center_y)
-    circle = CircleCollider(parent, center, radius, solid=solid)  # type: ignore
+    circle = CircleColliderComponent(parent, center, radius, solid=solid)  # type: ignore
 
     assert circle.radius == radius
     assert circle.transform.position == center
@@ -127,7 +129,7 @@ def test_circle_collider_initialization(radius, center_x, center_y, solid):
 )
 def test_circle_collider_area(radius, expected_area):
     parent = DummyGameObject()
-    circle = CircleCollider(parent, radius=radius)  # type: ignore
+    circle = CircleColliderComponent(parent, radius=radius)  # type: ignore
     assert math.isclose(circle.get_area(), expected_area)
 
 
@@ -142,7 +144,7 @@ def test_circle_collider_area(radius, expected_area):
 def test_circle_collider_geometry_returns_circle(radius, center_x, center_y):
     parent = DummyGameObject()
     center = Vector2D(center_x, center_y)
-    circle = CircleCollider(parent, center, radius)  # type: ignore
+    circle = CircleColliderComponent(parent, center, radius)  # type: ignore
     geo = circle.get_geometry()
 
     assert geo["type"] == "circle"

@@ -58,7 +58,7 @@ def test_physic_body_initialization(speed):
 )
 def test_set_velocity(vx, vy):
     """Vérifie que set_velocity définit correctement la vélocité."""
-    component = PhysicBodyComponent()
+    component = PhysicBodyComponent(is_controlled=True)
     velocity = Vector2D(vx, vy)
 
     component.set_velocity(velocity)
@@ -118,7 +118,7 @@ def test_update_calculates_displacement(
     mock_game_object, vx, vy, delta_time, expected_dx, expected_dy
 ):
     """Vérifie que update calcule le déplacement correct à partir de la vélocité."""
-    component = PhysicBodyComponent()
+    component = PhysicBodyComponent(is_controlled=True)
     component.game_object = mock_game_object
 
     # Définir une vélocité
@@ -136,7 +136,7 @@ def test_update_calculates_displacement(
 
 def test_update_does_not_call_move_with_zero_velocity(mock_game_object):
     """Vérifie que update ne déplace pas si la vélocité est nulle."""
-    component = PhysicBodyComponent()
+    component = PhysicBodyComponent(is_controlled=True)
     component.game_object = mock_game_object
 
     # Vélocité nulle
@@ -151,7 +151,7 @@ def test_update_does_not_call_move_with_zero_velocity(mock_game_object):
 
 def test_update_applies_acceleration_to_velocity(mock_game_object):
     """Vérifie que update applique l'accélération à la vélocité."""
-    component = PhysicBodyComponent()
+    component = PhysicBodyComponent(is_controlled=True)
     component.game_object = mock_game_object
 
     # Vélocité initiale
@@ -170,7 +170,7 @@ def test_update_applies_acceleration_to_velocity(mock_game_object):
 
 def test_update_resets_acceleration(mock_game_object):
     """Vérifie que update réinitialise l'accélération après application."""
-    component = PhysicBodyComponent()
+    component = PhysicBodyComponent(is_controlled=True)
     component.game_object = mock_game_object
 
     # Ajouter une accélération
@@ -188,7 +188,7 @@ def test_update_resets_acceleration(mock_game_object):
 # --------------------
 def test_stop_resets_velocity_and_acceleration():
     """Vérifie que stop arrête complètement le mouvement."""
-    component = PhysicBodyComponent()
+    component = PhysicBodyComponent(is_controlled=True)
 
     # Définir vélocité et accélération
     component.set_velocity(Vector2D(100, 100))
@@ -207,7 +207,7 @@ def test_stop_resets_velocity_and_acceleration():
 # --------------------
 def test_update_with_acceleration_calculates_correct_displacement(mock_game_object):
     """Vérifie que update calcule le déplacement avec accélération + vélocité."""
-    component = PhysicBodyComponent()
+    component = PhysicBodyComponent(is_controlled=True)
     component.game_object = mock_game_object
 
     # Vélocité initiale + accélération

@@ -29,6 +29,8 @@ class InputComponent(Component):
         Référence au système d'inputs.
     """
 
+    component_name = "input"
+
     def __init__(self, input_system: "InputSystem"):
         """
         Initialise le composant d'input.
@@ -45,6 +47,23 @@ class InputComponent(Component):
     def from_data(
         cls, data: dict[str, Any], game_object, context: dict[str, Any]
     ) -> "InputComponent":
+        """
+        Crée un InputComponent à partir de données sérialisées.
+
+        Parameters
+        ----------
+        data : dict[str, Any]
+            Données de configuration (non utilisées ici).
+        game_object : GameObject
+            Le GameObject auquel ce composant sera attaché.
+        context : dict[str, Any]
+            Contexte additionnel pour la création (ex: références aux systèmes).
+
+        Returns
+        -------
+        InputComponent
+            Instance du composant créé.
+        """
         input_system = context.get("input_system")
         if input_system is None:
             raise ValueError("InputSystem requis pour creer un composant 'input'.")

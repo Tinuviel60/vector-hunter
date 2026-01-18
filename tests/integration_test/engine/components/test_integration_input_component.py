@@ -20,7 +20,7 @@ def input_system():
 def game_object_with_physics_and_input(input_system):
     """GameObject avec PhysicBodyComponent et InputComponent attachés."""
     obj = GameObject("Player")
-    physic_body = PhysicBodyComponent(speed=200.0)
+    physic_body = PhysicBodyComponent(speed=200.0, is_controlled=True)
     input_comp = InputComponent(input_system)
     obj.add_component(physic_body)
     obj.add_component(input_comp)

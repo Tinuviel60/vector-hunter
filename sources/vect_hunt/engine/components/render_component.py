@@ -17,12 +17,15 @@ class RenderComponent(Component):
         Indique si le composant est actif.
     """
 
+    component_name = "render"
+
     def __init__(self):
         """
         Initialise le composant de rendu.
         """
         super().__init__()
 
+    @abstractmethod
     def update(self, delta_time: float) -> None:
         """
         Les composants de rendu n'ont généralement pas de logique dans update.
@@ -34,7 +37,7 @@ class RenderComponent(Component):
         delta_time : float
             Temps écoulé depuis la dernière frame (en secondes).
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def render(self, surface) -> None:

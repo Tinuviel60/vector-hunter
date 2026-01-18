@@ -1,4 +1,4 @@
-from .basic_shape import BasicShape
-from .sprite import Sprite
+from .basic_shape_component import BasicShapeComponent
+from .sprite_component import SpriteComponent
 
-__all__ = ["BasicShape", "Sprite"]
+__all__ = ["BasicShapeComponent", "SpriteComponent"]

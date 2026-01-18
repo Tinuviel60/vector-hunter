@@ -18,7 +18,12 @@ from .core import (
 )
 
 # Physics
-from .physics import Collider, BoxCollider, CircleCollider, ColliderSystem
+from .physics import (
+    BoxColliderComponent,
+    CircleColliderComponent,
+    ColliderComponent,
+    ColliderSystem,
+)
 
 # Objects
 from .objects import GameObject, GameObjectFactory
@@ -28,7 +33,7 @@ from .input import InputAction, ActionType, ActionState, InputSystem, InputTrack
 
 # Rendering
 from .rendering import Renderer, RenderComponent
-from vect_hunt.engine.components.rendering import BasicShape, Sprite
+from vect_hunt.engine.components.rendering import BasicShapeComponent, SpriteComponent
 from .rendering.font import FontStyle, FontSystem
 
 # Resources
@@ -48,9 +53,9 @@ __all__ = [
     "TagSystem",
     "hex_to_rgb",
     # Physics
-    "Collider",
-    "BoxCollider",
-    "CircleCollider",
+    "ColliderComponent",
+    "BoxColliderComponent",
+    "CircleColliderComponent",
     "ColliderSystem",
     # Objects
     "GameObject",
@@ -64,8 +69,8 @@ __all__ = [
     # Rendering
     "Renderer",
     "RenderComponent",
-    "BasicShape",
-    "Sprite",
+    "BasicShapeComponent",
+    "SpriteComponent",
     "FontStyle",
     "FontSystem",
     # Resources

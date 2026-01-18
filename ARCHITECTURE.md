@@ -130,8 +130,8 @@ if TYPE_CHECKING:
     from vect_hunt.engine.objects import GameObject
 
 class Collider:
-    def __init__(self, parent: "GameObject"):  # Type hint en string
-        self.parent = parent
+    def __init__(self, game_object: "GameObject"):  # Type hint en string
+        self.game_object = game_object
 ```
 
 ## Avantages de cette architecture

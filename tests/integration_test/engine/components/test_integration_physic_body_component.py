@@ -12,7 +12,7 @@ from vect_hunt.engine.objects import GameObject
 def game_object_with_physics():
     """GameObject avec PhysicBodyComponent attaché."""
     obj = GameObject("TestObject")
-    physic_body = PhysicBodyComponent(speed=300.0)
+    physic_body = PhysicBodyComponent(speed=300.0, is_controlled=True)
     obj.add_component(physic_body)
     return obj
 

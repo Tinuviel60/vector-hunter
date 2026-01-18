@@ -10,7 +10,9 @@ from vect_hunt.engine.physics.physic_material import CombineMode, PhysicMaterial
 from vect_hunt.engine.resources import DataLoader
 
 import logging
+
 logger = logging.getLogger(__name__)
+
 
 class PhysicBodyComponent(Component):
     """
@@ -44,6 +46,8 @@ class PhysicBodyComponent(Component):
         Matériau physique associé.
     """
 
+    component_name = "physic_body"
+
     def __init__(
         self,
         mass: float = 1.0,
@@ -69,8 +73,10 @@ class PhysicBodyComponent(Component):
         """
         super().__init__()
         if mass <= 0:
-            logger.warning("La masse doit être positive. \
-                           Valeur par défaut 1.0 utilisée.")
+            logger.warning(
+                "La masse doit être positive. \
+                           Valeur par défaut 1.0 utilisée."
+            )
             mass = 1.0
 
         self.mass = mass
@@ -80,7 +86,7 @@ class PhysicBodyComponent(Component):
 
         self.is_kinematic = is_kinematic
         self.use_gravity = use_gravity
-        self.is_controlled = is_controlled  
+        self.is_controlled = is_controlled
 
         self.material = material if material is not None else PhysicMaterial()
 
@@ -88,6 +94,23 @@ class PhysicBodyComponent(Component):
     def from_data(
         cls, data: dict[str, Any], game_object, context: dict[str, Any]
     ) -> "PhysicBodyComponent":
+        """
+        Crée une instance de PhysicBodyComponent à partir de données sérialisées.
+
+        Parameters
+        ----------
+        data : dict[str, Any]
+            Données de configuration.
+        game_object : GameObject
+            Le GameObject auquel ce composant sera attaché.
+        context : dict[str, Any]
+            Contexte additionnel pour la création (ex: références aux systèmes).
+
+        Returns
+        -------
+        InputComponent
+            Instance du composant créé.
+        """
         material = cls._create_physic_material(data.get("material"))
         return cls(
             mass=data.get("mass", 1.0),
@@ -99,24 +122,48 @@ class PhysicBodyComponent(Component):
         )
 
     @staticmethod
-    def _create_physic_material(material_ref: Any) -> PhysicMaterial:
-        if not material_ref:
+    def _create_physic_material(material_path: Any) -> PhysicMaterial:
+        """
+        Crée un PhysicMaterial à partir d'un chemin de fichier JSON.
+
+        Parameters
+        ----------
+        material_path : str | None
+            Chemin vers le fichier JSON du matériau physique.
+
+        Returns
+        -------
+        PhysicMaterial
+            Matériau physique chargé ou par défaut.
+        """
+        if not material_path:
             return PhysicMaterial()
 
-        if isinstance(material_ref, dict):
-            return PhysicBodyComponent._material_from_data(material_ref)
-
-        material_path = str(material_ref)
-        if not material_path.endswith(".json"):
-            material_path = f"{material_path}.json"
-        if not material_path.startswith("materials/"):
-            material_path = f"materials/{material_path}"
+        if not isinstance(material_path, str):
+            logger.warning(
+                "Le chemin du matériau physique doit être une chaîne de caractères. \
+                           Matériau par défaut utilisé."
+            )
+            return PhysicMaterial()
 
         material_data = DataLoader.load_json(material_path)
         return PhysicBodyComponent._material_from_data(material_data)
 
     @staticmethod
     def _material_from_data(material_data: dict[str, Any]) -> PhysicMaterial:
+        """
+        Crée un PhysicMaterial à partir de données sérialisées.
+
+        Parameters
+        ----------
+        material_data : dict[str, Any]
+            Données de configuration du matériau physique.
+
+        Returns
+        -------
+        PhysicMaterial
+            Matériau physique créé.
+        """
         friction = material_data.get("friction", 0.5)
         restitution = material_data.get("restitution", 0.5)
         linear_damping = material_data.get("linear_damping", 0.0)
@@ -139,6 +186,20 @@ class PhysicBodyComponent(Component):
 
     @staticmethod
     def _parse_combine_mode(value: str | None, default: CombineMode) -> CombineMode:
+        """
+        Analyse une chaîne de caractères en CombineMode.
+
+        Parameters
+        ----------
+        value : str | None
+            Chaîne représentant le mode de combinaison.
+        default : CombineMode
+            Valeur par défaut si l'analyse échoue.
+        Returns
+        -------
+        CombineMode
+            Mode de combinaison analysé.
+        """
         if value is None:
             return default
         try:
@@ -197,14 +258,18 @@ class PhysicBodyComponent(Component):
             Vecteur de vélocité en pixels/seconde.
         """
         if not self.is_controlled:
-            logger.debug("Le corps physique n'est pas contrôlé. \
-                         La vélocité ne peut pas être définie.")
+            logger.debug(
+                "Le corps physique n'est pas contrôlé. \
+                         La vélocité ne peut pas être définie."
+            )
             return
         if self.is_kinematic:
-            logger.debug("Le corps physique est cinématique. \
-                         La vélocité ne peut pas être définie.")
+            logger.debug(
+                "Le corps physique est cinématique. \
+                         La vélocité ne peut pas être définie."
+            )
             return
-        
+
         self.velocity = velocity
 
     def add_force(self, force: Vector2D) -> None:

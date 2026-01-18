@@ -7,36 +7,16 @@ from __future__ import annotations
 import math
 from typing import Any, Optional, TYPE_CHECKING
 
-from vect_hunt.engine.components import IaComponent, PhysicBodyComponent
-from vect_hunt.engine.components.input_component import InputComponent
-from vect_hunt.engine.components.collider import BoxCollider, CircleCollider
 from vect_hunt.engine.core import Tag
 from vect_hunt.engine.core.math import Vector2D
 from vect_hunt.engine.core.transform import Transform
-from vect_hunt.engine.components.rendering import BasicShape, Sprite
 from vect_hunt.engine.resources import DataLoader
 
-from .component_registry import ComponentRegistry
+from vect_hunt.engine.components import Component
 from .game_object import GameObject
 
 if TYPE_CHECKING:
     from vect_hunt.engine.input import InputSystem
-
-
-def _build_default_registry() -> ComponentRegistry:
-    registry = ComponentRegistry()
-    registry.register("physics", PhysicBodyComponent)
-    registry.register("circle_collider", CircleCollider)
-    registry.register("box_collider", BoxCollider)
-    registry.register("rendering", BasicShape)
-    registry.register("sprite", Sprite)
-    registry.register("input", InputComponent)
-    registry.register("ai", IaComponent)
-    registry.register("ia", IaComponent)
-    return registry
-
-
-_DEFAULT_REGISTRY = _build_default_registry()
 
 
 class GameObjectFactory:
@@ -49,15 +29,21 @@ class GameObjectFactory:
         "tags": ["PLAYER"],
         "transform": {"position": [0, 0], "rotation": 0.0},
         "components": [
-            {"component": "physics", "data": {...}},
-            {"component": "collider", "data": {"colliders": [ ... ]}},
-            {"component": "rendering", "data": {...}}
+            {"component": "physic_body", "data": {...}},
+            {"component": "circle_collider", "data": {...}},
+            {"component": "box_collider", "data": {...}},
+            {"component": "basic_shape", "data": {...}},
+            {"component": "sprite", "data": {...}},
+            {"component": "input", "data": {...}},
+            {"component": "ia", "data": {...}}
         ]
     }
     """
 
-    def __init__(self, registry: ComponentRegistry | None = None) -> None:
-        self._registry = registry or _DEFAULT_REGISTRY
+    def __init__(self) -> None:
+        self._registry = Component.get_registered_components()
+        for key in self._registry:
+            print(key)
 
     def from_template(
         self,
@@ -84,9 +70,7 @@ class GameObjectFactory:
         transform_data = template.get("transform", {})
         pos = position if position is not None else self._parse_position(transform_data)
         rot_deg = (
-            rotation
-            if rotation is not None
-            else transform_data.get("rotation", 0.0)
+            rotation if rotation is not None else transform_data.get("rotation", 0.0)
         )
         rot_rad = math.radians(rot_deg)
         transform = Transform(position=pos, rotation=rot_rad)

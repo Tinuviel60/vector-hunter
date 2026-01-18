@@ -14,7 +14,7 @@ from vect_hunt.engine.objects import GameObject
 def game_object_with_ia():
     """GameObject avec IaComponent et PhysicBodyComponent attachés."""
     obj = GameObject("Enemy")
-    physic_body = PhysicBodyComponent(speed=150.0)
+    physic_body = PhysicBodyComponent(speed=150.0, is_controlled=True)
     ia_comp = IaComponent(top_left=Vector2D(0, 0), bottom_right=Vector2D(800, 600))
     obj.add_component(physic_body)
     obj.add_component(ia_comp)

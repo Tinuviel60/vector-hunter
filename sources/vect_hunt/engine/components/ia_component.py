@@ -28,6 +28,8 @@ class IaComponent(Component):
         Limite inférieure droite de la zone de mouvement.
     """
 
+    component_name = "ia"
+
     def __init__(
         self,
         top_left: Vector2D = Vector2D(100, 100),
@@ -51,6 +53,23 @@ class IaComponent(Component):
     def from_data(
         cls, data: dict[str, Any], game_object, context: dict[str, Any]
     ) -> "IaComponent":
+        """
+        Crée un IaComponent à partir de données sérialisées.
+
+        Parameters
+        ----------
+        data : dict[str, Any]
+            Données de configuration.
+        game_object : GameObject
+            Le GameObject auquel ce composant sera attaché.
+        context : dict[str, Any]
+            Contexte additionnel pour la création (ex: références aux systèmes).
+
+        Returns
+        -------
+        InputComponent
+            Instance du composant créé.
+        """
         top_left = data.get("top_left", [100, 100])
         bottom_right = data.get("bottom_right", [700, 500])
         return cls(

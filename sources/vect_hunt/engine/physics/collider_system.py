@@ -4,7 +4,11 @@ from vect_hunt.engine.core.tag_system import TagSystem
 from vect_hunt.engine.core import Geometry
 from vect_hunt.engine.core.math import Vector2D
 from vect_hunt.engine.core.transform import Transform
-from vect_hunt.engine.components.collider import Collider, BoxCollider, CircleCollider
+from vect_hunt.engine.components.collider import (
+    BoxColliderComponent,
+    CircleColliderComponent,
+    ColliderComponent,
+)
 from vect_hunt.engine.resources.loaders.data_loader import DataLoader
 
 if TYPE_CHECKING:
@@ -38,7 +42,7 @@ class ColliderSystem:
     # AABB Mondial
     # --------------------
     @staticmethod
-    def compute_aabb(collider: Collider, parent_transform: Transform) -> tuple:
+    def compute_aabb(collider: ColliderComponent, parent_transform: Transform) -> tuple:
         """
         Calcule l'AABB mondial du collider.
 
@@ -57,16 +61,18 @@ class ColliderSystem:
         tuple
             L'AABB sous la forme (min_x, min_y, max_x, max_y).
         """
-        assert collider.parent is not None, "Collider must have a parent GameObject"
-        if isinstance(collider, CircleCollider):
+        assert (
+            collider.game_object is not None
+        ), "Collider must have a parent GameObject"
+        if isinstance(collider, CircleColliderComponent):
             return ColliderSystem._compute_aabb_circle(collider, parent_transform)
-        elif isinstance(collider, BoxCollider):
+        elif isinstance(collider, BoxColliderComponent):
             return ColliderSystem._compute_aabb_box(collider, parent_transform)
         else:
             raise TypeError("Collider inconnu pour calcul AABB")
 
     @staticmethod
-    def _compute_aabb_box(collider: BoxCollider, parent_transform: Transform):
+    def _compute_aabb_box(collider: BoxColliderComponent, parent_transform: Transform):
         """
         Calcule l'AABB mondial d'un BoxCollider.
 
@@ -90,7 +96,9 @@ class ColliderSystem:
         return (min(xs), min(ys), max(xs), max(ys))
 
     @staticmethod
-    def _compute_aabb_circle(collider: CircleCollider, parent_transform: Transform):
+    def _compute_aabb_circle(
+        collider: CircleColliderComponent, parent_transform: Transform
+    ):
         """
         Calcule l'AABB mondial d'un CircleCollider.
 
@@ -124,7 +132,7 @@ class ColliderSystem:
     # Collisions fines
     # --------------------
     @staticmethod
-    def check_collision(c1: Collider, c2: Collider) -> dict | None:
+    def check_collision(c1: ColliderComponent, c2: ColliderComponent) -> dict | None:
         """
         Détecte la collision fine entre deux colliders et retourne un dictionnaire
         d'information ou None.
@@ -143,21 +151,31 @@ class ColliderSystem:
             si collision, sinon None.
         """
         # Circle / Circle
-        if isinstance(c1, CircleCollider) and isinstance(c2, CircleCollider):
+        if isinstance(c1, CircleColliderComponent) and isinstance(
+            c2, CircleColliderComponent
+        ):
             return ColliderSystem._circle_circle_collision_info(c1, c2)
-        elif isinstance(c1, BoxCollider) and isinstance(c2, BoxCollider):
+        elif isinstance(c1, BoxColliderComponent) and isinstance(
+            c2, BoxColliderComponent
+        ):
             return ColliderSystem._sat_collision_info(c1, c2)
-        elif isinstance(c1, BoxCollider) and isinstance(c2, CircleCollider):
+        elif isinstance(c1, BoxColliderComponent) and isinstance(
+            c2, CircleColliderComponent
+        ):
             return ColliderSystem._circle_box_collision_info(
                 c2, c1, reverse_normal=True
             )
-        elif isinstance(c1, CircleCollider) and isinstance(c2, BoxCollider):
+        elif isinstance(c1, CircleColliderComponent) and isinstance(
+            c2, BoxColliderComponent
+        ):
             return ColliderSystem._circle_box_collision_info(c1, c2)
         else:
             raise TypeError("Type de collider non supporté pour collision fine")
 
     @staticmethod
-    def _circle_circle_collision_info(c1: CircleCollider, c2: CircleCollider):
+    def _circle_circle_collision_info(
+        c1: CircleColliderComponent, c2: CircleColliderComponent
+    ):
         """
         Détecte et retourne les informations de collision entre deux cercles.
 
@@ -173,11 +191,11 @@ class ColliderSystem:
         dict or None
             Dictionnaire d'information (normal, depth, point) si collision, sinon None.
         """
-        assert c1.parent is not None
-        assert c2.parent is not None
+        assert c1.game_object is not None
+        assert c2.game_object is not None
 
-        c1_world_pos = c1.transform.position + c1.parent.transform.position
-        c2_world_pos = c2.transform.position + c2.parent.transform.position
+        c1_world_pos = c1.transform.position + c1.game_object.transform.position
+        c2_world_pos = c2.transform.position + c2.game_object.transform.position
 
         delta = c1_world_pos - c2_world_pos
         dist = delta.magnitude()
@@ -198,7 +216,7 @@ class ColliderSystem:
         return None
 
     @staticmethod
-    def _sat_collision_info(box1: BoxCollider, box2: BoxCollider):
+    def _sat_collision_info(box1: BoxColliderComponent, box2: BoxColliderComponent):
         """
         Détecte et retourne les informations de collision
         entre deux BoxCollider (méthode SAT).
@@ -216,11 +234,15 @@ class ColliderSystem:
             Dictionnaire d'information (normal, depth) si collision, sinon None.
         """
         # SAT avec calcul de la plus petite séparation
-        assert box1.parent is not None
-        assert box2.parent is not None
+        assert box1.game_object is not None
+        assert box2.game_object is not None
 
-        corners1 = ColliderSystem.get_world_corners(box1.corners, box1.parent.transform)
-        corners2 = ColliderSystem.get_world_corners(box2.corners, box2.parent.transform)
+        corners1 = ColliderSystem.get_world_corners(
+            box1.corners, box1.game_object.transform
+        )
+        corners2 = ColliderSystem.get_world_corners(
+            box2.corners, box2.game_object.transform
+        )
         axes = Geometry.get_polygon_normals(corners1) + Geometry.get_polygon_normals(
             corners2
         )
@@ -266,7 +288,9 @@ class ColliderSystem:
 
     @staticmethod
     def _circle_box_collision_info(
-        circle: CircleCollider, box: BoxCollider, reverse_normal: bool = False
+        circle: CircleColliderComponent,
+        box: BoxColliderComponent,
+        reverse_normal: bool = False,
     ):
         """
         Détecte et retourne les informations de collision entre un cercle et un box.
@@ -287,10 +311,12 @@ class ColliderSystem:
         dict or None
             Dictionnaire d'information (normal, depth, point) si collision, sinon None.
         """
-        assert circle.parent is not None
-        assert box.parent is not None
+        assert circle.game_object is not None
+        assert box.game_object is not None
 
-        circle_world_pos = circle.transform.position + circle.parent.transform.position
+        circle_world_pos = (
+            circle.transform.position + circle.game_object.transform.position
+        )
         closest = ColliderSystem.get_closest_point_on_box(box, circle_world_pos)
         delta = circle_world_pos - closest
         dist = delta.magnitude()
@@ -340,7 +366,9 @@ class ColliderSystem:
 
     # TODO : Bouger dans geometry.py ?
     @staticmethod
-    def get_closest_point_on_box(box: BoxCollider, point: Vector2D) -> Vector2D:
+    def get_closest_point_on_box(
+        box: BoxColliderComponent, point: Vector2D
+    ) -> Vector2D:
         """
         Trouve le point le plus proche sur un BoxCollider orienté
         à partir d'un point donné.
@@ -363,8 +391,8 @@ class ColliderSystem:
         Vector2D
             Le point le plus proche sur le box en coordonnées mondiales.
         """
-        assert box.parent is not None, "box must have a parent"
-        parent_tr = box.parent.transform
+        assert box.game_object is not None, "box must have a game_object"
+        parent_tr = box.game_object.transform
         box_tr = box.transform
 
         # ----------------------------
@@ -432,11 +460,11 @@ class ColliderSystem:
         """
         # Recuperer tous les GameObjects actifs avec des colliders
         collidable_objects: List["GameObject"] = []
-        colliders_by_object: dict[int, list[Collider]] = {}
+        colliders_by_object: dict[int, list[ColliderComponent]] = {}
         for game_object in world.game_objects.values():
             if not game_object.active:
                 continue
-            colliders = game_object.get_components(Collider)
+            colliders = game_object.get_components(ColliderComponent)
             if colliders:
                 collidable_objects.append(game_object)
                 colliders_by_object[game_object.id] = colliders

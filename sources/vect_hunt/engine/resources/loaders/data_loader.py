@@ -45,6 +45,9 @@ class DataLoader:
         if use_cache and path in cls._cache:
             return cls._cache[path]
 
+        if not path.exists():
+            raise FileNotFoundError(f"Fichier JSON non trouvé : {path}")
+
         with open(path, "r", encoding="utf-8") as f:
             data = json.load(f)
 

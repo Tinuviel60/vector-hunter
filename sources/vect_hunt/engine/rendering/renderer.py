@@ -5,7 +5,7 @@ from vect_hunt.engine.core.math import hex_to_rgb
 from vect_hunt.engine.physics import ColliderSystem
 from vect_hunt.engine.rendering.font import FontSystem
 from vect_hunt.engine.components.render_component import RenderComponent
-from vect_hunt.engine.components.collider import Collider
+from vect_hunt.engine.components.collider import ColliderComponent
 from vect_hunt.engine.resources import DataLoader
 
 if TYPE_CHECKING:
@@ -128,7 +128,7 @@ class Renderer:
                 self.draw_name(game_object)
             # Dessine les colliders
             if self.draw_colliders:
-                colliders = game_object.get_components(Collider)
+                colliders = game_object.get_components(ColliderComponent)
                 for collider in colliders:
                     self.draw_collider(
                         collider,
@@ -158,7 +158,7 @@ class Renderer:
 
         Parameters
         ----------
-        collider : Collider
+        collider : ColliderComponent
             Le collider à dessiner.
         transform : Transform
             La transformation du GameObject auquel le collider appartient.

@@ -8,7 +8,7 @@
   },
   "components": [
     {
-      "component": "physics",
+      "component": "physic_body",
       "data": {
         "speed": 300.0,
         "is_kinematic": false,
@@ -30,7 +30,7 @@
       }
     },
     {
-      "component": "rendering",
+      "component": "basic_shape",
       "data": {
         "type": "basic_shape",
         "shape": "circle",

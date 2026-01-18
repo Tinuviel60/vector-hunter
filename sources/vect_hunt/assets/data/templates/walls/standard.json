@@ -8,7 +8,7 @@
   },
   "components": [
     {
-      "component": "physics",
+      "component": "physic_body",
       "data": {
         "speed": 0.0,
         "is_kinematic": true,
@@ -28,7 +28,7 @@
       }
     },
     {
-      "component": "rendering",
+      "component": "basic_shape",
       "data": {
         "type": "basic_shape",
         "shape": "rectangle",

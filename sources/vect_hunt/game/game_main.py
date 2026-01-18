@@ -51,9 +51,7 @@ class Game:
         self.world.add_game_object(player)
 
         # Creer un ennemi via template
-        enemy = factory.from_template(
-            "targets/basic.json", position=Vector2D(600, 200)
-        )
+        enemy = factory.from_template("targets/basic.json", position=Vector2D(600, 200))
         self.world.add_game_object(enemy)
 
         # Creer un obstacle via template
@@ -94,8 +92,8 @@ class Game:
         max_passes = 6  # TODO : Mettre dans un json de config
         passes = 0
 
-         # Itérer plusieurs fois pour une meilleure résolution des collisions
-        for _ in range(max_passes): 
+        # Itérer plusieurs fois pour une meilleure résolution des collisions
+        for _ in range(max_passes):
             passes += 1
             collisions, _, collision_info = (
                 self.world.collider_system.detect_collisions(self.world)

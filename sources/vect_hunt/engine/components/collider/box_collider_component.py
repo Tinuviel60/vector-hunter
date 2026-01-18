@@ -4,27 +4,63 @@ from typing import Any, Optional, TYPE_CHECKING
 from vect_hunt.engine.core.math import Vector2D
 from vect_hunt.engine.core.transform import Transform
 
-from .base import Collider
+from .collider_component import ColliderComponent
 
 if TYPE_CHECKING:
     from vect_hunt.engine.objects import GameObject
 
 
-class BoxCollider(Collider):
+class BoxColliderComponent(ColliderComponent):
     """
     Classe de collider rectangulaire.
     Utilisee dans les systemes de collision pour definir des zones rectangulaires.
+
+    Attributes
+    ----------
+    game_object : GameObject | None
+        GameObject parent du collider.
+    width : float
+        Largeur du rectangle.
+    height : float
+        Hauteur du rectangle.
+    center : Vector2D
+        Centre du rectangle par rapport au GameObject parent.
+    orientation : float
+        Orientation du rectangle en radians.
+    solid : bool
+        Indique si le collider est solide.
     """
+
+    component_name = "box_collider"
 
     def __init__(
         self,
-        parent: Optional["GameObject"] = None,
+        game_object: Optional["GameObject"] = None,
         width: float = 10.0,
         height: float = 10.0,
         center: Optional[Vector2D] = None,
         orientation: float = 0.0,
         solid: bool = True,
     ):
+        """
+        Initialise le BoxColliderComponent avec les dimensions,
+        le centre et l'orientation.
+
+        Parameters
+        ----------
+        parent : GameObject, optional
+            Le GameObject auquel ce composant appartient.
+        width : float
+            Largeur du rectangle.
+        height : float
+            Hauteur du rectangle.
+        center : Vector2D, optional
+            Centre du rectangle par rapport au GameObject parent.
+        orientation : float
+            Orientation du rectangle en radians.
+        solid : bool
+            Indique si le collider est solide.
+        """
         self.width = width
         self.height = height
 
@@ -37,18 +73,35 @@ class BoxCollider(Collider):
         self.sin_orientation = math.sin(orientation)
         self.corners: list[Vector2D] = self.calculate_corners()
 
-        super().__init__(parent, transform, solid)
+        super().__init__(game_object, transform, solid)
 
     @classmethod
     def from_data(
         cls, data: dict[str, Any], game_object, context: dict[str, Any]
-    ) -> "BoxCollider":
+    ) -> "BoxColliderComponent":
+        """
+        Crée un BoxColliderComponent à partir de données sérialisées.
+
+        Parameters
+        ----------
+        data : dict[str, Any]
+            Données de configuration.
+        game_object : GameObject
+            Le GameObject auquel ce composant sera attaché.
+        context : dict[str, Any]
+            Contexte additionnel pour la création (ex: références aux systèmes).
+
+        Returns
+        -------
+        InputComponent
+            Instance du composant créé.
+        """
         transform_data = data.get("transform", {})
         position_data = transform_data.get("position", [0, 0])
         rotation = math.radians(transform_data.get("rotation", 0.0))
         center = Vector2D(position_data[0], position_data[1])
         return cls(
-            parent=game_object,
+            game_object=game_object,
             width=data.get("width", 10.0),
             height=data.get("height", 10.0),
             center=center,
@@ -57,9 +110,26 @@ class BoxCollider(Collider):
         )
 
     def get_area(self):
+        """
+        Calcule et retourne l'aire du rectangle.
+
+        Returns
+        -------
+        float
+            Aire du rectangle.
+        """
         return self.width * self.height
 
     def calculate_corners(self) -> list[Vector2D]:
+        """
+        Calcule les coins du rectangle en fonction de la position,
+        de la taille et de l'orientation.
+
+        Returns
+        -------
+        list[Vector2D]
+            Liste des coins du rectangle dans l'ordre horaire.
+        """
         half_width = self.width / 2
         half_height = self.height / 2
 
@@ -87,6 +157,14 @@ class BoxCollider(Collider):
         return rotated_corners
 
     def get_geometry(self) -> dict:
+        """
+        Retourne la geometrie specifique du collider.
+
+        Returns
+        -------
+        dict
+            Dictionnaire représentant la géométrie du rectangle.
+        """
         return {
             "type": "box",
             "points": self.corners,

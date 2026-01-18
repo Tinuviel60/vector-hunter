@@ -1,5 +1,5 @@
-from .base import Collider
-from .box import BoxCollider
-from .circle import CircleCollider
+from .collider_component import ColliderComponent
+from .box_collider_component import BoxColliderComponent
+from .circle_collider_component import CircleColliderComponent
 
-__all__ = ["Collider", "BoxCollider", "CircleCollider"]
+__all__ = ["ColliderComponent", "BoxColliderComponent", "CircleColliderComponent"]
