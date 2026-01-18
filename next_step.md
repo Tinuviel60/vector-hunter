@@ -4,11 +4,26 @@
 
 | Item | Détails | Priorité | Status |
 | --- | --- | --- | --- |
-| Restructurer la boucle de jeu | Sortir la logique de `World` vers une classe dédiée (ordre: mouvement, collisions, rendu). Transformer `World` en scène. | haute | todo |
-| Revoir le système de RenderComponent | Clarifier la relation au `Transform`. Gérer une liste de rendu (sprite et/ou basic shape, etc.). | haute | todo |
+| Restructurer la boucle de jeu | Finaliser la séparation `GameLoop` / `SimulationScheduler`. Le scheduler pilote l’ordre des systèmes (input → mouvement/physique → collisions/triggers → résolution → rendu). La `Scene` reste un conteneur d’état (GameObjects, index, etc.). | haute | in_progress |
+| Système de chargement (Loaders + Factories) | Ajouter un pipeline clair : `SceneLoader` (I/O + parsing) → `SceneFactory` (validation + construction). Même logique côté `GameObjectFactory` (déjà présent) + préparation d’un `GameObjectLoader` si besoin pour charger des templates/prefabs JSON. Définir le `context` injecté (InputSystem, DataLoader, registries). | haute | todo |
+| Revoir le système de RenderComponent | Clarifier la relation au `Transform` (position/rotation/scale). Permettre plusieurs renderers par GameObject (sprite + basic shape, etc.) via une liste (ex: `RenderComponent.renderers: list[RendererItem]`). Définir l’ordre de rendu et la stratégie (layer/z-index). | haute | todo |
+| Revoir le déplacement du joueur | Refaire le pipeline “mouvement” : input → intention (direction/rotation) → application (cinématique ou physique). Clarifier si le Player déplace le Transform directement ou passe par la physique (forces/vitesse). Uniformiser le comportement pour éviter les incohérences. | haute | todo |
+| Ajouter la rotation dans la physique | Les objets doivent pouvoir tourner via la physique : intégrer vitesse angulaire, couples/torque (même minimal), et résolution de collision qui peut appliquer une rotation. Définir un premier modèle simple avant sophistication. | moyenne | todo |
 | Targets | Position, mouvement simple ou scripté. Collider attaché. Comportement d’interaction (hit, score...). | moyenne | in_progress |
-| Logger les collisions et événements | Aide au debug et suivi des interactions. | faible | todo |
-| Optimiser le CollisionSystem | Spatial partitioning (quadtree ou grille). Découpler on_trigger et on_collision vers le tracker (done). Option: collisions/triggers par collider plutôt que par GameObject. | faible | in_progress |
+| Logger les collisions et événements | Journaliser collisions, triggers, résolutions, et événements gameplay (hit/score). Prévoir un niveau de verbosité configurable pour debug. | faible | todo |
+| Optimiser le CollisionSystem | Spatial partitioning (quadtree ou grille). Option: collisions/triggers par collider plutôt que par GameObject. Continuer le découplage via `CollisionTracker`. | faible | in_progress |
+
+## Points d’attention (risques / pièges à surveiller)
+
+| Sujet | Pourquoi c’est important | Action / garde-fou |
+| --- | --- | --- |
+| Séparer I/O et construction | Éviter que `SceneFactory` devienne “Loader + Factory + Resolver” au fil du temps. | `SceneLoader` lit/parsing, `SceneFactory` valide/construit à partir de dicts. |
+| Couplage du `SimulationScheduler` | Le scheduler ne doit pas devenir un “God object” qui connaît tous les systèmes concrets. | Prévoir une injection de liste d’étapes/systèmes (duck-typing ou interface) plutôt que des imports/instanciations internes. |
+| Rotation des colliders | Si les colliders ne tournent pas correctement, collisions incohérentes (visuel vs physique). | Vérifier l’origine (pivot/offset), appliquer rotation, valider avec tests simples (box rotated vs box). |
+| Centre/pivot des renderer | Si sprite/shape n’est pas centré sur le GameObject, décalage visuel constant et bugs de hitbox. | Ajouter offset/pivot côté renderer (et éventuellement côté collider). Tester “collider centré vs sprite centré”. |
+| Rotation dans le rendu vs rotation dans la physique | Risque de divergence : Transform tourne visuellement mais pas physiquement (ou l’inverse). | Source de vérité unique : `Transform`. La physique modifie le Transform, le renderer lit le Transform. |
+| Mouvement direct du Transform vs physique | Déplacer le Transform “à la main” peut court-circuiter collisions/résolution. | Décider une règle : cinématique explicite (non-physique) ou dynamique via `PhysicBodyComponent`. |
+| Liste de renderers par GameObject | Besoin courant (sprite + debug shape + effets). | Concevoir `RenderComponent` comme un agrégateur plutôt qu’un unique rendu. |
 
 ## Fini (trié par priorité)
 
