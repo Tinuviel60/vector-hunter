@@ -14,6 +14,10 @@ class NumberedRotatingFileHandler(RotatingFileHandler):
     """
     RotatingFileHandler avec numérotation avant l'extension :
     simulation_0.log, simulation_1.log, etc.
+
+    Attributes
+    ----------
+    None
     """
 
     def doRollover(self) -> None:
@@ -23,7 +27,6 @@ class NumberedRotatingFileHandler(RotatingFileHandler):
         """
         if self.stream:
             self.stream.close()
-            self.stream = None
 
         # Décale les fichiers existants (du plus ancien au plus récent)
         for i in range(self.backupCount - 1, -1, -1):

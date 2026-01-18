@@ -7,11 +7,35 @@ name = "vector-hunter"
 version = "0.1.0"
 description = ""
 authors = [
-    { name = "Your Name" }
+    { name = "tinuviel60" }
+]
+
+dependencies = [
+    "pygame>=2.5",
+    "matplotlib"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "black",
+    "flake8"
 ]
 
 [tool.setuptools]
-package-dir = {"" = "sources"}
+package-dir = { "" = "sources" }
 
 [tool.setuptools.packages.find]
 where = ["sources"]
+
+[tool.pytest.ini_options]
+addopts = "--cov=vect_hunt --cov-report=html:reports/coverage --cov-report=term-missing"
+testpaths = ["tests"]
+
+[tool.coverage.run]
+omit = [
+    "*/__init__.py",
+    "__main__.py",
+    "logging_config.py"
+]

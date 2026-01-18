@@ -18,7 +18,7 @@ en rebandisant sur les murs pour atteindre les cibles.
 - Typage Python quand pertinent
 - Tests unitaires avec `pytest`
 - Formatage et qualité de code (black, flake8, isort)
-- Documentation avec Sphinx (docstrings NumPy)
+- Documentation avec Sphinx (docstrings NumPy) (a lancer)
 
 ---
 

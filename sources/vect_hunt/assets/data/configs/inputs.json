@@ -1,0 +1,60 @@
+{
+  "_comment": "Configuration des mappings d'entrées par contexte",
+  "_comment_types": "Types d'actions : bool, vector2d",
+  
+  "contexts": {
+    "global": {
+      "_comment": "Actions disponibles dans tous les contextes",
+      "pause": {
+        "type": "bool",
+        "keys": ["ESCAPE"],
+        "description": "Pause / Resume le jeu"
+      }
+    },
+    
+    "menu": {
+      "_comment": "Navigation dans les menus",
+      "navigate_up": {
+        "type": "bool",
+        "keys": ["UP", "W", "Z"],
+        "description": "Naviguer vers le haut"
+      },
+      "navigate_down": {
+        "type": "bool",
+        "keys": ["DOWN", "S"],
+        "description": "Naviguer vers le bas"
+      },
+      "confirm": {
+        "type": "bool",
+        "keys": ["RETURN", "SPACE"],
+        "description": "Confirmer la sélection"
+      },
+      "cancel": {
+        "type": "bool",
+        "keys": ["ESCAPE"],
+        "description": "Annuler / Retour"
+      }
+    },
+    
+    "playing": {
+      "_comment": "Actions pendant le gameplay",
+      "move": {
+        "type": "vector2d",
+        "keys": {
+          "up": ["W", "Z", "UP"],
+          "down": ["S", "DOWN"],
+          "left": ["A", "Q", "LEFT"],
+          "right": ["D", "RIGHT"]
+        },
+        "normalize": true,
+        "description": "Déplacement du joueur"
+      }
+    }
+  },
+  
+  "settings": {
+    "_comment": "Paramètres globaux des inputs",
+    "mouse_sensitivity": 1.0,
+    "deadzone": 0.1
+  }
+}

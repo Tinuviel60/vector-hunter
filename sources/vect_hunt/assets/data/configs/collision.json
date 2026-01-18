@@ -1,0 +1,20 @@
+{
+  "_comment": "Masques de collision : définit quels tags peuvent interagir",
+  "_format": "Chaque clé est un tag, la valeur est une liste de tags avec lesquels il peut collisionner",
+  "collision_matrix": {
+    "PLAYER": ["PLAYER", "ENEMY", "OBJECT"],
+    "ENEMY": ["ENEMY", "PLAYER", "OBJECT"],
+    "OBJECT": ["PLAYER", "ENEMY", "OBJECT"],
+    "PROJECTILE": ["ENEMY", "OBJECT"],
+    "PICKUP": ["PLAYER"]
+  },
+  "destruction_matrix": {
+    "_comment": "Définit quels objets peuvent détruire d'autres objets (futur)",
+    "PROJECTILE": ["ENEMY", "OBJECT"],
+    "ENEMY": ["PLAYER"]
+  },
+  "pickup_matrix": {
+    "_comment": "Définit quels objets peuvent être ramassés (futur)",
+    "PLAYER": ["PICKUP"]
+  }
+}
