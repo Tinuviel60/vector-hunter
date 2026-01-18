@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, Optional, Tuple
 
 from vect_hunt.engine.core.math.vector import Vector2D
-from vect_hunt.engine.components import PhysicBodyComponent
+from vect_hunt.engine.components.physic_body_component import PhysicBodyComponent
 
 if TYPE_CHECKING:
     from vect_hunt.engine.worlds import World

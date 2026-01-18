@@ -61,10 +61,29 @@ class DataLoader(BaseLoader):
         with open(path, "r", encoding="utf-8") as f:
             data = json.load(f)
 
+        # Nettoyer les commentaires
+        data = cls.remove_comments(data)
+
         if use_cache:
             cls._cache_put(path, data, cls._max_items)
 
         return data
+
+    @classmethod
+    def remove_comments(cls, obj):
+        """
+        Supprime récursivement les clés '_comment' dans un dictionnaire ou une liste.
+        """
+        if isinstance(obj, dict):
+            return {
+                k: cls.remove_comments(v)
+                for k, v in obj.items()
+                if not (isinstance(k, str) and k.startswith("_comment"))
+            }
+        elif isinstance(obj, list):
+            return [cls.remove_comments(item) for item in obj]
+        else:
+            return obj
 
     @classmethod
     def reload(cls, relative_path: str) -> dict[str, Any]:

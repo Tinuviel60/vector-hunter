@@ -1,13 +1,15 @@
 from typing import Set, Tuple
 
 from vect_hunt.engine.objects import GameObject
-from vect_hunt.engine.physics import ColliderSystem, CollisionTracker
+from vect_hunt.engine.physics.collider_system import ColliderSystem
+from vect_hunt.engine.physics.collision_tracker import CollisionTracker
 from vect_hunt.engine.input import InputSystem
 from vect_hunt.engine.components.collider import ColliderComponent
 from vect_hunt.engine.physics.collision_resolution_system import (
     CollisionResolutionSystem,
 )
 from vect_hunt.engine.physics.external_forces_system import ExternalForcesSystem
+from vect_hunt.engine.resources.loaders.data_loader import DataLoader
 
 
 class World:
@@ -36,10 +38,24 @@ class World:
 
         self.input_system = InputSystem()
 
+        self.units = self._load_units()
         self.collider_system = ColliderSystem()
         self.collision_tracker = CollisionTracker()
         self.collision_resolution_system = CollisionResolutionSystem(self)
         self.external_forces_system = ExternalForcesSystem()
+
+    @staticmethod
+    def _load_units() -> dict:
+        """
+        Charge la configuration des unites physiques.
+        """
+        units = DataLoader.load_json("configs/units.json")
+        pixels_per_meter = units.get("pixels_per_meter", 100.0)
+        gravity_m_s2 = units.get("gravity_m_s2", 9.81)
+        return {
+            "pixels_per_meter": pixels_per_meter,
+            "gravity_m_s2": gravity_m_s2,
+        }
 
     def add_game_object(self, game_object: GameObject) -> None:
         """

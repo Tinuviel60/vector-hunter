@@ -364,7 +364,6 @@ class ColliderSystem:
 
         return world_corners
 
-    # TODO : Bouger dans geometry.py ?
     @staticmethod
     def get_closest_point_on_box(
         box: BoxColliderComponent, point: Vector2D

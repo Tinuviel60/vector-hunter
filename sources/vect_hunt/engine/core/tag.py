@@ -29,6 +29,6 @@ class Tag(IntFlag):
     PLAYER = auto()
     ENEMY = auto()
     PROJECTILE = auto()
-    WALL = auto()
+    OBJECT = auto()
     PICKUP = auto()
     # Ajoutez ici vos autres tags jusqu'à 32 max

@@ -4,19 +4,22 @@ Factory pour creer des GameObjects depuis des templates JSON.
 
 from __future__ import annotations
 
+import logging
 import math
 from typing import Any, Optional, TYPE_CHECKING
 
 from vect_hunt.engine.core import Tag
 from vect_hunt.engine.core.math import Vector2D
 from vect_hunt.engine.core.transform import Transform
-from vect_hunt.engine.resources import DataLoader
+from vect_hunt.engine.resources.loaders.data_loader import DataLoader
 
-from vect_hunt.engine.components import Component
+from vect_hunt.engine.components.component import Component
 from .game_object import GameObject
 
 if TYPE_CHECKING:
     from vect_hunt.engine.input import InputSystem
+
+logger = logging.getLogger(__name__)
 
 
 class GameObjectFactory:
@@ -31,11 +34,7 @@ class GameObjectFactory:
         "components": [
             {"component": "physic_body", "data": {...}},
             {"component": "circle_collider", "data": {...}},
-            {"component": "box_collider", "data": {...}},
-            {"component": "basic_shape", "data": {...}},
-            {"component": "sprite", "data": {...}},
-            {"component": "input", "data": {...}},
-            {"component": "ia", "data": {...}}
+            ...
         ]
     }
     """
@@ -43,7 +42,7 @@ class GameObjectFactory:
     def __init__(self) -> None:
         self._registry = Component.get_registered_components()
         for key in self._registry:
-            print(key)
+            logger.debug(f"Component registered in GameObjectFactory: {key}")
 
     def from_template(
         self,

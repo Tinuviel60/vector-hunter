@@ -1,6 +1,7 @@
 import pygame
 from vect_hunt.engine.rendering.font.font_style import FontStyle
-from vect_hunt.engine.resources import DataLoader, FontLoader
+from vect_hunt.engine.resources.loaders.data_loader import DataLoader
+from vect_hunt.engine.resources.loaders.font__loader import FontLoader
 from vect_hunt.engine.core.math import hex_to_rgb
 
 """

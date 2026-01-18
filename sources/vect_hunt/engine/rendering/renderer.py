@@ -2,11 +2,11 @@ import pygame
 from typing import Tuple, TYPE_CHECKING
 
 from vect_hunt.engine.core.math import hex_to_rgb
-from vect_hunt.engine.physics import ColliderSystem
+from vect_hunt.engine.physics.collider_system import ColliderSystem
 from vect_hunt.engine.rendering.font import FontSystem
 from vect_hunt.engine.components.render_component import RenderComponent
 from vect_hunt.engine.components.collider import ColliderComponent
-from vect_hunt.engine.resources import DataLoader
+from vect_hunt.engine.resources.loaders.data_loader import DataLoader
 
 if TYPE_CHECKING:
     from vect_hunt.engine.objects import GameObject

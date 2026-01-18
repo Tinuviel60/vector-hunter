@@ -8,12 +8,15 @@ Gestion centralisée des chemins de ressources.
 # parents[0] = resources/, parents[1] = engine/, parents[2] = vect_hunt/
 # parents[3] = sources/, parents[4] = vector-hunter/ (PROJECT_ROOT)
 PROJECT_ROOT = Path(__file__).resolve().parents[4]
-ASSETS_ROOT = PROJECT_ROOT / "sources" / "vect_hunt" / "assets"
 
+COMPONENTS_DIR = PROJECT_ROOT / "sources" / "vect_hunt" / "engine" / "components"
+GAME_DIR = PROJECT_ROOT / "sources" / "vect_hunt" / "game"
+
+ASSETS_ROOT = PROJECT_ROOT / "sources" / "vect_hunt" / "assets"
 IMAGES_DIR = ASSETS_ROOT / "images"
 SOUNDS_DIR = ASSETS_ROOT / "sounds"
 DATA_DIR = ASSETS_ROOT / "data"
-FONTS_DIR = ASSETS_ROOT / "font"  # Note: le dossier s'appelle "font" pas "fonts"
+FONTS_DIR = ASSETS_ROOT / "font"
 
 
 class Paths:
@@ -24,6 +27,10 @@ class Paths:
     ----------
     PROJECT_ROOT : Path
         Racine du projet.
+    COMPONENTS_DIR : Path
+        Dossier des components.
+    GAME_DIR : Path
+        Dossier du jeu.
     ASSETS_ROOT : Path
         Racine des assets.
     IMAGES_DIR : Path
@@ -37,6 +44,8 @@ class Paths:
     """
 
     PROJECT_ROOT = PROJECT_ROOT
+    COMPONENTS_DIR = COMPONENTS_DIR
+    GAME_DIR = GAME_DIR
     ASSETS_ROOT = ASSETS_ROOT
     IMAGES_DIR = IMAGES_DIR
     SOUNDS_DIR = SOUNDS_DIR

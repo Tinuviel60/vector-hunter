@@ -1,0 +1,80 @@
+--- /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/engine/resources/__init__.py	2026-01-18 16:51:23.959233+00:00
++++ /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/engine/resources/__init__.py	2026-01-18 17:29:18.862700+00:00
+@@ -1,10 +1,11 @@
+ """
+ Module de gestion des ressources.
+ 
+ Charge et gère les assets (images, sons, données, polices).
+ """
++
+ from .paths import Paths
+ 
+ __all__ = [
+     "Paths",
+ ]
+--- /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/engine/core/tag_system.py	2026-01-18 17:27:21.863550+00:00
++++ /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/engine/core/tag_system.py	2026-01-18 17:29:18.882154+00:00
+@@ -2,10 +2,11 @@
+ from typing import Dict
+ from logging import getLogger
+ from vect_hunt.engine.resources.loaders.data_loader import DataLoader
+ 
+ logger = getLogger(__name__)
++
+ 
+ def _load_collision_config() -> dict:
+     """
+     Charge la configuration de collision depuis un fichier JSON.
+ 
+@@ -43,11 +44,11 @@
+     Construit une matrice de masque de collision à partir d'un dictionnaire.
+     Parameters
+     ----------
+     matrix_dict : dict
+         Dictionnaire représentant la matrice de collision.
+-        
++
+     Returns
+     -------
+     Dict[Tag, Tag]
+         Dictionnaire mappant chaque Tag à son masque de collision.
+     """
+@@ -87,11 +88,11 @@
+         ----------
+         tag1 : Tag
+             Premier tag.
+         tag2 : Tag
+             Second tag.
+-        
++
+         Returns
+         -------
+         bool
+             True si les deux tags peuvent collisionner, False sinon.
+         """
+@@ -109,11 +110,11 @@
+         ----------
+         tag1 : Tag
+             Premier tag.
+         tag2 : Tag
+             Second tag.
+-        
++
+         Returns
+         -------
+         bool
+             True si le tag1 peut détruire le tag2, False sinon.
+         """
+@@ -128,11 +129,11 @@
+         ----------
+         tag1 : Tag
+             Premier tag.
+         tag2 : Tag
+             Second tag.
+-        
++
+         Returns
+         -------
+         bool
+             True si le tag1 peut ramasser le tag2, False sinon.
+         """

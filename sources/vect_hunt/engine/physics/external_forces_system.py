@@ -1,5 +1,5 @@
 from vect_hunt.engine.core.math import Vector2D
-from vect_hunt.engine.components import PhysicBodyComponent
+from vect_hunt.engine.components.physic_body_component import PhysicBodyComponent
 
 from typing import TYPE_CHECKING
 
@@ -42,5 +42,8 @@ class ExternalForcesSystem:
 
             if body.use_gravity and not body.is_kinematic:
                 # TODO : Faire de la gravité une propriété du monde ou du système
-                gravity_force = Vector2D(0, 9.81) * body.mass * delta_time
-                body.add_force(gravity_force)
+                units = world.units
+                gravity_m_s2 = units.get("gravity_m_s2", 9.81)
+                pixels_per_meter = units.get("pixels_per_meter", 100.0)
+                gravity_accel = Vector2D(0, gravity_m_s2 * pixels_per_meter)
+                body.add_acceleration(gravity_accel)

@@ -1,7 +1,7 @@
 {
   "_comment": "Caisse standard en bois",
   "name": "Crate_Standard",
-  "tags": ["WALL"],
+  "tags": ["OBJECT"],
   "transform": {
     "position": [0, 0],
     "rotation": 0.0

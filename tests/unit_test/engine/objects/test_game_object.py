@@ -41,7 +41,7 @@ def test_game_object_initialization_defaults():
     [
         ("Player", Vector2D(0.0, 0.0), 0.0, Tag.NONE),
         ("Enemy", Vector2D(5.0, -3.0), 1.2, Tag.ENEMY),
-        ("Wall", Vector2D(-10.0, 4.5), -0.5, Tag.PLAYER | Tag.PROJECTILE),
+        ("OBJECT", Vector2D(-10.0, 4.5), -0.5, Tag.PLAYER | Tag.PROJECTILE),
     ],
 )
 def test_game_object_initialization(name, position, rotation, tags):
@@ -55,7 +55,7 @@ def test_game_object_initialization(name, position, rotation, tags):
 
 @pytest.mark.parametrize("nb_colliders", [0, 1, 10])
 def test_add_collider(nb_colliders):
-    obj = GameObject("Wall")
+    obj = GameObject("OBJECT")
     for _ in range(nb_colliders):
         collider = DummyColliderComponent()
         obj.add_component(collider)
@@ -68,7 +68,7 @@ def test_add_collider(nb_colliders):
     "nb_initial_colliders, nb_colliders_to_remove", [(1, 1), (5, 2), (3, 0)]
 )
 def test_remove_existing_collider(nb_initial_colliders, nb_colliders_to_remove):
-    obj = GameObject("Wall")
+    obj = GameObject("OBJECT")
     colliders = [DummyColliderComponent() for _ in range(nb_initial_colliders)]
 
     for collider in colliders:
@@ -86,7 +86,7 @@ def test_remove_existing_collider(nb_initial_colliders, nb_colliders_to_remove):
 
 
 def test_remove_non_existing_collider():
-    obj = GameObject("Wall")
+    obj = GameObject("OBJECT")
     collider = DummyColliderComponent()
 
     obj.remove_component(collider)
@@ -97,10 +97,14 @@ def test_remove_non_existing_collider():
 @pytest.mark.parametrize(
     "initial_tags, tag_to_check, expected_result",
     [
-        (Tag.PLAYER | Tag.WALL, Tag.PLAYER, Tag.PLAYER | Tag.WALL),
-        (Tag.ENEMY, Tag.WALL, Tag.ENEMY | Tag.WALL),
+        (Tag.PLAYER | Tag.OBJECT, Tag.PLAYER, Tag.PLAYER | Tag.OBJECT),
+        (Tag.ENEMY, Tag.OBJECT, Tag.ENEMY | Tag.OBJECT),
         (Tag.ENEMY, Tag.PLAYER, Tag.ENEMY | Tag.PLAYER),
-        (Tag.PROJECTILE | Tag.WALL, Tag.ENEMY, Tag.PROJECTILE | Tag.WALL | Tag.ENEMY),
+        (
+            Tag.PROJECTILE | Tag.OBJECT,
+            Tag.ENEMY,
+            Tag.PROJECTILE | Tag.OBJECT | Tag.ENEMY,
+        ),
         (Tag.NONE, Tag.ENEMY, Tag.ENEMY),
     ],
 )
@@ -116,7 +120,7 @@ def test_add_tag(initial_tags, tag_to_check, expected_result):
 @pytest.mark.parametrize(
     "initial_tags, tags_to_add, expected_tags",
     [
-        (Tag.NONE, [Tag.PLAYER, Tag.WALL], Tag.PLAYER | Tag.WALL),
+        (Tag.NONE, [Tag.PLAYER, Tag.OBJECT], Tag.PLAYER | Tag.OBJECT),
         (
             Tag.ENEMY,
             [Tag.PROJECTILE, Tag.PICKUP],
@@ -137,10 +141,10 @@ def test_add_multiple_tags(initial_tags, tags_to_add, expected_tags):
 @pytest.mark.parametrize(
     "initial_tags, tag_to_remove, expected_result",
     [
-        (Tag.PLAYER | Tag.WALL, Tag.PLAYER, Tag.WALL),
-        (Tag.ENEMY | Tag.WALL, Tag.WALL, Tag.ENEMY),
+        (Tag.PLAYER | Tag.OBJECT, Tag.PLAYER, Tag.OBJECT),
+        (Tag.ENEMY | Tag.OBJECT, Tag.OBJECT, Tag.ENEMY),
         (Tag.ENEMY | Tag.PLAYER, Tag.PLAYER, Tag.ENEMY),
-        (Tag.PROJECTILE | Tag.WALL, Tag.ENEMY, Tag.PROJECTILE | Tag.WALL),
+        (Tag.PROJECTILE | Tag.OBJECT, Tag.ENEMY, Tag.PROJECTILE | Tag.OBJECT),
         (Tag.NONE, Tag.ENEMY, Tag.NONE),
     ],
 )

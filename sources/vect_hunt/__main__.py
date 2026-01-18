@@ -1,10 +1,12 @@
 import logging
-
 import pygame
-
 from vect_hunt.game import Game
-from vect_hunt.engine.resources import DataLoader
+from vect_hunt.engine.resources.loaders import DataLoader
+from vect_hunt.engine.resources.paths import Paths
 from .logging_config import setup_logging
+
+# Import dynamique des components
+from vect_hunt.engine.utils.component_loader import load_all_components
 
 logger = logging.getLogger(__name__)
 
@@ -52,6 +54,9 @@ def main() -> None:
     Initialise Pygame, crée la fenêtre,
     et lance la boucle principale du jeu.
     """
+
+    # Charger dynamiquement tous les components du moteur et du jeu
+    load_all_components([str(Paths.COMPONENTS_DIR), str(Paths.GAME_DIR)])
 
     pygame.init()
     screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))

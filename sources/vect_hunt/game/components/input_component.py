@@ -4,7 +4,6 @@ Composant de gestion des inputs pour les entités contrôlées par le joueur.
 
 from typing import Any, TYPE_CHECKING
 
-from vect_hunt.engine.core.math import Vector2D
 from vect_hunt.engine.components.component import Component
 from vect_hunt.engine.components.physic_body_component import PhysicBodyComponent
 
@@ -93,4 +92,4 @@ class InputComponent(Component):
             physic_body.set_velocity(velocity)
         else:
             # Arrêter le mouvement si aucun input
-            physic_body.set_velocity(Vector2D(0, 0))
+            pass  # physic_body.set_velocity(Vector2D(0, 0))

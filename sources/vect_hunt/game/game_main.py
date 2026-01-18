@@ -61,7 +61,7 @@ class Game:
         self.world.add_game_object(obstacle)
 
         # Creer une caisse via template
-        crate = factory.from_template("objects/crate.json", position=Vector2D(100, 300))
+        crate = factory.from_template("objects/crate.json", position=Vector2D(400, 100))
         self.world.add_game_object(crate)
 
     def initiate_rendering(self, screen: pygame.Surface) -> None:

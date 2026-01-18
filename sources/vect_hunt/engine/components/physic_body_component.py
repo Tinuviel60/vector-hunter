@@ -7,7 +7,7 @@ from typing import Any
 from vect_hunt.engine.components.component import Component
 from vect_hunt.engine.core.math import Vector2D
 from vect_hunt.engine.physics.physic_material import CombineMode, PhysicMaterial
-from vect_hunt.engine.resources import DataLoader
+from vect_hunt.engine.resources.loaders.data_loader import DataLoader
 
 import logging
 
