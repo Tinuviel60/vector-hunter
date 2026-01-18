@@ -18,7 +18,7 @@ class GameLoop:
     ) -> None:
         """
         Initialise la boucle de jeu.
-        
+
         Parameters
         ----------
         game : Game

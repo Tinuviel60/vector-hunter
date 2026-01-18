@@ -1,5 +1,6 @@
+from typing import Any, Optional
+
 from vect_hunt.engine.objects import GameObject
-from vect_hunt.engine.resources.loaders.data_loader import DataLoader
 
 
 class Scene:
@@ -14,26 +15,37 @@ class Scene:
         Configuration des unités de la simulation (pixels/m, gravité...).
     """
 
-    def __init__(self):
+    def __init__(self, units: dict[str, float]):
         """
         Initialise une scène de jeu vide.
         """
         self.game_objects: dict[int, GameObject] = {}
+        self.units = units
 
-        self.units = self._load_units()
+    @classmethod
+    def from_data(cls, scene_data: Optional[dict[str, Any]] = None) -> "Scene":
+        """
+        Cree une Scene depuis des donnees JSON.
 
-    @staticmethod
-    def _load_units() -> dict:
+        Parameters
+        ----------
+        scene_data : dict[str, Any] | None
+            Donnees de scene. Doit contenir 'units'.
         """
-        Charge la configuration des unites physiques.
-        """
-        units = DataLoader.load_json("configs/units.json")
-        pixels_per_meter = units.get("pixels_per_meter", 100.0)
-        gravity_m_s2 = units.get("gravity_m_s2", 9.81)
-        return {
+        if scene_data is None:
+            raise ValueError("La scene doit definir les données.")
+
+        units_data = scene_data.get("units")
+        if units_data is None:
+            raise ValueError("La scene doit definir les 'unités'.")
+
+        pixels_per_meter = units_data.get("pixels_per_meter", 100.0)
+        gravity_m_s2 = units_data.get("gravity_m_s2", 9.81)
+        units = {
             "pixels_per_meter": pixels_per_meter,
             "gravity_m_s2": gravity_m_s2,
         }
+        return cls(units)
 
     def add_game_object(self, game_object: GameObject) -> None:
         """

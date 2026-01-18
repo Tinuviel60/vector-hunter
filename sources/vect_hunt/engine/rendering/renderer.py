@@ -216,7 +216,8 @@ class Renderer:
         Parameters
         ----------
         scene : Scene
-            L'état actuel de la scène du jeu, contenant les informations des objets de jeu.
+            L'état actuel de la scène du jeu, contenant les informations
+            des objets de jeu.
         """
         self.draw_background()
         self.draw_game_objects(scene.game_objects)

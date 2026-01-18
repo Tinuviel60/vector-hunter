@@ -19,6 +19,7 @@ Les paramètres graphiques et de simulation sont chargés depuis
 assets/data/configs/app.json
 """
 
+
 def bootstrap() -> dict:
     """
     Charge la configuration et prépare le logging.

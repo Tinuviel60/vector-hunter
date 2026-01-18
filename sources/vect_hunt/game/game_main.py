@@ -1,7 +1,7 @@
-from vect_hunt.engine.scenes import Scene
+from vect_hunt.engine.scenes import Scene, SceneFactory
 from vect_hunt.engine.rendering import Renderer
-from vect_hunt.engine.objects import GameObject, GameObjectFactory
-from vect_hunt.engine.core import Vector2D
+from vect_hunt.engine.objects import GameObject
+from vect_hunt.engine.resources.loaders.data_loader import DataLoader
 from vect_hunt.engine.simulation import SimulationScheduler
 
 import pygame
@@ -42,32 +42,18 @@ class Game:
         """
         Initialise les composants du jeu.
         """
-        self.scene = Scene()
+        self.scene = Scene.from_data(
+            {"units": DataLoader.load_json("configs/units.json")}
+        )
         self.simulation_scheduler = SimulationScheduler(self.scene)
 
-        factory = GameObjectFactory()
-
-        # Creer le joueur via template avec InputComponent integre
-        player = factory.from_template(
-            "player.json",
-            position=Vector2D(100, 200),
+        factory = SceneFactory()
+        self.scene = factory.from_template(
+            "level_00.json",
             input_system=self.simulation_scheduler.input_system,
         )
-        self.scene.add_game_object(player)
-
-        # Creer un ennemi via template
-        enemy = factory.from_template("targets/basic.json", position=Vector2D(600, 200))
-        self.scene.add_game_object(enemy)
-
-        # Creer un obstacle via template
-        obstacle = factory.from_template(
-            "walls/standard.json", position=Vector2D(400, 300)
-        )
-        self.scene.add_game_object(obstacle)
-
-        # Creer une caisse via template
-        crate = factory.from_template("objects/crate.json", position=Vector2D(400, 100))
-        self.scene.add_game_object(crate)
+        self.simulation_scheduler.scene = self.scene
+        self.simulation_scheduler.collision_resolution_system.scene = self.scene
 
     def initiate_rendering(self, screen: pygame.Surface) -> None:
         """
