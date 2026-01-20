@@ -5,8 +5,9 @@ from vect_hunt.engine.core.math import hex_to_rgb
 from vect_hunt.engine.physics.collider_system import ColliderSystem
 from vect_hunt.engine.rendering.font import FontSystem
 from vect_hunt.engine.components.render_component import RenderComponent
-from vect_hunt.engine.components.collider import ColliderComponent
+from vect_hunt.engine.components.collider import ColliderComponent, BoxColliderComponent
 from vect_hunt.engine.resources.loaders.data_loader import DataLoader
+from vect_hunt.engine.core.geometries import BoxShape, CircleShape
 
 if TYPE_CHECKING:
     from vect_hunt.engine.objects import GameObject
@@ -27,10 +28,6 @@ class Renderer:
     ----------
     screen : pygame.Surface
         Surface Pygame de rendu.
-    width : int
-        Largeur de la surface en pixels.
-    height : int
-        Hauteur de la surface en pixels.
     background_color : str
         Couleur de fond en hexadécimal.
     draw_colliders : bool
@@ -60,8 +57,6 @@ class Renderer:
         config = DataLoader.load_json("configs/renderer.json")
 
         self.screen = screen
-        self.width = screen.get_width()
-        self.height = screen.get_height()
         self.background_color = config["background_color"]
 
         # Options de debug depuis la config
@@ -69,7 +64,8 @@ class Renderer:
         self.draw_colliders = debug_config["draw_colliders"]
         self.print_names = debug_config["print_names"]
         self.print_fps = debug_config["print_fps"]
-        self.collider_color = debug_config["collider_color"]
+        self.color_for_valid = debug_config["color_for_valid"]
+        self.color_for_invalid = debug_config["color_for_invalid"]
         self.collider_thickness = debug_config["collider_thickness"]
 
         # Style de police pour le debug (géré par FontSystem)
@@ -132,7 +128,6 @@ class Renderer:
                 for collider in colliders:
                     self.draw_collider(
                         collider,
-                        game_object.transform,
                         collider.nb_collision > 0,
                     )
 
@@ -152,7 +147,7 @@ class Renderer:
             (int(pos.x - name_surf.get_width() / 2), int(pos.y - 20)),
         )
 
-    def draw_collider(self, collider, transform, is_colliding: bool = False):
+    def draw_collider(self, collider: ColliderComponent, is_colliding: bool = False):
         """
         Dessine un collider pour le debug.
 
@@ -160,36 +155,32 @@ class Renderer:
         ----------
         collider : ColliderComponent
             Le collider à dessiner.
-        transform : Transform
-            La transformation du GameObject auquel le collider appartient.
         is_colliding : bool
             Indique si le GameObject est actuellement en collision.
         """
-        geom = collider.get_geometry()
+        shape = collider.shape
 
         # Couleur rouge si en collision, vert sinon
-        color = (255, 0, 0) if is_colliding else (0, 255, 0)
+        color = self.color_for_invalid if is_colliding else self.color_for_valid
 
-        if geom["type"] == "circle":
+        if isinstance(shape, CircleShape):
             # Pour les cercles, center est local et on ajoute la position du GameObject
-            center_vec = transform.position + collider.transform.position
-            center = (int(center_vec.x), int(center_vec.y))
+            col_tr = ColliderSystem.get_collider_scene_transform(collider)
+            col_pos = col_tr.position
+            center = (int(col_pos.x), int(col_pos.y))
             pygame.draw.circle(
-                self.screen,
-                color,
-                center,
-                int(geom["radius"]),
-                1,
+                self.screen, color, center, int(shape.radius), self.collider_thickness
             )
 
-        elif geom["type"] == "box":
+        elif isinstance(shape, BoxShape):
             # Pour les polygones, les points incluent déjà la position absolue
-            points = ColliderSystem.get_scene_corners(geom["points"], transform)
+            assert isinstance(collider, BoxColliderComponent)
+            corners = ColliderSystem.get_scene_corners(collider)
             pygame.draw.polygon(
                 self.screen,
                 color,
-                [(int(p.x), int(p.y)) for p in points],
-                1,
+                [(int(p.x), int(p.y)) for p in corners],
+                self.collider_thickness,
             )
 
     def render_game_object(self, game_object: "GameObject") -> None:

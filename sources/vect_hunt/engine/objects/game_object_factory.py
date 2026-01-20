@@ -1,9 +1,3 @@
-"""
-Factory pour creer des GameObjects depuis des templates JSON.
-"""
-
-from __future__ import annotations
-
 import logging
 import math
 from typing import Any, Optional, TYPE_CHECKING
@@ -24,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 class GameObjectFactory:
     """
-    Factory responsable de la creation de GameObjects depuis des templates.
+    Factory responsable de la creation de GameObjects depuis des templates JSON.
 
     Format attendu :
     {

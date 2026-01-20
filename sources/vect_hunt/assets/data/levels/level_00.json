@@ -20,14 +20,22 @@
       "name": "Target_Basic",
       "transform": {
         "position": [600, 200],
-        "rotation": 0.0
+        "rotation": 45.0
+      }
+    },
+    {
+      "template_path": "targets/test.json",
+      "name": "Target_Basic",
+      "transform": {
+        "position": [600, 200],
+        "rotation": -45.0
       }
     },
     {
       "template_path": "objects/standard.json",
       "name": "Wall_Standard",
       "transform": {
-        "position": [400, 300],
+        "position": [400, 800],
         "rotation": 0.0
       }
     },

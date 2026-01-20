@@ -3,6 +3,8 @@ from typing import Any, Optional
 
 from vect_hunt.engine.core.math import Vector2D
 from vect_hunt.engine.core.transform import Transform
+from vect_hunt.engine.core.geometries import BoxShape
+
 
 from .collider_component import ColliderComponent
 
@@ -16,10 +18,8 @@ class BoxColliderComponent(ColliderComponent):
     ----------
     game_object : GameObject | None
         GameObject parent du collider.
-    width : float
-        Largeur du rectangle.
-    height : float
-        Hauteur du rectangle.
+    shape : BoxShape
+        Forme box portée par le collider.
     center : Vector2D
         Centre du rectangle par rapport au GameObject parent.
     orientation : float
@@ -29,6 +29,7 @@ class BoxColliderComponent(ColliderComponent):
     """
 
     component_name = "box_collider"
+    shape: BoxShape
 
     def __init__(
         self,
@@ -55,19 +56,12 @@ class BoxColliderComponent(ColliderComponent):
         solid : bool
             Indique si le collider est solide.
         """
-        self.width = width
-        self.height = height
-
         if center is None:
             center = Vector2D(0, 0)
+
         transform = Transform(position=center, rotation=orientation)
-
-        self.transform = transform
-        self.cos_orientation = math.cos(orientation)
-        self.sin_orientation = math.sin(orientation)
-        self.corners: list[Vector2D] = self.calculate_corners()
-
-        super().__init__(transform, solid)
+        shape = BoxShape(width=width, height=height)
+        super().__init__(shape=shape, transform=transform, solid=solid)
 
     @classmethod
     def from_data(
@@ -92,6 +86,7 @@ class BoxColliderComponent(ColliderComponent):
         position_data = transform_data.get("position", [0, 0])
         rotation = math.radians(transform_data.get("rotation", 0.0))
         center = Vector2D(position_data[0], position_data[1])
+
         return cls(
             width=data.get("width", 10.0),
             height=data.get("height", 10.0),
@@ -99,64 +94,3 @@ class BoxColliderComponent(ColliderComponent):
             orientation=rotation,
             solid=data.get("solid", True),
         )
-
-    def get_area(self):
-        """
-        Calcule et retourne l'aire du rectangle.
-
-        Returns
-        -------
-        float
-            Aire du rectangle.
-        """
-        return self.width * self.height
-
-    def calculate_corners(self) -> list[Vector2D]:
-        """
-        Calcule les coins du rectangle en fonction de la position,
-        de la taille et de l'orientation.
-
-        Returns
-        -------
-        list[Vector2D]
-            Liste des coins du rectangle dans l'ordre horaire.
-        """
-        half_width = self.width / 2
-        half_height = self.height / 2
-
-        corners = [
-            Vector2D(-half_width, -half_height),
-            Vector2D(half_width, -half_height),
-            Vector2D(half_width, half_height),
-            Vector2D(-half_width, half_height),
-        ]
-
-        rotated_corners = []
-        cos_angle = self.cos_orientation
-        sin_angle = self.sin_orientation
-
-        for corner in corners:
-            rotated_x = corner.x * cos_angle - corner.y * sin_angle
-            rotated_y = corner.x * sin_angle + corner.y * cos_angle
-            rotated_corners.append(
-                Vector2D(
-                    rotated_x + self.transform.position.x,
-                    rotated_y + self.transform.position.y,
-                )
-            )
-
-        return rotated_corners
-
-    def get_geometry(self) -> dict:
-        """
-        Retourne la geometrie specifique du collider.
-
-        Returns
-        -------
-        dict
-            Dictionnaire représentant la géométrie du rectangle.
-        """
-        return {
-            "type": "box",
-            "points": self.corners,
-        }

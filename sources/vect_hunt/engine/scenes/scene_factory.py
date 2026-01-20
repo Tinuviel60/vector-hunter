@@ -1,9 +1,3 @@
-"""
-Factory pour creer des scenes depuis des fichiers JSON.
-"""
-
-from __future__ import annotations
-
 import logging
 from typing import Any, Optional, TYPE_CHECKING
 

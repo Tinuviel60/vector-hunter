@@ -5,7 +5,8 @@
     "draw_colliders": true,
     "print_names": true,
     "print_fps": false,
-    "collider_color": "#00FF00",
+    "color_for_valid": "#00FF00",
+    "color_for_invalid": "#FF0000",
     "collider_thickness": 2
   }
 }

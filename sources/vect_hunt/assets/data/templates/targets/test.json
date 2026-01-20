@@ -1,0 +1,61 @@
+{
+  "_comment": "Cible standard",
+  "name": "Target_Basic",
+  "tags": ["ENEMY"],
+  "transform": {
+    "position": [0, 0],
+    "rotation": 0.0
+  },
+  "components": [
+    {
+      "component": "physic_body",
+      "data": {
+        "speed": 150.0,
+        "is_kinematic": false,
+        "is_controlled": true,
+        "mass": 1.0,
+        "use_gravity": true,
+        "material": "materials/default.json"
+      }
+    },
+    {
+      "component": "box_collider",
+      "data": {
+        "width": 40.0,
+        "height": 40.0,
+        "solid": true,
+        "transform": {
+          "position": [0, 0],
+          "rotation": 0.0
+        }
+      }
+    },
+    {
+      "component": "box_collider",
+      "data": {
+        "width": 40.0,
+        "height": 40.0,
+        "solid": true,
+        "transform": {
+          "position": [20, 0],
+          "rotation": 0.0
+        }
+      }
+    },
+    {
+      "component": "basic_shape",
+      "data": {
+        "type": "basic_shape",
+        "shape": "circle",
+        "color": "#FF6464",
+        "radius": 20,
+        "outline_color": "#8B0000",
+        "outline_width": 2
+      }
+    },
+    {
+      "component": "ia",
+      "data": {}
+    }
+  ]
+}

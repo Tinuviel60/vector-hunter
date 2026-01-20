@@ -129,6 +129,18 @@ class Rotation:
         """
         return self._angle
 
+    @property
+    def angle_degrees(self) -> float:
+        """
+        Retourne l'angle équivalent de la rotation.
+
+        Returns
+        -------
+        float
+            Angle de rotation en degrés.
+        """
+        return math.degrees(self._angle)
+
     def reflect(self, normal: Vector2D) -> "Rotation":
         """
         Retourne la rotation réfléchie par rapport à une normale de surface.

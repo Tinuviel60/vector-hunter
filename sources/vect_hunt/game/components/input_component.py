@@ -4,7 +4,6 @@ Composant de gestion des inputs pour les entités contrôlées par le joueur.
 
 from typing import Any, TYPE_CHECKING
 
-from vect_hunt.engine.core.math import Vector2D
 from vect_hunt.engine.components.component import Component
 from vect_hunt.engine.components.physic_body_component import PhysicBodyComponent
 
@@ -95,7 +94,7 @@ class InputComponent(Component):
         #     acceleration = Vector2D(delta_v_x, 0)
 
         #     physic_body.add_acceleration(acceleration)
-        
+
         # if move_vector.y != 0:
         #     # Calculer l'accélération verticale (saut)
         #     desired_velocity_y = move_vector.y * physic_body.speed
@@ -106,6 +105,7 @@ class InputComponent(Component):
 
         # Versions vu du dessus
         desired_velocity = move_vector * physic_body.speed
-        acceleration = desired_velocity - physic_body.velocity
-        physic_body.add_acceleration(acceleration)
-        
+        # acceleration = desired_velocity - physic_body.velocity
+        # physic_body.add_acceleration(acceleration)
+
+        physic_body.set_velocity(desired_velocity)
