@@ -38,12 +38,14 @@ class Game:
         self.gameObjects: dict[str, GameObject] = {}
         self.initialize()
 
+    # TODO : Ajouter un système de gestion des niveaux/scènes
+    # TODO : Sortir la 1ere scene de la
     def initialize(self) -> None:
         """
         Initialise les composants du jeu.
         """
         self.scene = Scene.from_data(
-            {"units": DataLoader.load_json("configs/units.json")}
+            {"units": DataLoader.load_json("levels/level_00.json")["scene"]["units"]}
         )
         self.simulation_scheduler = SimulationScheduler(self.scene)
 

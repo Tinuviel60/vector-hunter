@@ -1,5 +1,0 @@
-{
-  "_comment": "Configuration des unites physiques",
-  "pixels_per_meter": 100.0,
-  "gravity_m_s2": 9.81
-}

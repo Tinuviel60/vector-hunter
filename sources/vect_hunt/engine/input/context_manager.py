@@ -116,6 +116,7 @@ class ContextManager:
         """
         return len(self._context_stack)
 
+    # TODO : Quand même garder global en 1er
     def clear_stack(self, new_context: GameContext) -> None:
         """
         Vide la pile et définit un nouveau contexte unique.

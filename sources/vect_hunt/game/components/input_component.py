@@ -4,6 +4,7 @@ Composant de gestion des inputs pour les entités contrôlées par le joueur.
 
 from typing import Any, TYPE_CHECKING
 
+from vect_hunt.engine.core.math import Vector2D
 from vect_hunt.engine.components.component import Component
 from vect_hunt.engine.components.physic_body_component import PhysicBodyComponent
 
@@ -86,10 +87,25 @@ class InputComponent(Component):
         if not physic_body:
             return
 
-        if move_vector.magnitude() > 0.0:
-            # Calculer la vélocité à appliquer en utilisant la vitesse du corps physique
-            velocity = move_vector * physic_body.speed
-            physic_body.set_velocity(velocity)
-        else:
-            # Arrêter le mouvement si aucun input
-            pass  # physic_body.set_velocity(Vector2D(0, 0))
+        # Versions plateforme
+        # if move_vector.x != 0:
+        #     # Calculer l'accélération à appliquer pour atteindre la vitesse désirée
+        #     desired_velocity_x = move_vector.x * physic_body.speed
+        #     delta_v_x = desired_velocity_x - physic_body.velocity.x
+        #     acceleration = Vector2D(delta_v_x, 0)
+
+        #     physic_body.add_acceleration(acceleration)
+        
+        # if move_vector.y != 0:
+        #     # Calculer l'accélération verticale (saut)
+        #     desired_velocity_y = move_vector.y * physic_body.speed
+        #     delta_v_y = desired_velocity_y - physic_body.velocity.y
+        #     acceleration_y = Vector2D(0, delta_v_y)
+
+        #     physic_body.add_acceleration(acceleration_y)
+
+        # Versions vu du dessus
+        desired_velocity = move_vector * physic_body.speed
+        acceleration = desired_velocity - physic_body.velocity
+        physic_body.add_acceleration(acceleration)
+        

@@ -32,8 +32,9 @@ class ColliderSystem:
         Profondeur minimale de pénétration pour valider une collision.
     """
 
-    physic_config = DataLoader.load_json("configs/game.json")["physics"]
-    min_penetration_depth = physic_config["min_penetration_depth"]
+    # TODO : Charger depuis la config de la scène ?
+    #physic_config = DataLoader.load_json("configs/units.json")
+    min_penetration_depth = 1e-9
 
     def __init__(self):
         """Initialise le système de collision."""
