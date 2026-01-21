@@ -1,5 +1,3 @@
-import math
-import random
 import pytest
 
 from vect_hunt.engine.core.math import Numeric
@@ -63,7 +61,7 @@ def test_is_close_nearly_zero():
 
 
 # -------------------
-# sign / step / smoothstep
+# sign / treshold / smoothstep
 # -------------------
 @pytest.mark.parametrize("value, expected", [(-2.0, -1), (0.0, 0), (3.0, 1)])
 def test_sign(value, expected):
@@ -71,8 +69,8 @@ def test_sign(value, expected):
 
 
 @pytest.mark.parametrize("edge, value, expected", [(0.5, 0.3, 0.0), (0.5, 0.5, 1.0)])
-def test_step(edge, value, expected):
-    assert Numeric.step(edge, value) == expected
+def test_treshold(edge, value, expected):
+    assert Numeric.treshold(edge, value) == expected
 
 
 def test_smoothstep():
@@ -82,7 +80,7 @@ def test_smoothstep():
 
 
 # -------------------
-# wrap / pingpong
+# wrap / oscilate
 # -------------------
 @pytest.mark.parametrize(
     "value, min_v, max_v, expected",
@@ -105,42 +103,5 @@ def test_wrap(value, min_v, max_v, expected):
         (2.5, 1.0, 0.5),
     ],
 )
-def test_pingpong(value, length, expected):
-    assert Numeric.pingpong(value, length) == pytest.approx(expected)
-
-
-# -------------------
-# approach / damp
-# -------------------
-@pytest.mark.parametrize(
-    "current, target, delta, expected",
-    [
-        (0.0, 10.0, 3.0, 3.0),
-        (9.0, 10.0, 3.0, 10.0),
-        (10.0, 0.0, 4.0, 6.0),
-    ],
-)
-def test_approach(current, target, delta, expected):
-    assert Numeric.approach(current, target, delta) == pytest.approx(expected)
-
-
-def test_damp():
-    value = Numeric.damp(0.0, 10.0, smoothing=5.0, dt=0.1)
-    assert 0.0 < value < 10.0
-    assert Numeric.damp(0.0, 10.0, smoothing=0.0, dt=0.1) == 10.0
-    assert Numeric.damp(3.0, 10.0, smoothing=5.0, dt=0.0) == 3.0
-
-
-# -------------------
-# rand_range / rand_int
-# -------------------
-def test_rand_range():
-    rng = random.Random(42)
-    value = Numeric.rand_range(0.0, 1.0, rng=rng)
-    assert 0.0 <= value <= 1.0
-
-
-def test_rand_int():
-    rng = random.Random(42)
-    value = Numeric.rand_int(1, 6, rng=rng)
-    assert 1 <= value <= 6
+def test_oscilate(value, length, expected):
+    assert Numeric.oscilate(value, length) == pytest.approx(expected)

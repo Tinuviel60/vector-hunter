@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import MagicMock, Mock
 
 from vect_hunt.engine.core import Vector2D
-from vect_hunt.engine.components.input_component import InputComponent
+from vect_hunt.game.components import InputComponent
 from vect_hunt.engine.components.physic_body_component import PhysicBodyComponent
 
 

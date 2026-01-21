@@ -124,7 +124,6 @@ class ColliderSystem:
 
         return scene_tr
 
-
     @staticmethod
     def _get_collider_scene_position(collider: ColliderComponent) -> Vector2D:
         """
@@ -301,7 +300,6 @@ class ColliderSystem:
         assert local_corners is not None, "BoxShape must provide local vertices"
         return Geometry.get_scene_corners(local_corners, scene_position, scene_rotation)
 
-    
     def compute_aabb(self, collider: ColliderComponent) -> tuple[Vector2D, Vector2D]:
         """
         Calcule l'AABB monde d'un collider.

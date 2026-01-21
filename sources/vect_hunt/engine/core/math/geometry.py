@@ -254,7 +254,9 @@ class Geometry:
         clamped_x = max(min_x, min(max_x, local_point.x))
         clamped_y = max(min_y, min(max_y, local_point.y))
 
-        return Geometry.to_scene(Vector2D(clamped_x, clamped_y), box_position, box_rotation)
+        return Geometry.to_scene(
+            Vector2D(clamped_x, clamped_y), box_position, box_rotation
+        )
 
     # TODO : Epsilon à gérer en global
     @staticmethod
@@ -322,8 +324,8 @@ class Geometry:
         sum_x = sum(corner.x for corner in corners)
         sum_y = sum(corner.y for corner in corners)
         num_corners = len(corners)
-        return Vector2D(sum_x / num_corners, sum_y / num_corners
-                        )
+        return Vector2D(sum_x / num_corners, sum_y / num_corners)
+
     # TODO : Epsilon à gérer en global
     @staticmethod
     def sat_collision_info(
@@ -376,7 +378,6 @@ class Geometry:
             normal = -1 * normal
 
         return {"normal": normal, "depth": penetration}
-
 
     # TODO : Epsilon à gérer en global
     @staticmethod

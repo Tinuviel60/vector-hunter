@@ -1,5 +1,5 @@
 import pygame
-from typing import Tuple, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 from vect_hunt.engine.core import RenderOps
 from vect_hunt.engine.physics.collider_system import ColliderSystem
@@ -82,7 +82,6 @@ class Renderer:
         Dessine le fond de la carte.
         """
         self.clear()
-
 
     def draw_game_objects(self, game_objects: dict[int, "GameObject"]) -> None:
         """

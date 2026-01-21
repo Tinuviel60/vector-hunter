@@ -45,24 +45,6 @@ def test_rgba_to_hex():
 
 
 # -------------------
-# parse_color
-# -------------------
-@pytest.mark.parametrize(
-    "color, expected",
-    [
-        ("#FF8000", (255, 128, 0, 255)),
-        ("#FF800080", (255, 128, 0, 128)),
-        ((255, 128, 0), (255, 128, 0, 255)),
-        ((255, 128, 0, 64), (255, 128, 0, 64)),
-        ("rgb(255, 128, 0)", (255, 128, 0, 255)),
-        ("rgba(255, 128, 0, 64)", (255, 128, 0, 64)),
-    ],
-)
-def test_parse_color(color, expected):
-    assert RenderOps.parse_color(color) == expected
-
-
-# -------------------
 # lerp_color / blend_colors
 # -------------------
 def test_lerp_color():

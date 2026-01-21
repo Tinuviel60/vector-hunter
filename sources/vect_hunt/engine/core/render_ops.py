@@ -14,12 +14,12 @@ class RenderOps:
     def _clamp_channel(value: float) -> int:
         """
         Contraint une valeur de canal couleur entre 0 et 255.
-        
+
         Parameters
         ----------
         value : float
             Valeur du canal couleur.
-            
+
         Returns
         -------
         int
@@ -88,7 +88,7 @@ class RenderOps:
         if len(hex_color) == 6:
             r, g, b = RenderOps.hex_to_rgb(hex_color)
             return (r, g, b, 255)
-        
+
         if len(hex_color) == 8:
             r = int(hex_color[0:2], 16)
             g = int(hex_color[2:4], 16)
@@ -114,7 +114,6 @@ class RenderOps:
         """
         r, g, b, a = color
         return f"#{r:02X}{g:02X}{b:02X}{a:02X}"
-
 
     @staticmethod
     def lerp_color(color_a: ColorRGB, color_b: ColorRGB, t: float) -> ColorRGB:
@@ -248,7 +247,7 @@ class RenderOps:
         b = RenderOps._clamp_channel((color[2] - 128) * factor + 128)
 
         return (r, g, b)
-    
+
     @staticmethod
     def tint(color: ColorRGB, tint_color: ColorRGB, amount: float) -> ColorRGB:
         """

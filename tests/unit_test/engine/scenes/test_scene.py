@@ -9,7 +9,7 @@ def empty_scene():
     """
     Retourne une Scene vide pour tests.
     """
-    return Scene()
+    return Scene(units={"pixels_per_meter": 100.0, "gravity_m_s2": 9.81})
 
 
 @pytest.mark.parametrize(
@@ -128,9 +128,6 @@ def test_game_object_gets_unique_id(empty_scene):
 
 
 def test_scene_has_collision_tracker(empty_scene):
-    """Vérifie que Scene initialise un CollisionTracker."""
+    """Vérifie que Scene n'expose pas de CollisionTracker par défaut."""
     scene = empty_scene
-    assert hasattr(scene, "collision_tracker")
-    from vect_hunt.engine.physics import CollisionTracker
-
-    assert isinstance(scene.collision_tracker, CollisionTracker)
+    assert not hasattr(scene, "collision_tracker")

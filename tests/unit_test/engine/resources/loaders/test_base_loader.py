@@ -17,7 +17,7 @@ from vect_hunt.engine.resources.loaders.data_loader import DataLoader
             False,
             id="reject_extension",
         ),
-        pytest.param("reject_size", "big.json", "file_big", 1, False, id="reject_size"),
+        pytest.param("big.json", "file_big", 1, False, id="reject_size"),
         pytest.param(
             "link.json",
             "file_symlink",

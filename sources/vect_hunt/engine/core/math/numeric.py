@@ -1,8 +1,3 @@
-import math
-import random
-from typing import Optional
-
-
 class Numeric:
     """
     Utilitaires numériques.
@@ -120,7 +115,7 @@ class Numeric:
             Valeur entre 0 et 1.
         """
         return Numeric.clamp(value, 0.0, 1.0)
-    
+
     # TODO : Espilon par default global
     @staticmethod
     def is_close(a: float, b: float, eps: float = 1e-9) -> bool:
@@ -280,5 +275,3 @@ class Numeric:
             return cycle
         else:
             return 2.0 * length - cycle
-
-    
