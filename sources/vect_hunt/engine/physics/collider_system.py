@@ -1,8 +1,7 @@
 from typing import List, Set, Tuple, TYPE_CHECKING
 
 from vect_hunt.engine.core.tag_system import TagSystem
-from vect_hunt.engine.core import Geometry
-from vect_hunt.engine.core.math import Vector2D
+from vect_hunt.engine.core.math import Geometry, Vector2D
 from vect_hunt.engine.core.transform import Rotation, Transform
 from vect_hunt.engine.components.collider import (
     BoxColliderComponent,
@@ -58,10 +57,7 @@ class ColliderSystem:
         """
         a_min, a_max = a
         b_min, b_max = b
-
-        return Geometry.intervals_overlap(
-            a_min.x, a_max.x, b_min.x, b_max.x
-        ) and Geometry.intervals_overlap(a_min.y, a_max.y, b_min.y, b_max.y)
+        return Geometry.aabb_overlap(a_min, a_max, b_min, b_max)
 
     # --------------------
     # Collisions fines
@@ -128,50 +124,6 @@ class ColliderSystem:
 
         return scene_tr
 
-    @staticmethod
-    def collider_scene_to_local(
-        collider: ColliderComponent, scene_point: Vector2D
-    ) -> Vector2D:
-        """
-        Convertit un point scene en coordonnées LOCALES du collider.
-        Dans ce repère, la shape est centrée en (0,0) et non-rotée.
-
-        Parameters
-        ----------
-        collider : ColliderComponent
-            Le collider de référence.
-        world_point : Vector2D
-            Le point en coordonnées mondiales.
-
-        Returns
-        -------
-        Vector2D
-            Le point en coordonnées locales du collider.
-        """
-        wt = ColliderSystem.get_collider_scene_transform(collider)
-        return wt.rotation.inverse().apply(scene_point - wt.position)
-
-    @staticmethod
-    def collider_local_to_scene(
-        collider: ColliderComponent, local_point: Vector2D
-    ) -> Vector2D:
-        """
-        Convertit un point du repère local collider en scene.
-
-        Parameters
-        ----------
-        collider : ColliderComponent
-            Le collider de référence.
-        local_point : Vector2D
-            Le point en coordonnées locales du collider.
-
-        Returns
-        -------
-        Vector2D
-            Le point en coordonnées mondiales.
-        """
-        wt = ColliderSystem.get_collider_scene_transform(collider)
-        return wt.position + wt.rotation.apply(local_point)
 
     @staticmethod
     def _get_collider_scene_position(collider: ColliderComponent) -> Vector2D:
@@ -246,24 +198,13 @@ class ColliderSystem:
 
         c1_scene_pos = ColliderSystem._get_collider_scene_position(c1)
         c2_scene_pos = ColliderSystem._get_collider_scene_position(c2)
-
-        delta = c1_scene_pos - c2_scene_pos
-        dist = delta.magnitude()
-        radius_sum = c1.shape.radius + c2.shape.radius
-
-        if dist < radius_sum:
-            normal = delta.normalized() if dist != 0 else Vector2D(1, 0)
-            penetration = radius_sum - dist
-
-            if penetration < ColliderSystem.min_penetration_depth:
-                return None
-
-            return {
-                "normal": normal,
-                "depth": penetration,
-                "point": c2_scene_pos + normal * c2.shape.radius,
-            }
-        return None
+        return Geometry.circle_circle_collision_info(
+            c1_scene_pos,
+            c1.shape.radius,
+            c2_scene_pos,
+            c2.shape.radius,
+            ColliderSystem.min_penetration_depth,
+        )
 
     @staticmethod
     def _sat_collision_info(
@@ -291,48 +232,9 @@ class ColliderSystem:
 
         corners1 = ColliderSystem.get_scene_corners(box1)
         corners2 = ColliderSystem.get_scene_corners(box2)
-        axes = Geometry.get_polygon_normals(corners1) + Geometry.get_polygon_normals(
-            corners2
+        return Geometry.sat_collision_info(
+            corners1, corners2, ColliderSystem.min_penetration_depth
         )
-        penetration = float("inf")
-        smallest_axis = None
-
-        for axis in axes:
-            min1, max1 = Geometry.project_polygon_on_axis(corners1, axis)
-            min2, max2 = Geometry.project_polygon_on_axis(corners2, axis)
-            if not Geometry.intervals_overlap(min1, max1, min2, max2):
-                return None
-
-            overlap = min(max1, max2) - max(min1, min2)
-            if overlap < penetration:
-                penetration = overlap
-                smallest_axis = axis
-
-        if penetration < ColliderSystem.min_penetration_depth:
-            return None
-
-        if smallest_axis is None:
-            return None
-
-        # Normale unitaire (mais direction arbitraire à ce stade)
-        normal = smallest_axis.normalized()
-
-        # Calcul des centres (moyenne des corners)
-        center1 = Vector2D(
-            sum(c.x for c in corners1) / len(corners1),
-            sum(c.y for c in corners1) / len(corners1),
-        )
-        center2 = Vector2D(
-            sum(c.x for c in corners2) / len(corners2),
-            sum(c.y for c in corners2) / len(corners2),
-        )
-
-        # Orientation déterministe : normal doit pointer de box2 vers box1
-        direction = center1 - center2
-        if direction.dot(normal) < 0:
-            normal = -1 * normal
-
-        return {"normal": normal, "depth": penetration}
 
     @staticmethod
     def _circle_box_collision_info(
@@ -360,21 +262,20 @@ class ColliderSystem:
             Dictionnaire d'information (normal, depth, point) si collision, sinon None.
         """
         circle_scene_pos = ColliderSystem._get_collider_scene_position(circle)
+        box_scene_pos = ColliderSystem._get_collider_scene_position(box)
+        box_scene_rot = ColliderSystem._get_collider_scene_rotation(box)
+        local_corners = box.shape.local_vertices()
+        assert local_corners is not None, "BoxShape must provide local vertices"
 
-        closest = ColliderSystem.get_closest_point_on_box(box, circle_scene_pos)
-        delta = circle_scene_pos - closest
-        dist = delta.magnitude()
-
-        if dist < circle.shape.radius:
-            normal = delta.normalized() if dist != 0 else Vector2D(1, 0)
-            if reverse_normal:
-                normal = -1 * normal
-            penetration = circle.shape.radius - dist
-            if penetration < ColliderSystem.min_penetration_depth:
-                return None
-
-            return {"normal": normal, "depth": penetration, "point": closest}
-        return None
+        return Geometry.circle_box_collision_info(
+            circle_scene_pos,
+            circle.shape.radius,
+            box_scene_pos,
+            box_scene_rot,
+            local_corners,
+            ColliderSystem.min_penetration_depth,
+            reverse_normal,
+        )
 
     @staticmethod
     def get_scene_corners(box: BoxColliderComponent) -> list[Vector2D]:
@@ -398,36 +299,9 @@ class ColliderSystem:
 
         local_corners = box.shape.local_vertices()
         assert local_corners is not None, "BoxShape must provide local vertices"
+        return Geometry.get_scene_corners(local_corners, scene_position, scene_rotation)
 
-        scene_corners = [
-            scene_rotation.apply(corner) + scene_position for corner in local_corners
-        ]
-        return scene_corners
-
-    @staticmethod
-    def get_closest_point_on_box(
-        box: BoxColliderComponent, point: Vector2D
-    ) -> Vector2D:
-        """
-        Trouve le point le plus proche sur le BoxCollider d'un point donné en monde.
-
-        La méthode :
-        1. Convertit le point monde en coordonnées locales du box.
-        2. Utilise la méthode closest_point_local de la shape box.
-        3. Convertit le point local le plus proche en coordonnées monde.
-
-        Parameters
-        ----------
-        box : BoxCollider
-            Le BoxCollider de référence.
-        point : Vector2D
-            Le point en coordonnées mondiales.
-        """
-        point_local = ColliderSystem.collider_scene_to_local(box, point)
-        closest_local = box.shape.closest_point_local(point_local)
-
-        return ColliderSystem.collider_local_to_scene(box, closest_local)
-
+    
     def compute_aabb(self, collider: ColliderComponent) -> tuple[Vector2D, Vector2D]:
         """
         Calcule l'AABB monde d'un collider.
@@ -496,11 +370,6 @@ class ColliderSystem:
         current_triggers: Set[Tuple[int, int]] = set()
         collision_info: dict = {}
 
-        # Reinitialiser le compteur de collisions debug
-        for game_object in collidable_objects:
-            for collider in colliders_by_object[game_object.id]:
-                collider.nb_collision = 0  # TODO : Voir si toujours utile
-
         # Tester toutes les paires de GameObjects
         for i, obj1 in enumerate(collidable_objects):
             next_i = i + 1
@@ -531,8 +400,6 @@ class ColliderSystem:
                         if c1.solid and c2.solid:
                             current_collisions.add(pair)
                             collision_info[pair] = info
-                            c1.nb_collision += 1
-                            c2.nb_collision += 1
                         else:
                             # Au moins un des deux est un trigger
                             current_triggers.add(pair)

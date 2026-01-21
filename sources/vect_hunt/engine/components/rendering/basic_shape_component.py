@@ -3,7 +3,7 @@ from typing import Any, Tuple
 import pygame
 
 from vect_hunt.engine.components.render_component import RenderComponent
-from vect_hunt.engine.core.math import Vector2D, hex_to_rgb
+from vect_hunt.engine.core import RenderOps, Vector2D
 
 
 class BasicShapeComponent(RenderComponent):
@@ -77,11 +77,11 @@ class BasicShapeComponent(RenderComponent):
         if self.shape_type == "circle":
             assert isinstance(self.size, int), "Size must be an int for circle shape"
             radius = int(self.size)
-            pygame.draw.circle(surface, hex_to_rgb(self.color), (x, y), radius)
+            pygame.draw.circle(surface, RenderOps.hex_to_rgb(self.color), (x, y), radius)
             if self.outline_color:
                 pygame.draw.circle(
                     surface,
-                    hex_to_rgb(self.outline_color),
+                    RenderOps.hex_to_rgb(self.outline_color),
                     (x, y),
                     radius,
                     self.outline_width,
@@ -107,11 +107,11 @@ class BasicShapeComponent(RenderComponent):
 
             points = [(int(corner.x), int(corner.y)) for corner in scene_corners]
 
-            pygame.draw.polygon(surface, hex_to_rgb(self.color), points)
+            pygame.draw.polygon(surface, RenderOps.hex_to_rgb(self.color), points)
             if self.outline_color:
                 pygame.draw.polygon(
                     surface,
-                    hex_to_rgb(self.outline_color),
+                    RenderOps.hex_to_rgb(self.outline_color),
                     points,
                     self.outline_width,
                 )

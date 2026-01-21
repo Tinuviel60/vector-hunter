@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
-from vect_hunt.engine.core.math.numeric import clamp
+from vect_hunt.engine.core.math import Numeric
 
 from logging import getLogger
 
@@ -110,19 +110,19 @@ class PhysicMaterial:
             logger.warning(
                 f"Friction {self.friction} hors limites, " f"clamp entre 0.0 et 1.0."
             )
-            self.friction = clamp(self.friction, 0.0, 1.0)
+            self.friction = Numeric.clamp(self.friction, 0.0, 1.0)
         if not (0.0 <= self.restitution <= 1.0):
             logger.warning(
                 f"Restitution {self.restitution} hors limites, "
                 f"clamp entre 0.0 et 1.0."
             )
-            self.restitution = clamp(self.restitution, 0.0, 1.0)
+            self.restitution = Numeric.clamp(self.restitution, 0.0, 1.0)
         if not (0.0 <= self.linear_damping <= 1.0):
             logger.warning(
                 f"Linear Damping {self.linear_damping} hors limites, "
                 f"clamp entre 0.0 et 1.0."
             )
-            self.linear_damping = clamp(self.linear_damping, 0.0, 1.0)
+            self.linear_damping = Numeric.clamp(self.linear_damping, 0.0, 1.0)
         if self.bounciness_threshold < 0.0:
             logger.warning(
                 f"Bounciness Threshold {self.bounciness_threshold} hors limites, "

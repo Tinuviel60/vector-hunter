@@ -7,7 +7,8 @@ Fournit les composants fondamentaux :
 - tag : système de tags
 """
 
-from .math import Vector2D, Geometry, hex_to_rgb
+from .math import Vector2D, Geometry, Numeric
+from .render_ops import RenderOps
 from .transform import Position2D, Rotation, Transform
 from .tag import Tag
 from .tag_system import TagSystem, CAN_COLLIDE, CAN_DESTROY, CAN_PICKUP
@@ -16,7 +17,8 @@ __all__ = [
     # Math
     "Vector2D",
     "Geometry",
-    "hex_to_rgb",
+    "Numeric",
+    "RenderOps",
     # Transform
     "Position2D",
     "Rotation",

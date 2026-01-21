@@ -2,7 +2,7 @@ import pygame
 from vect_hunt.engine.rendering.font.font_style import FontStyle
 from vect_hunt.engine.resources.loaders.data_loader import DataLoader
 from vect_hunt.engine.resources.loaders.font__loader import FontLoader
-from vect_hunt.engine.core.math import hex_to_rgb
+from vect_hunt.engine.core import RenderOps
 
 """
 Système de gestion centralisée des styles de polices.
@@ -63,7 +63,7 @@ class FontSystem:
                 raise ValueError(f"Type de police inconnu : {font_type}")
 
             # Convertir la couleur hex en RGB
-            color = hex_to_rgb(style_def["color"])
+            color = RenderOps.hex_to_rgb(style_def["color"])
             antialias = style_def.get("antialias", True)
 
             cls._styles[style_name] = FontStyle(font, color, antialias)

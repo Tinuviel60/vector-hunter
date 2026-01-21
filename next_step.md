@@ -4,6 +4,8 @@
 
 | Item | Détails | Priorité | Status |
 | --- | --- | --- | --- |
+| Isoler les calculs geométriques | Sortir les calculs geométrique de `ColliderSystem` | Haute | todo |
+| Spring | Créer des spring pour relié des objets et les maintenir à une certaines distances | moyenne | todo |
 | Restructurer la boucle de jeu | Finaliser la séparation `GameLoop` / `SimulationScheduler`. Le scheduler pilote l’ordre des systèmes (input → mouvement/physique → collisions/triggers → résolution → rendu). La `Scene` reste un conteneur d’état (GameObjects, index, etc.). | haute | in_progress |
 | Système de chargement (Loaders + Factories) | Ajouter un pipeline clair : `SceneLoader` (I/O + parsing) → `SceneFactory` (validation + construction). Même logique côté `GameObjectFactory` (déjà présent) + préparation d’un `GameObjectLoader` si besoin pour charger des templates/prefabs JSON. Définir le `context` injecté (InputSystem, DataLoader, registries). | haute | todo |
 | Revoir le système de RenderComponent | Clarifier la relation au `Transform` (position/rotation/scale). Permettre plusieurs renderers par GameObject (sprite + basic shape, etc.) via une liste (ex: `RenderComponent.renderers: list[RendererItem]`). Définir l’ordre de rendu et la stratégie (layer/z-index). | haute | todo |

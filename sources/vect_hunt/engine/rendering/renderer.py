@@ -1,7 +1,7 @@
 import pygame
 from typing import Tuple, TYPE_CHECKING
 
-from vect_hunt.engine.core.math import hex_to_rgb
+from vect_hunt.engine.core import RenderOps
 from vect_hunt.engine.physics.collider_system import ColliderSystem
 from vect_hunt.engine.rendering.font import FontSystem
 from vect_hunt.engine.components.render_component import RenderComponent
@@ -75,7 +75,7 @@ class Renderer:
         """
         Efface l'écran avec la couleur de fond.
         """
-        self.screen.fill(hex_to_rgb(self.background_color))
+        self.screen.fill(RenderOps.hex_to_rgb(self.background_color))
 
     def draw_background(self) -> None:
         """
@@ -83,25 +83,6 @@ class Renderer:
         """
         self.clear()
 
-    def draw_player(
-        self, position: Tuple[float, float], radius: int = 15, color: str = "#64C8FF"
-    ) -> None:
-        """
-        Dessine le joueur sous forme de cercle.
-
-        Parameters
-        ----------
-        position : Tuple[float, float]
-            Position (x, y) du joueur.
-        radius : int, optional
-            Rayon du cercle représentant le joueur, par défaut 15.
-        color : str, optional
-            Couleur du joueur en hexadécimal, par défaut "#64C8FF".
-        """
-        pos = (int(position[0]), int(position[1]))
-        pygame.draw.circle(self.screen, hex_to_rgb(color), pos, radius)
-        # Bordure plus foncée
-        pygame.draw.circle(self.screen, (50, 100, 150), pos, radius, 2)
 
     def draw_game_objects(self, game_objects: dict[int, "GameObject"]) -> None:
         """
@@ -116,7 +97,6 @@ class Renderer:
             if not game_object.active:
                 continue
 
-            # DEBUG: Affiche le compteur de collisions
             # Dessine le GameObject via son composant de rendu
             self.render_game_object(game_object)
             # Dessine le nom
@@ -128,7 +108,7 @@ class Renderer:
                 for collider in colliders:
                     self.draw_collider(
                         collider,
-                        collider.nb_collision > 0,
+                        False,  # TODO : Passer l'info de collision réelle
                     )
 
     def draw_name(self, game_object: "GameObject") -> None:
