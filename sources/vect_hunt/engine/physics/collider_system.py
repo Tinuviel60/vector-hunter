@@ -31,11 +31,18 @@ class ColliderSystem:
     """
 
     # TODO : Charger depuis la config de la scène ?
-    # physic_config = DataLoader.load_json("configs/units.json")
     min_penetration_depth = 1e-9
 
-    def __init__(self):
-        """Initialise le système de collision."""
+    def __init__(self, tag_system: TagSystem):
+        """
+        Initialise le système de collision.
+
+        Parameters
+        ----------
+        tag_system : TagSystem
+            Systeme de tags a utiliser pour filtrer les collisions.
+        """
+        self._tag_system = tag_system
 
     @staticmethod
     def aabb_overlap(
@@ -376,7 +383,7 @@ class ColliderSystem:
                 colliders2 = colliders_by_object[obj2.id]
 
                 # Filtrage par tags
-                if not TagSystem.can_collide(obj1.tags, obj2.tags):
+                if not self._tag_system.can_collide(obj1.tags, obj2.tags):
                     continue
 
                 # Tester tous les colliders de obj1 contre tous les colliders de obj2

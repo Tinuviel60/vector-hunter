@@ -2,7 +2,6 @@ import pygame
 from typing import Dict, Set, Optional, List, Any
 
 from vect_hunt.engine.core.math import Vector2D
-from vect_hunt.engine.resources.loaders.data_loader import DataLoader
 from .input_tracker import InputTracker
 from vect_hunt.engine.input.input_action import (
     InputAction,
@@ -37,14 +36,14 @@ class InputSystem:
     None
     """
 
-    def __init__(self, config_path: str = "configs/inputs.json"):
+    def __init__(self, config: dict[str, Any]):
         """
         Initialise le système d'inputs.
 
         Parameters
         ----------
-        config_path : str
-            Chemin relatif vers le fichier de configuration JSON.
+        config : dict[str, Any]
+            Configuration chargee depuis inputs.json.
         """
         self._actions: Dict[str, InputAction] = {}
         self._contexts: Dict[GameContext, List[str]] = {}
@@ -70,7 +69,7 @@ class InputSystem:
         }
 
         # Charger la configuration
-        self._load_config(config_path)
+        self._load_config(config)
 
     def _build_key_mapping(self) -> Dict[int, str]:
         """
@@ -131,22 +130,20 @@ class InputSystem:
         mapping.update(special_keys)
         return mapping
 
-    def _load_config(self, config_path: str) -> None:
+    def _load_config(self, config: dict[str, Any]) -> None:
         """
         Charge la configuration depuis le fichier JSON.
 
         Parameters
         ----------
-        config_path : str
-            Chemin relatif vers le fichier de configuration.
+        config : dict[str, Any]
+            Configuration chargee depuis inputs.json.
         """
-        data = DataLoader.load_json(config_path)
-
         # Charger les settings
-        self._settings = data.get("settings", {})
+        self._settings = config.get("settings", {})
 
         # Charger les contextes et actions
-        contexts_data = data.get("contexts", {})
+        contexts_data = config.get("contexts", {})
         for context_name, actions_data in contexts_data.items():
             # Créer l'enum de contexte
             try:

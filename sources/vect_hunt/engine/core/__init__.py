@@ -11,7 +11,7 @@ from .math import Vector2D, Geometry, Numeric
 from .render_ops import RenderOps
 from .transform import Position2D, Rotation, Transform
 from .tag import Tag
-from .tag_system import TagSystem, CAN_COLLIDE, CAN_DESTROY, CAN_PICKUP
+from .tag_system import TagSystem
 
 __all__ = [
     # Math
@@ -26,7 +26,4 @@ __all__ = [
     # Tags
     "Tag",
     "TagSystem",
-    "CAN_COLLIDE",
-    "CAN_DESTROY",
-    "CAN_PICKUP",
 ]

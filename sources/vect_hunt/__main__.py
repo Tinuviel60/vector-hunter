@@ -1,37 +1,52 @@
-import logging
-import pygame
-from vect_hunt.game import Game
-from vect_hunt.engine.resources.loaders import DataLoader
-from vect_hunt.engine.resources.paths import Paths
-from vect_hunt.engine.simulation import GameLoop
-from .logging_config import setup_logging
+# vect_hunt/__main__.py
 
-# Import dynamique des components
+import logging
+from typing import Any
+
+import pygame
+
+from vect_hunt.engine.resources import Paths, ResourceRegistry
+from vect_hunt.engine.resources.readers import (
+    ConfigReader,
+    MaterialReader,
+    SceneReader,
+    TemplateReader,
+)
+from vect_hunt.engine.simulation import GameLoop
 from vect_hunt.engine.utils.component_loader import load_all_components
+from vect_hunt.game import Game
+from vect_hunt.logging_config import setup_logging
 
 logger = logging.getLogger(__name__)
 
 """
-Configuration globale de l'application et mise en place de
-la boucle principale du jeu.
+Point d'entrée de l'application.
 
-Les paramètres graphiques et de simulation sont chargés depuis
-assets/data/configs/app.json
+- Charge la configuration et configure le logging
+- Charge les ressources JSON en mémoire (registry)
+- Charge dynamiquement les composants (plugins)
+- Initialise Pygame, instancie le jeu et lance la boucle principale
 """
 
 
-def bootstrap() -> dict:
+def bootstrap() -> dict[str, Any]:
     """
-    Charge la configuration et prépare le logging.
+    Charge la configuration de l'application et configure le logging.
+
+    Parameters
+    ----------
+    None
 
     Returns
     -------
-    dict
-        Configuration de l'application.
+    dict[str, Any]
+        Configuration de l'application (chargée depuis app.json).
     """
-    app_config = DataLoader.load_json("configs/app.json")
+    app_config = ConfigReader().load("app.json")
+
     log_level_str = app_config["logging"]["level"]
     log_level = getattr(logging, log_level_str, logging.WARNING)
+
     setup_logging(
         log_level=log_level,
         enable_console=app_config["logging"]["enable_console"],
@@ -39,18 +54,42 @@ def bootstrap() -> dict:
     return app_config
 
 
-def main(app_config: dict) -> None:
+def build_resource_registry() -> ResourceRegistry:
     """
-    Fonction principale de l'application.
-    Initialise Pygame, crée la fenêtre,
-    et lance la boucle principale du jeu.
+    Construit un registre typé des ressources JSON chargées au démarrage.
+
+    L'objectif est de centraliser la lecture des fichiers (assets/data)
+    dans le bootstrap, et d'injecter ensuite des structures de données
+    (pas des Readers) dans le jeu et le moteur.
 
     Parameters
     ----------
-    app_config : dict
-        Configuration de l'application.
-    """
+    None
 
+    Returns
+    -------
+    ResourceRegistry
+        Registre des ressources JSON (configs, templates, scenes, materials).
+    """
+    return ResourceRegistry(
+        configs=ConfigReader().configs,
+        templates=TemplateReader().configs,
+        scenes=SceneReader().configs,
+        materials=MaterialReader().configs,
+    )
+
+
+def main(app_config: dict[str, Any], resources: ResourceRegistry) -> None:
+    """
+    Lance l'application : init Pygame, instancie le jeu, et exécute la boucle.
+
+    Parameters
+    ----------
+    app_config : dict[str, Any]
+        Configuration de l'application (fenêtre, simulation, etc.).
+    resources : ResourceRegistry
+        Registre des ressources JSON en mémoire.
+    """
     # Charger dynamiquement tous les components du moteur et du jeu
     load_all_components([str(Paths.COMPONENTS_DIR), str(Paths.GAME_DIR)])
 
@@ -66,8 +105,15 @@ def main(app_config: dict) -> None:
         pygame.display.set_caption(window_title)
         clock = pygame.time.Clock()
 
-        game = Game()
+        # Créer le jeu déjà "assemblé" (scene + scheduler, etc.)
+        game = Game.from_resources(
+            resources=resources,
+            level_name="level_00.json",
+        )
+
+        # Le rendu dépend de Pygame : initialisation après set_mode()
         game.initiate_rendering(screen)
+
         loop = GameLoop(
             game=game,
             scheduler=game.simulation_scheduler,
@@ -82,6 +128,6 @@ def main(app_config: dict) -> None:
 
 
 if __name__ == "__main__":
-    # Lancer l'application principale
     app_config = bootstrap()
-    main(app_config)
+    resources = build_resource_registry()
+    main(app_config, resources)

@@ -7,7 +7,6 @@ from typing import Any
 from vect_hunt.engine.components.component import Component
 from vect_hunt.engine.core.math import Vector2D
 from vect_hunt.engine.physics.physic_material import CombineMode, PhysicMaterial
-from vect_hunt.engine.resources.loaders.data_loader import DataLoader
 
 import logging
 
@@ -109,7 +108,8 @@ class PhysicBodyComponent(Component):
         InputComponent
             Instance du composant créé.
         """
-        material = cls._create_physic_material(data.get("material"))
+        materials = context.get("materials", {})
+        material = cls._create_physic_material(data.get("material"), materials)
         return cls(
             mass=data.get("mass", 1.0),
             speed=data.get("speed", 300.0),
@@ -120,7 +120,9 @@ class PhysicBodyComponent(Component):
         )
 
     @staticmethod
-    def _create_physic_material(material_path: Any) -> PhysicMaterial:
+    def _create_physic_material(
+        material_path: Any, materials: dict[str, dict[str, Any]]
+    ) -> PhysicMaterial:
         """
         Crée un PhysicMaterial à partir d'un chemin de fichier JSON.
 
@@ -144,7 +146,16 @@ class PhysicBodyComponent(Component):
             )
             return PhysicMaterial()
 
-        material_data = DataLoader.load_json(material_path)
+        if not materials:
+            raise ValueError(
+                "Registre de materials manquant pour charger le material."
+            )
+
+        material_data = materials.get(material_path)
+        if material_data is None:
+            raise FileNotFoundError(
+                f"Material introuvable dans le registre: {material_path}"
+            )
         return PhysicBodyComponent._material_from_data(material_data)
 
     @staticmethod

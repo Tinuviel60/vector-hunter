@@ -5,7 +5,6 @@ from typing import Any, Optional, TYPE_CHECKING
 from vect_hunt.engine.core import Tag
 from vect_hunt.engine.core.math import Vector2D
 from vect_hunt.engine.core.transform import Transform
-from vect_hunt.engine.resources.loaders.data_loader import DataLoader
 
 from vect_hunt.engine.components.component import Component
 from .game_object import GameObject
@@ -33,7 +32,13 @@ class GameObjectFactory:
     }
     """
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        templates: dict[str, dict[str, Any]] | None = None,
+        materials: dict[str, dict[str, Any]] | None = None,
+    ) -> None:
+        self._templates = templates or {}
+        self._materials = materials or {}
         self._registry = Component.get_registered_components()
         for key in self._registry:
             logger.debug(f"Component registered in GameObjectFactory: {key}")
@@ -45,11 +50,15 @@ class GameObjectFactory:
         rotation: Optional[float] = None,
         input_system: Optional["InputSystem"] = None,
     ) -> GameObject:
-        template = DataLoader.load_json(f"templates/{template_path}")
+        template = self._templates.get(template_path)
+        if template is None:
+            raise FileNotFoundError(
+                f"Template introuvable dans le registre: {template_path}"
+            )
 
         game_object = self._create_base_object(template, position, rotation)
 
-        context = {"input_system": input_system}
+        context = {"input_system": input_system, "materials": self._materials}
         self._add_components(game_object, template, context)
 
         return game_object

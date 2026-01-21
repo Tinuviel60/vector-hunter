@@ -15,7 +15,7 @@
         "is_controlled": true,
         "mass": 1.0,
         "use_gravity": true,
-        "material": "materials/ice.json"
+        "material": "ice.json"
       }
     },
     {

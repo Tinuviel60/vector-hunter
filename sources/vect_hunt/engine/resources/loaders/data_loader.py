@@ -110,3 +110,31 @@ class DataLoader(BaseLoader):
         Vide complètement le cache.
         """
         cls._cache.clear()
+
+    @classmethod
+    def get_file_path_in_dir(cls, relative_dir: str) -> dict[str, str]:
+        """
+        Cherche l'emplacement de tous les fichiers JSON dans un répertoire donné.
+
+        Parameters
+        ----------
+        relative_dir : str
+            Chemin relatif depuis DATA_DIR
+
+        Returns
+        -------
+        dict[str, str]
+            Dictionnaire mappant les chemins relatifs aux fichiers JSON.
+        """
+        dir_path = cls._resolve_path(
+            DATA_DIR,
+            relative_dir,
+            must_be_file=False,
+        )
+
+        result = {}
+        for file_path in dir_path.rglob("*.json"):
+            rel_path = file_path.relative_to(DATA_DIR).as_posix()
+            result[rel_path] = str(file_path)
+
+        return result

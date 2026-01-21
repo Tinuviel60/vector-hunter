@@ -15,7 +15,7 @@
         "is_controlled": false,
         "mass": 1.0,
         "use_gravity": true,
-        "material": "materials/stone.json"
+        "material": "stone.json"
       }
     },
     {

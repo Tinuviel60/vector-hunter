@@ -17,7 +17,13 @@ class SimulationScheduler:
     Centralise l'ordre d'update du monde (inputs, objets, forces, collisions).
     """
 
-    def __init__(self, scene, max_collision_passes: int = 6) -> None:
+    def __init__(
+        self,
+        scene,
+        input_config: dict,
+        tag_system,
+        max_collision_passes: int = 6,
+    ) -> None:
         """
         Initialise le scheduler pour une scene.
 
@@ -31,8 +37,8 @@ class SimulationScheduler:
         self.scene = scene
         self.max_collision_passes = max_collision_passes
 
-        self.input_system = InputSystem()
-        self.collider_system = ColliderSystem()
+        self.input_system = InputSystem(input_config)
+        self.collider_system = ColliderSystem(tag_system)
         self.collision_tracker = CollisionTracker()
         self.collision_resolution_system = CollisionResolutionSystem(scene)
         self.external_forces_system = ExternalForcesSystem()

@@ -1,12 +1,11 @@
 import pygame
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from vect_hunt.engine.core import RenderOps
 from vect_hunt.engine.physics.collider_system import ColliderSystem
 from vect_hunt.engine.rendering.font import FontSystem
 from vect_hunt.engine.components.render_component import RenderComponent
 from vect_hunt.engine.components.collider import ColliderComponent, BoxColliderComponent
-from vect_hunt.engine.resources.loaders.data_loader import DataLoader
 from vect_hunt.engine.core.geometries import BoxShape, CircleShape
 
 if TYPE_CHECKING:
@@ -44,7 +43,12 @@ class Renderer:
         Style de police pour le debug.
     """
 
-    def __init__(self, screen: pygame.Surface):
+    def __init__(
+        self,
+        screen: pygame.Surface,
+        config: dict[str, Any],
+        font_system: FontSystem,
+    ):
         """
         Initialise le renderer.
 
@@ -53,9 +57,6 @@ class Renderer:
         screen : pygame.Surface
             La surface Pygame où le jeu sera rendu.
         """
-        # Charger la configuration du renderer
-        config = DataLoader.load_json("configs/renderer.json")
-
         self.screen = screen
         self.background_color = config["background_color"]
 
@@ -69,7 +70,7 @@ class Renderer:
         self.collider_thickness = debug_config["collider_thickness"]
 
         # Style de police pour le debug (géré par FontSystem)
-        self.debug_font_style = FontSystem.get("debug")
+        self.debug_font_style = font_system.get("debug")
 
     def clear(self) -> None:
         """

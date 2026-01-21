@@ -3,7 +3,6 @@ from typing import Any, Optional, TYPE_CHECKING
 
 from vect_hunt.engine.core.math import Vector2D
 from vect_hunt.engine.objects import GameObjectFactory
-from vect_hunt.engine.resources.loaders.data_loader import DataLoader
 from .scene import Scene
 
 if TYPE_CHECKING:
@@ -31,11 +30,16 @@ class SceneFactory:
     }
     """
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        game_object_factory: GameObjectFactory,
+        scenes: dict[str, dict[str, Any]] | None = None,
+    ) -> None:
         """
         Initialise la SceneFactory avec une GameObjectFactory interne.
         """
-        self._game_object_factory = GameObjectFactory()
+        self._scenes = scenes or {}
+        self._game_object_factory = game_object_factory
 
     def from_template(
         self,
@@ -52,7 +56,11 @@ class SceneFactory:
         input_system : InputSystem | None
             Systeme d'input a injecter dans les GameObjects, si necessaire.
         """
-        data = DataLoader.load_json(f"levels/{template_path}")
+        data = self._scenes.get(template_path)
+        if data is None:
+            raise FileNotFoundError(
+                f"Scene introuvable dans le registre: {template_path}"
+            )
 
         scene = Scene.from_data(data.get("scene"))
         self._add_game_objects(scene, data, input_system)
