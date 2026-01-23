@@ -1,8 +1,11 @@
+import logging
 import math
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from vect_hunt.engine.core.transform.rotation import Rotation
+
+logger = logging.getLogger(__name__)
 
 
 class Vector2D:
@@ -81,8 +84,9 @@ class Vector2D:
             Le vecteur normalisé.
         """
         mag = self.magnitude()
-        if mag == 0:
-            return Vector2D(0, 0)
+        if mag <= 1e-9:  # TODO : Sortir le epsilon dans une constante globale
+            logger.warning("Normalisation d'un vecteur de magnitude nulle.")
+            return Vector2D(1, 0)
         return Vector2D(self._x / mag, self._y / mag)
 
     def normalize(self) -> None:
@@ -90,8 +94,9 @@ class Vector2D:
         Normalise le vecteur (le rend de longueur 1).
         """
         mag = self.magnitude()
-        if mag == 0:
-            self._x = 0.0
+        if mag <= 1e-9:  # TODO : Sortir le epsilon dans une constante globale
+            logger.warning("Normalisation d'un vecteur de magnitude nulle.")
+            self._x = 1.0
             self._y = 0.0
             return
         self._x /= mag
@@ -123,7 +128,7 @@ class Vector2D:
             Le produit scalaire des deux vecteurs.
         """
         return self._x * other._x + self._y * other._y
-    
+
     def cross(self, other: "Vector2D") -> float:
         """
         Calcule le produit vectoriel (croisé) entre ce vecteur et un autre.
@@ -266,7 +271,7 @@ class Vector2D:
             Le vecteur résultant de la soustraction.
         """
         return Vector2D(self._x - other._x, self._y - other._y)
-    
+
     def __neg__(self) -> "Vector2D":
         """
         Renvoie l'opposé du vecteur.

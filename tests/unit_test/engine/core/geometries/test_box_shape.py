@@ -1,5 +1,4 @@
 import pytest
-
 from vect_hunt.engine.core.geometries import BoxShape
 from vect_hunt.engine.core.math import Vector2D
 

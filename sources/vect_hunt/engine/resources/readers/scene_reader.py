@@ -8,5 +8,6 @@ class SceneReader(BaseReader):
 
     Encapsule la convention de chemin assets/data/scenes/.
     """
+
     _relative_root = SCENES_ROOT
     _entry_label = "scene"

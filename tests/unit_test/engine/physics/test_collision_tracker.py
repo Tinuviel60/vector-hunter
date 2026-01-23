@@ -1,5 +1,4 @@
 import pytest
-
 from vect_hunt.engine.physics.collision_tracker import CollisionTracker
 
 

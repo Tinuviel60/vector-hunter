@@ -29,8 +29,6 @@ SCENES_ROOT = "scenes"
 MATERIALS_ROOT = "materials"
 
 
-
-
 class Paths:
     """
     Classe wrapper pour accès aux chemins.
@@ -87,5 +85,6 @@ class Paths:
     CONFIGS_ROOT = CONFIGS_ROOT
     SCENES_ROOT = SCENES_ROOT
     MATERIALS_ROOT = MATERIALS_ROOT
+
 
 path = Paths()

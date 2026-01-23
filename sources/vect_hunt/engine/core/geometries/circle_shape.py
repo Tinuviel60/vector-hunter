@@ -1,9 +1,8 @@
 import math
-
 from dataclasses import dataclass
 
-from vect_hunt.engine.core.math import Vector2D
-from vect_hunt.engine.core.geometries import Shape
+from vect_hunt.engine.core.geometries.shape import Shape
+from vect_hunt.engine.core.math.vector import Vector2D
 
 
 @dataclass(frozen=True, slots=True)
@@ -107,3 +106,15 @@ class CircleShape(Shape):
             return Vector2D(self.radius, 0.0)
 
         return point.normalized() * self.radius
+
+    @property
+    def inertia(self) -> float:
+        """
+        Calcule le moment d'inertie du cercle pour une masse de 1.0.
+
+        Returns
+        -------
+        float
+            Moment d'inertie du cercle.
+        """
+        return 0.5 * (self.radius**2)

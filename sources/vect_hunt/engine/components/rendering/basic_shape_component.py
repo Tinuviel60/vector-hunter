@@ -1,9 +1,9 @@
 from typing import Any, Tuple
 
 import pygame
-
 from vect_hunt.engine.components.render_component import RenderComponent
-from vect_hunt.engine.core import RenderOps, Vector2D
+from vect_hunt.engine.core.math.vector import Vector2D
+from vect_hunt.engine.core.render_ops import RenderOps
 
 
 class BasicShapeComponent(RenderComponent):

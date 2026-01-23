@@ -1,7 +1,6 @@
 from typing import Any
 
 import pygame
-
 from vect_hunt.engine.components.render_component import RenderComponent
 from vect_hunt.engine.resources.loaders.image_loader import ImageLoader
 

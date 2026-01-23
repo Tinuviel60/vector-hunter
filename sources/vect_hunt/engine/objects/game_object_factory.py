@@ -1,16 +1,16 @@
 import logging
 import math
-from typing import Any, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Optional
 
-from vect_hunt.engine.core import Tag
+from vect_hunt.engine.components.component import Component
+from vect_hunt.engine.core.tag import Tag
 from vect_hunt.engine.core.math.vector import Vector2D
 from vect_hunt.engine.core.transform.transform import Transform
 
-from vect_hunt.engine.components.component import Component
 from .game_object import GameObject
 
 if TYPE_CHECKING:
-    from vect_hunt.engine.input import InputSystem
+    from vect_hunt.engine.input.input_system import InputSystem
 
 logger = logging.getLogger(__name__)
 

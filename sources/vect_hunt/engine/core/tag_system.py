@@ -1,6 +1,7 @@
-from .tag import Tag
-from typing import Dict
 from logging import getLogger
+from typing import Dict
+
+from .tag import Tag
 
 
 class TagSystem:

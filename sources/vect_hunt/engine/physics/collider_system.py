@@ -1,17 +1,22 @@
-from typing import List, Set, Tuple, TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Set, Tuple
 
-from vect_hunt.engine.core.tag_system import TagSystem
-from vect_hunt.engine.core.math import Geometry, Vector2D
-from vect_hunt.engine.core.transform import Rotation, Transform
-from vect_hunt.engine.components.collider import (
+from vect_hunt.engine.components.collider.box_collider_component import (
     BoxColliderComponent,
-    CircleColliderComponent,
-    ColliderComponent,
 )
+from vect_hunt.engine.components.collider.circle_collider_component import (
+    CircleColliderComponent,
+)
+from vect_hunt.engine.components.collider.collider_component import ColliderComponent
+from vect_hunt.engine.core.math.geometry import Geometry
+from vect_hunt.engine.core.math.vector import Vector2D
+from vect_hunt.engine.core.tag_system import TagSystem
+from vect_hunt.engine.core.transform.rotation import Rotation
+from vect_hunt.engine.core.transform.transform import Transform
+from vect_hunt.engine.physics.collision_info import CollisionInfo
 
 if TYPE_CHECKING:
-    from vect_hunt.engine.objects import GameObject
-    from vect_hunt.engine.scenes import Scene
+    from vect_hunt.engine.objects.game_object import GameObject
+    from vect_hunt.engine.scenes.scene import Scene
 
 
 class ColliderSystem:
@@ -70,7 +75,9 @@ class ColliderSystem:
     # Collisions fines
     # --------------------
     @staticmethod
-    def check_collision(c1: ColliderComponent, c2: ColliderComponent) -> dict | None:
+    def check_collision(
+        c1: ColliderComponent, c2: ColliderComponent
+    ) -> CollisionInfo | None:
         """
         Détecte la collision fine entre deux colliders et retourne un dictionnaire
         d'information ou None.
@@ -84,9 +91,9 @@ class ColliderSystem:
 
         Returns
         -------
-        dict | None
-            Un dictionnaire d'information de collision (normal, depth, point, etc.)
-            si collision, sinon None.
+        CollisionInfo | None
+            Les informations de collision (normal, depth, point, etc.) si collision,
+            sinon None.
         """
         # Circle / Circle
         if isinstance(c1, CircleColliderComponent) and isinstance(
@@ -181,7 +188,7 @@ class ColliderSystem:
     @staticmethod
     def _circle_circle_collision_info(
         c1: CircleColliderComponent, c2: CircleColliderComponent
-    ) -> dict | None:
+    ) -> CollisionInfo | None:
         """
         Détecte et retourne les informations de collision entre deux cercles.
 
@@ -192,10 +199,10 @@ class ColliderSystem:
         c2 : CircleCollider
             Second cercle.
 
-        Returns
+
         -------
-        dict or None
-            Dictionnaire d'information (normal, depth, point) si collision, sinon None.
+        CollisionInfo or None
+            Informations de collision (normal, depth, points) si collision, sinon None.
         """
         c1_scene_pos = ColliderSystem._get_collider_scene_position(c1)
         c2_scene_pos = ColliderSystem._get_collider_scene_position(c2)
@@ -210,7 +217,7 @@ class ColliderSystem:
     @staticmethod
     def _sat_collision_info(
         box1: BoxColliderComponent, box2: BoxColliderComponent
-    ) -> dict | None:
+    ) -> CollisionInfo | None:
         """
         Détecte et retourne les informations de collision
         entre deux BoxCollider (méthode SAT).
@@ -224,23 +231,21 @@ class ColliderSystem:
 
         Returns
         -------
-        dict or None
-            Dictionnaire d'information (normal, depth) si collision, sinon None.
+        CollisionInfo or None
+            Informations de collision (normal, depth) si collision, sinon None.
         """
         # SAT avec calcul de la plus petite séparation
 
         corners1 = ColliderSystem.get_scene_corners(box1)
         corners2 = ColliderSystem.get_scene_corners(box2)
-        return Geometry.sat_collision_info(
-            corners1, corners2, ColliderSystem.min_penetration_depth
-        )
+        return Geometry.sat_collision_info(corners1, corners2)
 
     @staticmethod
     def _circle_box_collision_info(
         circle: CircleColliderComponent,
         box: BoxColliderComponent,
         reverse_normal: bool = False,
-    ) -> dict | None:
+    ) -> CollisionInfo | None:
         """
         Détecte et retourne les informations de collision entre un cercle et un box.
 
@@ -257,8 +262,8 @@ class ColliderSystem:
 
         Returns
         -------
-        dict or None
-            Dictionnaire d'information (normal, depth, point) si collision, sinon None.
+        CollisionInfo or None
+            Informations de collision (normal, depth, points) si collision, sinon None.
         """
         circle_scene_pos = ColliderSystem._get_collider_scene_position(circle)
         box_scene_pos = ColliderSystem._get_collider_scene_position(box)
@@ -328,7 +333,9 @@ class ColliderSystem:
     # --------------------
     def detect_collisions(
         self, scene: "Scene"
-    ) -> Tuple[Set[Tuple[int, int]], Set[Tuple[int, int]], dict]:
+    ) -> Tuple[
+        Set[Tuple[int, int]], Set[Tuple[int, int]], dict[Tuple[int, int], CollisionInfo]
+    ]:
         """
         Detecte les collisions entre tous les GameObjects de la scène
         ayant des colliders.
@@ -362,7 +369,7 @@ class ColliderSystem:
 
         current_collisions: Set[Tuple[int, int]] = set()
         current_triggers: Set[Tuple[int, int]] = set()
-        collision_info: dict = {}
+        collision_info: dict[Tuple[int, int], CollisionInfo] = {}
 
         # Tester toutes les paires de GameObjects
         for i, obj1 in enumerate(collidable_objects):

@@ -2,11 +2,15 @@
 Composant de corps physique pour gérer les déplacements et forces.
 """
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from vect_hunt.engine.components.component import Component
-from vect_hunt.engine.core.math import Vector2D
+from vect_hunt.engine.components.collider.collider_component import ColliderComponent
+from vect_hunt.engine.core.math.vector import Vector2D
 from vect_hunt.engine.physics.physic_material import CombineMode, PhysicMaterial
+
+if TYPE_CHECKING:
+    from vect_hunt.engine.objects.game_object import GameObject
 
 import logging
 
@@ -20,6 +24,14 @@ class PhysicBodyComponent(Component):
     Reçoit des intentions de mouvement (vélocité, forces) et applique
     les déplacements sur le Transform du GameObject.
     Le système de collision se charge des limitations.
+
+    Notes
+    -----
+    - Le centre de masse local (ici basé sur la géométrie/aire) est calculé
+      une fois que le composant est attaché au GameObject (via `on_attach`).
+    - L'inertie totale prend en compte :
+        1) la redistribution de la masse au prorata des aires
+        2) le décalage des colliders par rapport au centre de masse (axes parallèles)
 
     Attributes
     ----------
@@ -35,6 +47,14 @@ class PhysicBodyComponent(Component):
         Vitesse actuelle en pixels/seconde.
     acceleration : Vector2D
         Accélération accumulée en pixels/seconde².
+    angular_velocity : float
+        Vitesse angulaire actuelle en radians/seconde.
+    angular_acceleration : float
+        Accélération angulaire en radians/seconde².
+    inertia : float
+        Moment d'inertie du corps.
+    mass_center : Vector2D
+        Centre de masse (géométrique pondéré par aire) en coordonnées locales.
     is_kinematic : bool
         Indique si le corps est cinématique.
     use_gravity : bool
@@ -69,6 +89,8 @@ class PhysicBodyComponent(Component):
             Indique si le corps est cinématique (par défaut False).
         material : PhysicMaterial | None, optional
             Matériau physique à utiliser (par défaut PhysicMaterial standard).
+        angular_damping : float, optional
+            Amortissement angulaire (par défaut 0.0).
         """
         super().__init__()
         if mass <= 0:
@@ -82,6 +104,13 @@ class PhysicBodyComponent(Component):
         self.speed = speed  # TODO : A déplacer
         self.velocity = Vector2D(0, 0)
         self.acceleration = Vector2D(0, 0)
+
+        self.angular_velocity = 0.0
+        self.angular_acceleration = 0.0
+
+        # Propriétés de masse : initialisées ici, calculées réellement à l'attache
+        self.inertia = 1.0
+        self.mass_center = Vector2D(0, 0)
 
         self.is_kinematic = is_kinematic
         self.use_gravity = use_gravity
@@ -119,6 +148,22 @@ class PhysicBodyComponent(Component):
             material=material,
         )
 
+    def on_attach(self, game_object: "GameObject") -> None:
+        """
+        Appelé lorsque le composant est attaché à un GameObject.
+
+        Calcule le centre de masse et le moment d'inertie.
+
+        Parameters
+        ----------
+        game_object : GameObject
+            GameObject auquel le composant est attaché.
+        """
+        super().on_attach(game_object)
+        self.mass_center = self.define_gravity_center()
+        self.inertia = self.calculate_inertia()
+
+    # TODO : Bouger dans material ?
     @staticmethod
     def _create_physic_material(
         material_path: Any, materials: dict[str, dict[str, Any]]
@@ -147,9 +192,7 @@ class PhysicBodyComponent(Component):
             return PhysicMaterial()
 
         if not materials:
-            raise ValueError(
-                "Registre de materials manquant pour charger le material."
-            )
+            raise ValueError("Registre de materials manquant pour charger le material.")
 
         material_data = materials.get(material_path)
         if material_data is None:
@@ -177,6 +220,7 @@ class PhysicBodyComponent(Component):
         restitution = material_data.get("restitution", 0.5)
         linear_damping = material_data.get("linear_damping", 0.0)
         bounciness_threshold = material_data.get("bounciness_threshold", 0.0)
+        angular_damping = material_data.get("angular_damping", 0.0)
         friction_mode = PhysicBodyComponent._parse_combine_mode(
             material_data.get("friction_mode"), CombineMode.MAX
         )
@@ -188,6 +232,7 @@ class PhysicBodyComponent(Component):
             friction=friction,
             restitution=restitution,
             friction_mode=friction_mode,
+            angular_damping=angular_damping,
             restitution_mode=restitution_mode,
             linear_damping=linear_damping,
             bounciness_threshold=bounciness_threshold,
@@ -230,32 +275,43 @@ class PhysicBodyComponent(Component):
         delta_time : float
             Temps écoulé depuis la dernière frame (en secondes).
         """
-        assert (
-            self.game_object is not None
-        ), "PhysicBodyComponent doit être attaché à un GameObject"
-
         # Un corps cinématique peut être déplacé par une logique dédiée,
         # mais ne subit pas intégration des forces ici.
         if self.is_kinematic:
             self.acceleration = Vector2D(0, 0)
+            self.angular_acceleration = 0.0
             return
 
         # Appliquer l'accélération à la vélocité
         self.velocity += self.acceleration * delta_time
 
         # Appliquer l'amortissement linéaire (perte de vitesse au fil du temps)
-        damping = self.material.linear_damping
-        if damping > 0.0:
-            damping_factor = max(0.0, 1.0 - damping * delta_time)
+        linear_damping = self.material.linear_damping
+        if linear_damping > 0.0:
+            damping_factor = max(0.0, 1.0 - linear_damping * delta_time)
             self.velocity *= damping_factor
 
         # Appliquer la vélocité au déplacement
         if self.velocity.magnitude() > 0:
             displacement = self.velocity * delta_time
-            self.game_object.transform.move(displacement)
+            self.parent.transform.move(displacement)
+
+        # Appliquer l'accélération angulaire à la vitesse angulaire
+        self.angular_velocity += self.angular_acceleration * delta_time
+
+        # Appliquer l'amortissement angulaire (perte de vitesse au fil du temps)
+        angular_damping = self.material.angular_damping
+        if angular_damping > 0.0:
+            damping_factor = max(0.0, 1.0 - angular_damping * delta_time)
+            self.angular_velocity *= damping_factor
+
+        # Appliquer la vitesse angulaire à la rotation
+        if self.angular_velocity != 0.0:
+            self.parent.transform.rotate(self.angular_velocity * delta_time)
 
         # Réinitialiser l'accélération (forces ponctuelles)
         self.acceleration = Vector2D(0, 0)
+        self.angular_acceleration = 0.0
 
     def set_velocity(self, velocity: Vector2D) -> None:
         """
@@ -305,9 +361,128 @@ class PhysicBodyComponent(Component):
         """
         self.acceleration += acceleration
 
+    def apply_impulse(self, impulse: Vector2D) -> None:
+        """
+        Applique une impulsion instantanée au corps physique.
+
+        L'impulsion est convertie en changement de vélocité en fonction de la masse.
+
+        Parameters
+        ----------
+        impulse : Vector2D
+            Impulsion à appliquer en newton*seconde (pixels*kg/s).
+        """
+        if self.is_kinematic:
+            return
+        eps = 1e-9  # TODO : Aller chercher le epsilon global
+        if self.mass <= eps:
+            return
+
+        delta_velocity = impulse / self.mass
+        self.velocity += delta_velocity
+
+    def add_torque(self, torque: float) -> None:
+        """
+        Ajoute un couple (torque) au corps physique.
+
+        Le couple est converti en accélération angulaire en fonction de l'inertie.
+
+        Parameters
+        ----------
+        torque : float
+            Couple à appliquer en newton*mètres (kg*m²/s²).
+        """
+        if self.inertia <= 0.0:
+            logger.warning("Inertia <= 0, torque ignoré pour éviter division par zéro.")
+            return
+
+        angular_acceleration = torque / self.inertia
+        self.angular_acceleration += angular_acceleration
+
+    def define_gravity_center(self) -> Vector2D:
+        """
+        Définit le centre de gravité local du corps physique, à partir des différents
+        colliders attachés au GameObject.
+
+        On considère que chaque collider à une masse proportionnelle à son aire.
+
+        Returns
+        -------
+        Vector2D
+            Centre de gravité en coordonnées locales du GameObject.
+        """
+
+        total_area = 0.0
+        weighted_position_sum = Vector2D(0, 0)
+        for collider in self.parent.get_components(ColliderComponent):
+            area = collider.shape.area()
+            local_position = collider.transform.position
+
+            weighted_position_sum += local_position * area
+            total_area += area
+
+        if total_area == 0.0:
+            return Vector2D(0, 0)
+
+        return weighted_position_sum / total_area
+
+    def calculate_inertia(self) -> float:
+        """
+        Calcule le moment d'inertie du corps physique, à partir des différents
+        colliders attachés au GameObject.
+
+        Détails :
+        - masse répartie au prorata des aires
+        - inertie locale : I_local = m_i * I_unit(shape)
+        - axes parallèles : I = I_local + m_i * d^2
+
+        Returns
+        -------
+        float
+            Moment d'inertie total du corps physique.
+        """
+        colliders = self.parent.get_components(ColliderComponent)
+        if not colliders:
+            return 1.0
+
+        # Somme des aires pour répartir la masse
+        areas: list[float] = []
+        for collider in colliders:
+            area = float(collider.shape.area())
+            areas.append(area)
+
+        total_area = sum(areas)
+        if total_area == 0.0:
+            logger.warning(
+                "Aire totale des colliders est nulle. "
+                "Inertie par défaut 1.0 utilisée."
+            )
+            return 1.0
+
+        total_inertia = 0.0
+        for collider, area in zip(colliders, areas):
+            # Masse du collider au prorata de l'aire
+            mass_collider = self.mass * (area / total_area)
+
+            # Inertie centrée du collider
+            inertia = mass_collider * collider.shape.inertia
+
+            # Terme des axes parallèles : décalage du collider au centre de masse
+            local_position = collider.transform.position
+            offset = local_position - self.mass_center
+
+            inertia += mass_collider * offset.magnitude_squared()
+            total_inertia += inertia
+
+        # Sécurité : éviter 0 (division par zéro lors d'un torque)
+        return max(1e-9, total_inertia)  # TODO : Aller chercher le epsilon global
+
     def stop(self) -> None:
         """
         Arrête complètement le mouvement du corps physique.
         """
         self.velocity = Vector2D(0, 0)
         self.acceleration = Vector2D(0, 0)
+
+        self.angular_velocity = 0.0
+        self.angular_acceleration = 0.0

@@ -1,5 +1,4 @@
 import pytest
-
 from vect_hunt.engine.core.math import Vector2D
 from vect_hunt.engine.objects import GameObject
 from vect_hunt.engine.scenes.scene_factory import SceneFactory

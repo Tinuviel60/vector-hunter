@@ -1,6 +1,6 @@
 import math
-import pytest
 
+import pytest
 from vect_hunt.engine.core import Geometry, Vector2D
 from vect_hunt.engine.core.transform import Rotation
 

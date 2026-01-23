@@ -1,7 +1,7 @@
 from typing import Set, Tuple
 
-from vect_hunt.engine.components.collider import ColliderComponent
-from vect_hunt.engine.input import InputSystem
+from vect_hunt.engine.components.collider.collider_component import ColliderComponent
+from vect_hunt.engine.input.input_system import InputSystem
 from vect_hunt.engine.physics.collider_system import ColliderSystem
 from vect_hunt.engine.physics.collision_resolution_system import (
     CollisionResolutionSystem,
@@ -59,8 +59,8 @@ class SimulationScheduler:
             Temps ecoule depuis la derniere frame (en secondes).
         """
         self._update_inputs(delta_time)
-        self.external_forces_system.apply_gravity(self.scene, delta_time)
         self._update_game_objects(delta_time)
+        self.external_forces_system.apply_gravity(self.scene, delta_time)
         self.update_collisions(delta_time)
         self._resolve_collisions()
 
@@ -119,15 +119,17 @@ class SimulationScheduler:
             collisions, _, collision_info = self.collider_system.detect_collisions(
                 self.scene
             )
-            apply_impulses = True
-            if i > 0:
-                apply_impulses = False
-            moved = self.collision_resolution_system.update_from_collisions(
+            moved = self.collision_resolution_system.correct_collisions(
                 list(collisions),
                 collision_info,
-                apply_position=True,
-                apply_impulses=apply_impulses,
             )
+
+            # Appliquer les impulsions seulement dans la premièr passe
+            if i == 0:
+                self.collision_resolution_system.apply_inpulse_response(
+                    list(collisions), collision_info
+                )
+
             if not moved:
                 break
 

@@ -1,10 +1,9 @@
 import pytest
-
-from vect_hunt.engine.core import Vector2D
 from vect_hunt.engine.components.collider import (
     CircleColliderComponent,
     ColliderComponent,
 )
+from vect_hunt.engine.core import Vector2D
 
 
 @pytest.mark.parametrize(

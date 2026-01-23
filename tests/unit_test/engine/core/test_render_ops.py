@@ -1,5 +1,4 @@
 import pytest
-
 from vect_hunt.engine.core import RenderOps
 
 

@@ -7,9 +7,9 @@ Fournit les primitives mathématiques pour le moteur :
 - Numeric : utilitaires numériques (clamp, etc.)
 """
 
-from .vector import Vector2D
 from .geometry import Geometry
 from .numeric import Numeric
+from .vector import Vector2D
 
 __all__ = [
     "Vector2D",

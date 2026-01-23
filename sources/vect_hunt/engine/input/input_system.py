@@ -1,18 +1,16 @@
-import pygame
-from typing import Dict, Set, Optional, List, Any
+from typing import Any, Dict, List, Optional, Set
 
+import pygame
 from vect_hunt.engine.core.math.vector import Vector2D
-from .input_tracker import InputTracker
 from vect_hunt.engine.input.input_action import (
-    InputAction,
     ActionState,
     ActionType,
+    InputAction,
     action_from_config,
 )
-from .context_manager import (
-    ContextManager,
-    GameContext,
-)
+
+from .context_manager import ContextManager, GameContext
+from .input_tracker import InputTracker
 
 """Système de gestion des entrées utilisateur."""
 

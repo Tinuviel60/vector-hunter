@@ -1,5 +1,6 @@
-from typing import List, Optional, TypeVar, TYPE_CHECKING
-from vect_hunt.engine.core import Tag
+from typing import TYPE_CHECKING, List, Optional, TypeVar
+
+from vect_hunt.engine.core.tag import Tag
 from vect_hunt.engine.core.transform.transform import Transform
 
 if TYPE_CHECKING:
@@ -36,9 +37,7 @@ class GameObject:
 
     _next_id: int = 1  # Compteur de classe pour générer des IDs uniques
 
-    def __init__(
-        self, name: str, transform: Optional[Transform], tags: Tag = Tag.NONE
-    ):
+    def __init__(self, name: str, transform: Optional[Transform], tags: Tag = Tag.NONE):
         """
         Initialise un GameObject.
 

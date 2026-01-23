@@ -1,4 +1,5 @@
 from abc import abstractmethod
+
 from vect_hunt.engine.components.component import Component
 
 

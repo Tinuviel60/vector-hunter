@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
-from vect_hunt.engine.core.math import Vector2D
-from vect_hunt.engine.core.geometries import Shape
+from vect_hunt.engine.core.geometries.shape import Shape
+from vect_hunt.engine.core.math.vector import Vector2D
 
 
 @dataclass(frozen=True, slots=True)
@@ -130,3 +130,15 @@ class BoxShape(Shape):
         clamped_x = max(-half_w, min(half_w, point.x))
         clamped_y = max(-half_h, min(half_h, point.y))
         return Vector2D(clamped_x, clamped_y)
+
+    @property
+    def inertia(self) -> float:
+        """
+        Calcule le moment d'inertie du box pour une masse de 1.0.
+
+        Returns
+        -------
+        float
+            Moment d'inertie du box.
+        """
+        return (1 / 12) * (self.width**2 + self.height**2)

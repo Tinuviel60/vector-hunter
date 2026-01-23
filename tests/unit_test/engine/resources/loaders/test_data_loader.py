@@ -1,7 +1,8 @@
 import json
-import pytest
 from pathlib import Path
 from unittest.mock import mock_open, patch
+
+import pytest
 from vect_hunt.engine.resources.loaders.data_loader import DataLoader
 
 

@@ -1,8 +1,8 @@
 from typing import Any, Optional
 
+from vect_hunt.engine.core.geometries.circle_shape import CircleShape
 from vect_hunt.engine.core.math.vector import Vector2D
 from vect_hunt.engine.core.transform.transform import Transform
-from vect_hunt.engine.core.geometries import CircleShape
 
 from .collider_component import ColliderComponent
 

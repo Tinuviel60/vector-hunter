@@ -8,5 +8,6 @@ class TemplateReader(BaseReader):
 
     Encapsule la convention de chemin assets/data/templates/.
     """
+
     _relative_root = TEMPLATE_ROOT
     _entry_label = "template"

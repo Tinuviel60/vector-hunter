@@ -1,4 +1,5 @@
 from typing import Tuple
+
 from vect_hunt.engine.core.math.numeric import Numeric
 
 ColorRGB = Tuple[int, int, int]

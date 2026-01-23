@@ -2,6 +2,7 @@ import json
 from collections import OrderedDict
 from pathlib import Path
 from typing import Any
+
 from vect_hunt.engine.resources.loaders.base_loader import BaseLoader
 from vect_hunt.engine.resources.paths import DATA_DIR
 

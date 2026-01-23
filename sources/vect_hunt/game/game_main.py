@@ -3,19 +3,20 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import pygame
-
-from vect_hunt.engine.core import TagSystem
-from vect_hunt.engine.objects import GameObject, GameObjectFactory
-from vect_hunt.engine.rendering import Renderer
-from vect_hunt.engine.rendering.font import FontSystem
-from vect_hunt.engine.scenes import Scene, SceneFactory
-from vect_hunt.engine.simulation import SimulationScheduler
+from vect_hunt.engine.core.tag_system import TagSystem
+from vect_hunt.engine.objects.game_object_factory import GameObjectFactory
+from vect_hunt.engine.rendering.font.font_system import FontSystem
+from vect_hunt.engine.rendering.renderer import Renderer
+from vect_hunt.engine.scenes.scene import Scene
+from vect_hunt.engine.scenes.scene_factory import SceneFactory
+from vect_hunt.engine.simulation.simulation_scheduler import SimulationScheduler
 
 if TYPE_CHECKING:
-    from vect_hunt.engine.resources import ResourceRegistry
+    from vect_hunt.engine.objects.game_object import GameObject
+    from vect_hunt.engine.resources.resource_registry import ResourceRegistry
 
 
 @dataclass(frozen=True)
@@ -35,6 +36,7 @@ class GameWiring:
     simulation_scheduler : SimulationScheduler
         Orchestrateur de la simulation (inputs + systèmes physiques).
     """
+
     scene: Scene
     tag_system: TagSystem
     simulation_scheduler: SimulationScheduler

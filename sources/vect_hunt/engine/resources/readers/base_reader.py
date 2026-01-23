@@ -1,4 +1,5 @@
 from typing import Any
+
 from vect_hunt.engine.resources.loaders.data_loader import DataLoader
 
 """

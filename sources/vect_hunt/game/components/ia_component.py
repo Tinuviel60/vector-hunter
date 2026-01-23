@@ -6,7 +6,7 @@ from typing import Any
 
 from vect_hunt.engine.components.component import Component
 from vect_hunt.engine.components.physic_body_component import PhysicBodyComponent
-from vect_hunt.engine.core.math import Vector2D
+from vect_hunt.engine.core.math.vector import Vector2D
 
 
 class IaComponent(Component):
@@ -135,11 +135,15 @@ class IaComponent(Component):
 
         # Si collision détectée, inverser la rotation
         if collision_normal is not None:
-            self.parent.transform.rotation = (
-                self.parent.transform.rotation.reflect(collision_normal)
+            self.parent.transform.rotation = self.parent.transform.rotation.reflect(
+                collision_normal
             )
             direction = self.parent.transform.forward()
             velocity = direction * physic_body.speed
 
+        desired_velocity = direction * physic_body.speed
+        acceleration = desired_velocity - physic_body.velocity
+        physic_body.add_acceleration(acceleration)
+
         # Transmettre l'intention au PhysicBodyComponent
-        physic_body.set_velocity(velocity)
+        # physic_body.set_velocity(velocity)

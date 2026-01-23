@@ -1,6 +1,7 @@
-import pygame
 from collections import OrderedDict
 from pathlib import Path
+
+import pygame
 from vect_hunt.engine.resources.loaders.base_loader import BaseLoader
 from vect_hunt.engine.resources.paths import FONTS_DIR
 

@@ -1,10 +1,9 @@
 import pytest
-
-from vect_hunt.engine.core.math import Vector2D
 from vect_hunt.engine.components.physic_body_component import PhysicBodyComponent
+from vect_hunt.engine.core.math import Vector2D
 from vect_hunt.engine.objects import GameObject
-from vect_hunt.engine.scenes.scene import Scene
 from vect_hunt.engine.physics.external_forces_system import ExternalForcesSystem
+from vect_hunt.engine.scenes.scene import Scene
 
 
 @pytest.mark.parametrize(

@@ -13,9 +13,9 @@
         "speed": 0.0,
         "is_kinematic": false,
         "is_controlled": false,
-        "mass": 1.0,
+        "mass": 10.0,
         "use_gravity": true,
-        "material": "stone.json"
+        "material": "default.json"
       }
     },
     {

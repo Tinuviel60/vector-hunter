@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Any
 
+
 @dataclass(frozen=True)
 class ResourceRegistry:
     """
@@ -17,6 +18,7 @@ class ResourceRegistry:
     materials : dict[str, dict[str, Any]]
         Matériaux physiques.
     """
+
     configs: dict[str, dict[str, Any]]
     templates: dict[str, dict[str, Any]]
     scenes: dict[str, dict[str, Any]]

@@ -1,9 +1,9 @@
 import importlib
 import importlib.util
+import logging
 import os
 import sys
 from types import ModuleType
-import logging
 
 logger = logging.getLogger(__name__)
 

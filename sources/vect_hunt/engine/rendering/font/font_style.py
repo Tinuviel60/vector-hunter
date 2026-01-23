@@ -1,5 +1,6 @@
-import pygame
 from typing import Optional
+
+import pygame
 
 """
 Représentation d'un style de police pour le rendu.

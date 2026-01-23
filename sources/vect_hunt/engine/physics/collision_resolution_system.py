@@ -1,11 +1,12 @@
 from typing import TYPE_CHECKING, Optional, Tuple
 
-from vect_hunt.engine.core.math.vector import Vector2D
 from vect_hunt.engine.components.physic_body_component import PhysicBodyComponent
+from vect_hunt.engine.core.math.vector import Vector2D
+from vect_hunt.engine.physics.collision_info import CollisionInfo
 
 if TYPE_CHECKING:
-    from vect_hunt.engine.scenes import Scene
-    from vect_hunt.engine.objects import GameObject
+    from vect_hunt.engine.objects.game_object import GameObject
+    from vect_hunt.engine.scenes.scene import Scene
 
 
 class CollisionResolutionSystem:
@@ -33,10 +34,10 @@ class CollisionResolutionSystem:
         """
         self.scene = scene
 
-    def update_from_collisions(
+    def correct_collisions(
         self,
         collisions: list[tuple[int, int]],
-        collision_info: dict[tuple[int, int], dict],
+        collision_info: dict[tuple[int, int], CollisionInfo],
     ) -> bool:
         """
         Applique la résolution à partir d'un jeu de collisions déjà détectées.
@@ -65,7 +66,9 @@ class CollisionResolutionSystem:
 
         return correction_applied
 
-    def _resolve_collision(self, obj_a: int, obj_b: int, collision_info: dict) -> bool:
+    def _resolve_collision(
+        self, obj_a: int, obj_b: int, collision_info: CollisionInfo
+    ) -> bool:
         """
         Résout une collision entre deux GameObjects avec correction de position
         et annulation de la composante normale de la vélocité, en utilisant
@@ -77,8 +80,8 @@ class CollisionResolutionSystem:
             ID du premier objet en collision.
         obj_b : int
             ID du deuxième objet en collision.
-        collision_info : dict
-            Informations supplémentaires sur la collision (normal, depth, point, ...).
+        collision_info : CollisionInfo
+            Informations supplémentaires sur la collision (normal, depth, points).
 
         returns
         -------
@@ -93,27 +96,20 @@ class CollisionResolutionSystem:
         game_object_a, game_object_b, body_a, body_b = context
 
         # Résoudre la normale et la profondeur de collision
-        normal, depth = self._resolve_normal_and_depth(
+        collision_info = self._resolve_collision_info(
             collision_info,
             game_object_a.transform.position,
             game_object_b.transform.position,
         )
 
         # Si pas de pénétration, ne rien faire
-        if depth <= 0:
+        if collision_info.depth <= 0:
             return False
 
         # Appliquer la correction de position
         self._apply_position_correction(
-            body_a,
-            body_b,
-            game_object_a,
-            game_object_b,
-            normal,
-            depth,
+            body_a, body_b, game_object_a, game_object_b, collision_info
         )
-        # Appliquer la réponse de vélocité (restitution + friction)
-        self._apply_velocity_response(body_a, body_b, normal)
 
         return True
 
@@ -151,19 +147,19 @@ class CollisionResolutionSystem:
 
         return game_object_a, game_object_b, body_a, body_b
 
-    def _resolve_normal_and_depth(
+    def _resolve_collision_info(
         self,
-        collision_info: dict,
+        collision_info: CollisionInfo,
         pos_a: Vector2D,
         pos_b: Vector2D,
-    ) -> Tuple[Vector2D, float]:
+    ) -> CollisionInfo:
         """
         Résout la normale et la profondeur de collision, avec fallback.
 
         Parameters
         ----------
-        collision_info : dict
-            Informations supplémentaires sur la collision (normal, depth, ...).
+        collision_info : CollisionInfo
+            Informations supplémentaires sur la collision (normal, depth, points).
         pos_a : Vector2D
             Position du premier objet.
         pos_b : Vector2D
@@ -174,18 +170,16 @@ class CollisionResolutionSystem:
         tuple
             (normal, depth) validés, avec valeurs par défaut si absentes.
         """
-        normal = collision_info.get("normal")
-        depth = collision_info.get("depth")
 
-        if normal is None or depth is None:
+        if collision_info.normal is None or collision_info.depth is None:
             delta = pos_a - pos_b
             if delta.magnitude() == 0:
-                normal = Vector2D(1, 0)
+                collision_info.normal = Vector2D(1, 0)
             else:
-                normal = delta.normalized()
-            depth = 1.0
+                collision_info.normal = delta.normalized()
+            collision_info.depth = 1.0
 
-        return normal, depth
+        return collision_info
 
     def _apply_position_correction(
         self,
@@ -193,8 +187,7 @@ class CollisionResolutionSystem:
         body_b: PhysicBodyComponent,
         game_object_a: "GameObject",
         game_object_b: "GameObject",
-        normal: Vector2D,
-        depth: float,
+        collision_info: CollisionInfo,
     ) -> None:
         """
         Corrige la position des objets en fonction de la profondeur de collision.
@@ -209,15 +202,11 @@ class CollisionResolutionSystem:
             Le premier objet de jeu.
         game_object_b : GameObject
             Le deuxième objet de jeu.
-        normal : Vector2D
-            Normale de collision (pointant de B vers A).
-        depth : float
-            Profondeur de pénétration.
-        """
-        if depth <= 0:
-            return
+        collision_info : CollisionInfo
+            Informations supplémentaires sur la collision (normal, depth, points).
 
-        correction = normal * depth
+        """
+        correction = collision_info.normal * collision_info.depth
 
         is_kinematic_a = body_a.is_kinematic
         is_kinematic_b = body_b.is_kinematic
@@ -231,10 +220,46 @@ class CollisionResolutionSystem:
             game_object_a.transform.move(correction)
             return
 
+        eps = 1e-9  # TODO : Sortir le epsilon dans une constante globale
+        inv_mass_a = 1.0 / body_a.mass if body_a.mass > eps else 0.0
+        inv_mass_b = 1.0 / body_b.mass if body_b.mass > eps else 0.0
+        inv_mass_sum = inv_mass_a + inv_mass_b
+
+        if inv_mass_sum <= eps:
+            return
+
         # Les deux objets sont dynamiques, partager la correction
-        correction = correction * 0.5
-        game_object_a.transform.move(correction)
-        game_object_b.transform.move(-1 * correction)
+        game_object_a.transform.move(correction * (inv_mass_a / inv_mass_sum))
+        game_object_b.transform.move(-correction * (inv_mass_b / inv_mass_sum))
+
+    def apply_inpulse_response(
+        self,
+        collisions: list[tuple[int, int]],
+        collision_info: dict[tuple[int, int], CollisionInfo],
+    ) -> None:
+        """
+        Applique la réponse d'impulsion (vitesse) pour un ensemble de collisions.
+
+        Parameters
+        ----------
+        collisions : list[tuple[int, int]]
+            Paires d'IDs d'objets en collision.
+        collision_info : dict[tuple[int, int], CollisionInfo]
+            Informations de collision associées aux paires.
+        """
+
+        for id_obj_a, id_obj_b in collisions:
+            info_collision = collision_info.get((id_obj_a, id_obj_b))
+            if info_collision is None:
+                continue
+
+            context = self._get_collision_context(id_obj_a, id_obj_b)
+            if context is None:
+                continue
+
+            _, _, body_a, body_b = context
+
+            self._apply_velocity_response(body_a, body_b, info_collision.normal)
 
     def _apply_velocity_response(
         self,
@@ -254,7 +279,8 @@ class CollisionResolutionSystem:
         normal : Vector2D
             Normale de collision (pointant de B vers A).
         """
-        if normal.magnitude() == 0:
+        eps = 1e-9  # TODO : Sortir le epsilon dans une constante globale
+        if normal.magnitude_squared() <= eps * eps:
             return
         else:
             normal = normal.normalized()
@@ -263,11 +289,11 @@ class CollisionResolutionSystem:
 
         # Calcul des masses inverses (0 si cinématique)
         # pour l'application des impulsions
-        inv_mass_a = 0.0 if body_a.is_kinematic else 1.0
-        inv_mass_b = 0.0 if body_b.is_kinematic else 1.0
+        inv_mass_a = 0.0 if body_a.is_kinematic else (1.0 / body_a.mass)
+        inv_mass_b = 0.0 if body_b.is_kinematic else (1.0 / body_b.mass)
         inv_mass_sum = inv_mass_a + inv_mass_b
 
-        if inv_mass_sum == 0.0:
+        if inv_mass_sum <= eps:
             return
 
         v_a = body_a.velocity
@@ -277,45 +303,43 @@ class CollisionResolutionSystem:
         rel_normal_speed = relative_velocity.dot(normal)
 
         # Si les objets s'éloignent, ne pas appliquer d'impulsion normale.
-        # Epsilon pour éviter les micro-artefacts.
-        if rel_normal_speed > 1e-6:
+        if rel_normal_speed > eps:
             return
 
         restitution = contact_material.restitution
         if abs(rel_normal_speed) < contact_material.bounciness_threshold:
             restitution = 0.0
 
-        normal_impulse_magnitude = (
-            -(1.0 + restitution) * rel_normal_speed / inv_mass_sum
-        )
-        normal_impulse = normal * normal_impulse_magnitude
+        # Calcul de l'impulsion normale
+        jn = (-(1.0 + restitution) * rel_normal_speed) / inv_mass_sum
+        normal_impulse = normal * jn
 
+        # IMPORTANT : appliquer J en Δv via inv_mass
         if not body_a.is_kinematic:
-            body_a.velocity = body_a.velocity + normal_impulse
+            body_a.apply_impulse(normal_impulse)
         if not body_b.is_kinematic:
-            body_b.velocity = body_b.velocity - normal_impulse
+            body_b.apply_impulse(-normal_impulse)
 
+        # Recalcul après impulsion normale
         relative_velocity = body_a.velocity - body_b.velocity
-        tangent = relative_velocity - normal * relative_velocity.dot(normal)
 
-        if tangent.magnitude() == 0:
+        tangent = relative_velocity - normal * relative_velocity.dot(normal)
+        if tangent.magnitude_squared() <= eps * eps:
             return
 
         tangent_dir = tangent.normalized()
         rel_tangent_speed = relative_velocity.dot(tangent_dir)
 
+        jt = (-rel_tangent_speed) / inv_mass_sum
+
         friction = contact_material.friction
-        tangent_impulse_magnitude = -rel_tangent_speed / inv_mass_sum
+        max_friction_impulse = friction * jn
+        jt = max(-max_friction_impulse, min(jt, max_friction_impulse))
 
-        max_friction_impulse = friction * normal_impulse_magnitude
-        tangent_impulse_magnitude = max(
-            -max_friction_impulse,
-            min(tangent_impulse_magnitude, max_friction_impulse),
-        )
+        tangent_impulse = tangent_dir * jt
 
-        tangent_impulse = tangent_dir * tangent_impulse_magnitude
-
+        # IMPORTANT : appliquer Jt en Δv via inv_mass
         if not body_a.is_kinematic:
-            body_a.velocity = body_a.velocity + tangent_impulse
+            body_a.apply_impulse(tangent_impulse)
         if not body_b.is_kinematic:
-            body_b.velocity = body_b.velocity - tangent_impulse
+            body_b.apply_impulse(-tangent_impulse)

@@ -1,4 +1,5 @@
 import math
+
 import pytest
 from vect_hunt.engine.core import Vector2D
 from vect_hunt.engine.core.transform.rotation import Rotation

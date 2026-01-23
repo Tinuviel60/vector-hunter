@@ -1,6 +1,7 @@
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
-from vect_hunt.engine.objects import GameObject
+if TYPE_CHECKING:
+    from vect_hunt.engine.objects.game_object import GameObject
 
 
 class Scene:
@@ -19,7 +20,7 @@ class Scene:
         """
         Initialise une scène de jeu vide.
         """
-        self.game_objects: dict[int, GameObject] = {}
+        self.game_objects: dict[int, "GameObject"] = {}
         self.units = units
 
     @classmethod
@@ -47,7 +48,7 @@ class Scene:
         }
         return cls(units)
 
-    def add_game_object(self, game_object: GameObject) -> None:
+    def add_game_object(self, game_object: "GameObject") -> None:
         """
         Ajoute un GameObject à la scène.
 
@@ -60,7 +61,7 @@ class Scene:
 
         self.game_objects[game_object.id] = game_object
 
-    def remove_game_object(self, game_object: GameObject) -> None:
+    def remove_game_object(self, game_object: "GameObject") -> None:
         """
         Retire un GameObject de la scène.
 

@@ -20,7 +20,8 @@ dev = [
     "pytest",
     "pytest-cov",
     "black",
-    "flake8"
+    "flake8",
+    "isort"
 ]
 
 [tool.setuptools]
@@ -39,3 +40,7 @@ omit = [
     "__main__.py",
     "logging_config.py"
 ]
+
+[tool.isort]
+profile = "black"
+line_length = 88

@@ -1,9 +1,8 @@
 import pytest
-
-from vect_hunt.engine.objects import GameObject
-from vect_hunt.engine.core import Tag, Transform, Vector2D
 from vect_hunt.engine.components.collider import ColliderComponent
+from vect_hunt.engine.core import Tag, Transform, Vector2D
 from vect_hunt.engine.core.geometries import BoxShape
+from vect_hunt.engine.objects import GameObject
 
 
 class DummyColliderComponent(ColliderComponent):

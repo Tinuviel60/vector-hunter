@@ -1,5 +1,4 @@
 import pytest
-
 from vect_hunt.engine.physics.physic_material import CombineMode, PhysicMaterial
 
 

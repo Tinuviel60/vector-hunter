@@ -5,8 +5,8 @@ Contient les classes abstraites et concrètes pour le système de composants.
 """
 
 from .component import Component
-from .render_component import RenderComponent
 from .physic_body_component import PhysicBodyComponent
+from .render_component import RenderComponent
 
 __all__ = [
     "Component",

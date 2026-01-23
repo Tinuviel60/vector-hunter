@@ -1,6 +1,6 @@
 import math
-import pytest
 
+import pytest
 from vect_hunt.engine.core.geometries import CircleShape
 from vect_hunt.engine.core.math import Vector2D
 

@@ -1,4 +1,6 @@
-from typing import Dict, Set, Tuple, Optional, List
+from typing import Dict, List, Optional, Set, Tuple
+
+from vect_hunt.engine.physics.collision_info import CollisionInfo
 
 """Module de tracking des collisions entre objets du jeu."""
 
@@ -30,7 +32,7 @@ class CollisionTracker:
         self._exited_this_frame: Set[Tuple[int, int]] = set()
         self._exited_collisions: Set[Tuple[int, int]] = set()
         self._exited_triggers: Set[Tuple[int, int]] = set()
-        self._collision_info: Dict[Tuple[int, int], dict] = {}
+        self._collision_info: Dict[Tuple[int, int], CollisionInfo] = {}
 
     def _normalize_pair(self, obj1_id: int, obj2_id: int) -> Tuple[int, int]:
         """
@@ -54,7 +56,7 @@ class CollisionTracker:
         self,
         current_collisions: Set[Tuple[int, int]],
         current_triggers: Set[Tuple[int, int]],
-        collision_info: Dict[Tuple[int, int], dict],
+        collision_info: Dict[Tuple[int, int], CollisionInfo],
         delta_time: float,
     ):
         """
@@ -66,8 +68,8 @@ class CollisionTracker:
             Ensemble des collisions détectées cette frame
         current_triggers : Set[Tuple[int, int]]
             Ensemble des triggers détectés cette frame
-        collision_info : Dict[Tuple[int, int], dict]
-            Dictionnaire des informations de collision pour chaque paire
+        collision_info : Dict[Tuple[int, int], CollisionInfo]
+            Informations de collision pour chaque paire
         delta_time : float
             Temps écoulé depuis la dernière frame en secondes
         """
@@ -247,7 +249,7 @@ class CollisionTracker:
         """
         return list(self._active_triggers.keys())
 
-    def get_collision_info(self, obj1_id: int, obj2_id: int) -> Optional[dict]:
+    def get_collision_info(self, obj1_id: int, obj2_id: int) -> Optional[CollisionInfo]:
         """
         Retourne les informations de collision pour une paire d'objets.
 
@@ -260,8 +262,8 @@ class CollisionTracker:
 
         Returns
         -------
-        Optional[dict]
-            Dictionnaire des informations de collision, ou None si pas active
+        Optional[CollisionInfo]
+            Informations de collision, ou None si pas active
         """
         pair = self._normalize_pair(obj1_id, obj2_id)
         return self._collision_info.get(pair)

@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from enum import Enum
-from vect_hunt.engine.core.math import Numeric
-
 from logging import getLogger
+
+from vect_hunt.engine.core.math.numeric import Numeric
 
 logger = getLogger(__name__)
 
@@ -61,6 +61,10 @@ class PhysicMaterial:
         Amortissement linéaire (0.0 à 1.0).
         Correspond à la perte de vélocité au fil du temps.
         Par défaut 0.0.
+    anglular_damping : float, optional
+        Amortissement angulaire (0.0 à 1.0).
+        Correspond à la perte de vitesse angulaire au fil du temps.
+        Par défaut 0.0.
     bounciness_threshold : float, optional
         Vitesse minimale (valeur absolue) pour autoriser un rebond.
         En dessous, la restitution est ignorée.
@@ -78,6 +82,8 @@ class PhysicMaterial:
         Mode de combinaison de la restitution.
     linear_damping : float
         Amortissement linéaire (0.0 à 1.0).
+    angular_damping : float
+        Amortissement angulaire (0.0 à 1.0).
     bounciness_threshold : float
         Seuil de vitesse pour autoriser un rebond.
     """
@@ -87,6 +93,7 @@ class PhysicMaterial:
     friction_mode: CombineMode = CombineMode.MAX
     restitution_mode: CombineMode = CombineMode.MIN
     linear_damping: float = 0.0
+    angular_damping: float = 0.0
     bounciness_threshold: float = 10.0
 
     # TODO : Nouveau paramètre pour plus tard très probable
@@ -129,6 +136,12 @@ class PhysicMaterial:
                 "clamp à 0.0."
             )
             self.bounciness_threshold = 0.0
+        if not (0.0 <= self.angular_damping <= 1.0):
+            logger.warning(
+                f"Angular Damping {self.angular_damping} hors limites, "
+                f"clamp entre 0.0 et 1.0."
+            )
+            self.angular_damping = Numeric.clamp(self.angular_damping, 0.0, 1.0)
 
     @staticmethod
     def resolve_combine_mode(mode_a: CombineMode, mode_b: CombineMode) -> CombineMode:

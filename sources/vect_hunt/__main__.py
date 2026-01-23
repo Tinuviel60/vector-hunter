@@ -4,17 +4,15 @@ import logging
 from typing import Any
 
 import pygame
-
-from vect_hunt.engine.resources import Paths, ResourceRegistry
-from vect_hunt.engine.resources.readers import (
-    ConfigReader,
-    MaterialReader,
-    SceneReader,
-    TemplateReader,
-)
-from vect_hunt.engine.simulation import GameLoop
+from vect_hunt.engine.resources.paths import Paths
+from vect_hunt.engine.resources.readers.config_reader import ConfigReader
+from vect_hunt.engine.resources.readers.material_reader import MaterialReader
+from vect_hunt.engine.resources.readers.scene_reader import SceneReader
+from vect_hunt.engine.resources.readers.template_reader import TemplateReader
+from vect_hunt.engine.resources.resource_registry import ResourceRegistry
+from vect_hunt.engine.simulation.game_loop import GameLoop
 from vect_hunt.engine.utils.component_loader import load_all_components
-from vect_hunt.game import Game
+from vect_hunt.game.game_main import Game
 from vect_hunt.logging_config import setup_logging
 
 logger = logging.getLogger(__name__)

@@ -1,8 +1,8 @@
 import math
-import pytest
 
-from vect_hunt.engine.core import Vector2D
+import pytest
 from vect_hunt.engine.components.collider import BoxColliderComponent, ColliderComponent
+from vect_hunt.engine.core import Vector2D
 
 
 @pytest.mark.parametrize(

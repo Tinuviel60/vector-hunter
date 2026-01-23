@@ -2,13 +2,13 @@
 Composant de gestion des inputs pour les entités contrôlées par le joueur.
 """
 
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from vect_hunt.engine.components.component import Component
 from vect_hunt.engine.components.physic_body_component import PhysicBodyComponent
 
 if TYPE_CHECKING:
-    from vect_hunt.engine.input import InputSystem
+    from vect_hunt.engine.input.input_system import InputSystem
 
 
 class InputComponent(Component):
@@ -102,7 +102,7 @@ class InputComponent(Component):
 
         # Versions vu du dessus
         desired_velocity = move_vector * physic_body.speed
-        # acceleration = desired_velocity - physic_body.velocity
-        # physic_body.add_acceleration(acceleration)
+        acceleration = desired_velocity - physic_body.velocity
+        physic_body.add_acceleration(acceleration)
 
-        physic_body.set_velocity(desired_velocity)
+        # physic_body.set_velocity(desired_velocity)

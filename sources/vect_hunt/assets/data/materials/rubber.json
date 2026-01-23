@@ -3,6 +3,7 @@
   "friction": 0.9,
   "restitution": 0.85,
   "linear_damping": 0.05,
+  "angular_damping": 0.0,
   "friction_mode": "MAX",
   "restitution_mode": "MAX",
   "bounciness_threshold": 50.0

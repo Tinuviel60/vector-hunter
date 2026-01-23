@@ -8,5 +8,6 @@ class MaterialReader(BaseReader):
 
     Encapsule la convention de chemin assets/data/materials/.
     """
+
     _relative_root = MATERIALS_ROOT
     _entry_label = "material"

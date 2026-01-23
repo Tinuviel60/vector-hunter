@@ -1,12 +1,13 @@
 import logging
-from typing import Any, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Optional
 
 from vect_hunt.engine.core.math.vector import Vector2D
-from vect_hunt.engine.objects import GameObjectFactory
+
 from .scene import Scene
 
 if TYPE_CHECKING:
-    from vect_hunt.engine.input import InputSystem
+    from vect_hunt.engine.input.input_system import InputSystem
+    from vect_hunt.engine.objects.game_object_factory import GameObjectFactory
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +33,7 @@ class SceneFactory:
 
     def __init__(
         self,
-        game_object_factory: GameObjectFactory,
+        game_object_factory: "GameObjectFactory",
         scenes: dict[str, dict[str, Any]] | None = None,
     ) -> None:
         """

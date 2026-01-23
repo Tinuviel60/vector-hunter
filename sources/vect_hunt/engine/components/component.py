@@ -1,6 +1,6 @@
+import inspect
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, ClassVar
-import inspect
 
 if TYPE_CHECKING:
     from vect_hunt.engine.objects.game_object import GameObject
@@ -85,7 +85,7 @@ class Component(ABC):
         if self.game_object is None:
             raise RuntimeError("Component not attached to any GameObject")
         return self.game_object
-    
+
     @classmethod
     def get_registered_components(cls) -> dict[str, type["Component"]]:
         """

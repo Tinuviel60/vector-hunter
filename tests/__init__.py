@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from pathlib import Path
 import sys
 import types
+from pathlib import Path
 
 # Ensure the sources/ directory is on sys.path for unit tests.
 ROOT = Path(__file__).resolve().parents[1]

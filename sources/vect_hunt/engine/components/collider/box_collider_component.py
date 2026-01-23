@@ -1,10 +1,9 @@
 import math
 from typing import Any, Optional
 
+from vect_hunt.engine.core.geometries.box_shape import BoxShape
 from vect_hunt.engine.core.math.vector import Vector2D
 from vect_hunt.engine.core.transform.transform import Transform
-from vect_hunt.engine.core.geometries import BoxShape
-
 
 from .collider_component import ColliderComponent
 

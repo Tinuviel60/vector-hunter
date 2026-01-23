@@ -1,4 +1,5 @@
 import math
+
 import pytest
 from vect_hunt.engine.core import Transform, Vector2D
 

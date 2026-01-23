@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from vect_hunt.engine.core.math import Vector2D
+from vect_hunt.engine.core.math.vector import Vector2D
 
 
 class Shape(ABC):
@@ -122,3 +122,18 @@ class Shape(ABC):
         Vector2D
             Le point le plus proche sur la forme en espace local.
         """
+        pass
+
+    @property
+    def inertia(self) -> float:
+        """
+        Calcule le moment d'inertie de la forme pour une masse de 1.0.
+
+        Returns
+        -------
+        float
+            Moment d'inertie de la forme.
+        """
+        raise NotImplementedError(
+            "La méthode shape_inertia doit être implémentée dans les sous-classes."
+        )

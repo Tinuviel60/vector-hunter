@@ -2,9 +2,8 @@ from abc import ABC
 from typing import Optional
 
 from vect_hunt.engine.components.component import Component
+from vect_hunt.engine.core.geometries.shape import Shape
 from vect_hunt.engine.core.transform.transform import Transform
-
-from vect_hunt.engine.core.geometries import Shape
 
 
 class ColliderComponent(Component, ABC):

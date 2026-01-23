@@ -43,8 +43,8 @@
         {
             "label": "Build – Code Quality (check only)",
             "dependsOn": [
-                "Black (check)",
                 "Isort (check)",
+                "Black (check)",
                 "Flake8 (lint)"
             ],
             "dependsOrder": "sequence",
@@ -60,9 +60,9 @@
         {
             "label": "Build – Code Quality (apply format)",
             "dependsOn": [
+                "Isort (apply)",
                 "Black (check)",
                 "Black (apply)",
-                "Isort (apply)",
                 "Flake8 (lint)"
             ],
             "dependsOrder": "sequence",

@@ -1,16 +1,20 @@
-import pygame
 from typing import TYPE_CHECKING, Any
 
-from vect_hunt.engine.core import RenderOps
-from vect_hunt.engine.physics.collider_system import ColliderSystem
-from vect_hunt.engine.rendering.font import FontSystem
+import pygame
+from vect_hunt.engine.components.collider.box_collider_component import (
+    BoxColliderComponent,
+)
+from vect_hunt.engine.components.collider.collider_component import ColliderComponent
 from vect_hunt.engine.components.render_component import RenderComponent
-from vect_hunt.engine.components.collider import ColliderComponent, BoxColliderComponent
-from vect_hunt.engine.core.geometries import BoxShape, CircleShape
+from vect_hunt.engine.core.geometries.box_shape import BoxShape
+from vect_hunt.engine.core.geometries.circle_shape import CircleShape
+from vect_hunt.engine.core.render_ops import RenderOps
+from vect_hunt.engine.physics.collider_system import ColliderSystem
+from vect_hunt.engine.rendering.font.font_system import FontSystem
 
 if TYPE_CHECKING:
-    from vect_hunt.engine.objects import GameObject
-    from vect_hunt.engine.scenes import Scene
+    from vect_hunt.engine.objects.game_object import GameObject
+    from vect_hunt.engine.scenes.scene import Scene
 
 """
 Module de rendu pour le jeu Vector Hunter.
