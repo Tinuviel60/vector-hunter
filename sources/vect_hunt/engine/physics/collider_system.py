@@ -149,8 +149,7 @@ class ColliderSystem:
         Vector2D
             La position mondiale du centre du ColliderComponent.
         """
-        assert collider.game_object is not None
-        parent_tr = collider.game_object.transform
+        parent_tr = collider.parent.transform
 
         local_offset = collider.transform.position
         rotated_offset = parent_tr.rotation.apply(local_offset)
@@ -174,8 +173,7 @@ class ColliderSystem:
         Rotation
             La rotation mondiale du ColliderComponent.
         """
-        assert collider.game_object is not None
-        parent_tr = collider.game_object.transform
+        parent_tr = collider.parent.transform
         local_rot = collider.transform.rotation
         # On suppose que la méthode compose existe sur Rotation
         return parent_tr.rotation.compose(local_rot)
@@ -199,9 +197,6 @@ class ColliderSystem:
         dict or None
             Dictionnaire d'information (normal, depth, point) si collision, sinon None.
         """
-        assert c1.game_object is not None
-        assert c2.game_object is not None
-
         c1_scene_pos = ColliderSystem._get_collider_scene_position(c1)
         c2_scene_pos = ColliderSystem._get_collider_scene_position(c2)
         return Geometry.circle_circle_collision_info(
@@ -233,8 +228,6 @@ class ColliderSystem:
             Dictionnaire d'information (normal, depth) si collision, sinon None.
         """
         # SAT avec calcul de la plus petite séparation
-        assert box1.game_object is not None
-        assert box2.game_object is not None
 
         corners1 = ColliderSystem.get_scene_corners(box1)
         corners2 = ColliderSystem.get_scene_corners(box2)
@@ -271,7 +264,6 @@ class ColliderSystem:
         box_scene_pos = ColliderSystem._get_collider_scene_position(box)
         box_scene_rot = ColliderSystem._get_collider_scene_rotation(box)
         local_corners = box.shape.local_vertices()
-        assert local_corners is not None, "BoxShape must provide local vertices"
 
         return Geometry.circle_box_collision_info(
             circle_scene_pos,
@@ -298,13 +290,10 @@ class ColliderSystem:
         list[Vector2D]
             La liste des coins mondiaux du BoxCollider.
         """
-        assert box.game_object is not None, "box must have a game_object"
-
         scene_position = ColliderSystem._get_collider_scene_position(box)
         scene_rotation = ColliderSystem._get_collider_scene_rotation(box)
 
         local_corners = box.shape.local_vertices()
-        assert local_corners is not None, "BoxShape must provide local vertices"
         return Geometry.get_scene_corners(local_corners, scene_position, scene_rotation)
 
     def compute_aabb(self, collider: ColliderComponent) -> tuple[Vector2D, Vector2D]:

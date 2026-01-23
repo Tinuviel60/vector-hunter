@@ -37,7 +37,7 @@ class GameObject:
     _next_id: int = 1  # Compteur de classe pour générer des IDs uniques
 
     def __init__(
-        self, name: str, transform: Optional[Transform] = None, tags: Tag = Tag.NONE
+        self, name: str, transform: Optional[Transform], tags: Tag = Tag.NONE
     ):
         """
         Initialise un GameObject.
@@ -57,7 +57,7 @@ class GameObject:
 
         # Implementation des attributs
         self.name = name
-        self.transform = transform if transform is not None else Transform()
+        self.transform: Transform = transform if transform is not None else Transform()
         self.active = True
         self.tags = tags
 

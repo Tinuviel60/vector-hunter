@@ -1,43 +1,63 @@
-# Vector-Hunter Roadmap
+# Vector-Hunter Roadmap (mise à jour depuis `packages_vector-hunter_global.dot`)
+
+Lecture “froide” du DOT :
+- Les maths de collision sont déjà dans `engine.core.math.geometry` (bon découplage “calculs purs”).
+- Le gameplay (`vect_hunt.game.*`) dépend de l’engine (normal), mais aussi de `engine.rendering.*` (couplage au rendu concret).
+- `engine.rendering.renderer` dépend de `engine.physics.collider_system` (le rendu connaît un système de simulation → couplage).
+- `SpriteComponent` dépend de `ImageLoader` (un composant “données” qui déclenche du chargement d’asset).
+- `GameObjectFactory` et/ou `SceneFactory` importent `engine.input` (via le `context`) : pratique, mais à surveiller pour éviter que l’input devienne une dépendance structurelle partout.
+
+---
 
 ## En cours (trié par priorité)
 
 | Item | Détails | Priorité | Status |
 | --- | --- | --- | --- |
-| Isoler les calculs geométriques | Sortir les calculs geométrique de `ColliderSystem` | Haute | todo |
-| Spring | Créer des spring pour relié des objets et les maintenir à une certaines distances | moyenne | todo |
-| Restructurer la boucle de jeu | Finaliser la séparation `GameLoop` / `SimulationScheduler`. Le scheduler pilote l’ordre des systèmes (input → mouvement/physique → collisions/triggers → résolution → rendu). La `Scene` reste un conteneur d’état (GameObjects, index, etc.). | haute | in_progress |
-| Système de chargement (Loaders + Factories) | Ajouter un pipeline clair : `SceneLoader` (I/O + parsing) → `SceneFactory` (validation + construction). Même logique côté `GameObjectFactory` (déjà présent) + préparation d’un `GameObjectLoader` si besoin pour charger des templates/prefabs JSON. Définir le `context` injecté (InputSystem, DataLoader, registries). | haute | todo |
-| Revoir le système de RenderComponent | Clarifier la relation au `Transform` (position/rotation/scale). Permettre plusieurs renderers par GameObject (sprite + basic shape, etc.) via une liste (ex: `RenderComponent.renderers: list[RendererItem]`). Définir l’ordre de rendu et la stratégie (layer/z-index). | haute | todo |
-| Revoir le déplacement du joueur | Refaire le pipeline “mouvement” : input → intention (direction/rotation) → application (cinématique ou physique). Clarifier si le Player déplace le Transform directement ou passe par la physique (forces/vitesse). Uniformiser le comportement pour éviter les incohérences. | haute | todo |
-| Ajouter la rotation dans la physique | Les objets doivent pouvoir tourner via la physique : intégrer vitesse angulaire, couples/torque (même minimal), et résolution de collision qui peut appliquer une rotation. Définir un premier modèle simple avant sophistication. | moyenne | todo |
-| Targets | Position, mouvement simple ou scripté. Collider attaché. Comportement d’interaction (hit, score...). | moyenne | in_progress |
-| Introduire une couche InputView | Ajouter une couche intermédiaire injectée entre `InputSystem` et les classes métier (Player, Menu, UI). L’InputView expose uniquement les actions autorisées, filtre par contexte, empêche l’accès direct au système global et garantit une lecture d’input explicite, testable et découplée du gameplay. | moyenne | todo |
-| Centraliser la gestion des contextes d’input | Déplacer entièrement `set_context / push_context / pop_context` dans la boucle de jeu ou le `SimulationScheduler`. Les GameObjects ne manipulent jamais les contextes et consomment uniquement l’InputView qui leur est fourni. | moyenne | todo |
-| Logger les collisions et événements | Journaliser collisions, triggers, résolutions, et événements gameplay (hit/score). Prévoir un niveau de verbosité configurable pour debug. | faible | todo |
-| Optimiser le CollisionSystem | Spatial partitioning (quadtree ou grille). Option: collisions/triggers par collider plutôt que par GameObject. Continuer le découplage via `CollisionTracker`. | faible | in_progress |
+| Finaliser séparation `GameLoop` / `SimulationScheduler` | Le DOT montre déjà les modules, mais l’objectif reste : `GameLoop` gère le temps, les events “backend”, l’arrêt; `SimulationScheduler` orchestre l’ordre des systèmes (input → forces → collisions → résolution). `Scene` reste un conteneur d’état. | Haute | in_progress |
+| Stabiliser le pipeline Resources (Readers → Registry → Factories) | Le DOT montre `resources.readers.*`, `DataLoader`, `ResourceRegistry`, et `SceneFactory`. Prochaine étape : clarifier le contrat : Readers = I/O + parsing, Registry = cache/dict, Factories = construction pure depuis dict (sans I/O, sans backend). | Haute | in_progress |
+| Découpler le rendu des systèmes de simulation | Le DOT indique `engine.rendering.renderer -> engine.physics.collider_system`. Le renderer ne devrait pas importer un “System”. Extraire les infos debug (colliders, collisions) sous forme de données produites par la simulation (ex: `CollisionDebugData`) et consommées par le renderer. | Haute | todo |
+| Revoir `RenderComponent` (composition + ordre + pivot) | Le DOT montre `RenderComponent` et des implémentations (`basic_shape_component`, `sprite_component`). Objectif : permettre plusieurs “render items” par GameObject, définir layer/z-index, et standardiser pivot/offset pour éviter sprite≠collider. | Haute | todo |
+| Revoir le déplacement du joueur (intention → application) | Ton `InputComponent` gameplay applique des actions via `PhysicBodyComponent` (ok), mais le pipeline doit être explicite : input → intention (dir/rotation) → application (kinematic vs dynamic). Uniformiser les règles (pas de mélange implicite). | Haute | todo |
+| Introduire `InputView` côté game | Le DOT montre `game.components.input_component` dépendant de `engine.input`. Remplacer l’accès direct au système global par une vue injectée et limitée (actions autorisées par contexte). | Moyenne | todo |
+| Centraliser la gestion des contextes d’input | Le DOT montre `InputSystem` + `ContextManager`. Objectif : `push/pop/set_context` pilotés par `GameLoop`/`SimulationScheduler`, jamais par des GameObjects/composants. | Moyenne | todo |
+| Ajouter la rotation physique | Toujours à faire : vitesse angulaire + torque minimal + intégration dans Transform + (plus tard) influence de la collision. | Moyenne | todo |
+| Springs / contraintes | Ajouter un `ConstraintSystem` séparé (springs, distance constraints). Ce n’est pas visible dans le DOT, donc vraisemblablement pas encore implémenté. | Moyenne | todo |
+| Targets | Continuer les comportements simples (script, interaction). | Moyenne | in_progress |
+| Isoler les backends (pygame) | Le DOT montre `engine.rendering.*` et des loaders `font/image/sound` dans `engine`. Pour un vrai découplage, migrer tout import `pygame` vers `vect_hunt.backends.pygame` (renderer concret, window/events, loaders concrets). | Faible | todo |
+| Préparer une API “Render agnostic” | Définir côté engine une petite API de commandes/données de rendu (sprites/shapes/text) et implémenter la traduction pygame côté backend. | Faible | todo |
+| Liquides / fluides | Rester en préparation : éventuellement un `ParticleSystem` générique plus tard, mais inutile tant que le backend n’est pas isolé. | Faible | todo |
+| Optimiser collisions (broad phase) | Le DOT montre `ColliderSystem` + `CollisionTracker`, bon point. Prochaine étape : grille/quadtree. | Faible | in_progress |
 
-## Points d’attention (risques / pièges à surveiller)
+---
+
+## Points d’attention (risques / pièges)
 
 | Sujet | Pourquoi c’est important | Action / garde-fou |
 | --- | --- | --- |
-| Séparer I/O et construction | Éviter que `SceneFactory` devienne “Loader + Factory + Resolver” au fil du temps. | `SceneLoader` lit/parsing, `SceneFactory` valide/construit à partir de dicts. |
-| Couplage du `SimulationScheduler` | Le scheduler ne doit pas devenir un “God object” qui connaît tous les systèmes concrets. | Prévoir une injection de liste d’étapes/systèmes (duck-typing ou interface) plutôt que des imports/instanciations internes. |
-| Rotation des colliders | Si les colliders ne tournent pas correctement, collisions incohérentes (visuel vs physique). | Vérifier l’origine (pivot/offset), appliquer rotation, valider avec tests simples (box rotated vs box). |
-| Centre/pivot des renderer | Si sprite/shape n’est pas centré sur le GameObject, décalage visuel constant et bugs de hitbox. | Ajouter offset/pivot côté renderer (et éventuellement côté collider). Tester “collider centré vs sprite centré”. |
-| Rotation dans le rendu vs rotation dans la physique | Risque de divergence : Transform tourne visuellement mais pas physiquement (ou l’inverse). | Source de vérité unique : `Transform`. La physique modifie le Transform, le renderer lit le Transform. |
-| Mouvement direct du Transform vs physique | Déplacer le Transform “à la main” peut court-circuiter collisions/résolution. | Décider une règle : cinématique explicite (non-physique) ou dynamique via `PhysicBodyComponent`. |
-| Liste de renderers par GameObject | Besoin courant (sprite + debug shape + effets). | Concevoir `RenderComponent` comme un agrégateur plutôt qu’un unique rendu. |
+| Le renderer importe un “System” | Visible dans le DOT (`renderer -> collider_system`). Ça crée une dépendance en dur sur la simulation. | Le renderer doit consommer des données (Scene + debug data), pas des systèmes. |
+| Les composants chargent des assets | Visible (`sprite_component -> image_loader`). Ça mélange données & I/O/caching. | Les composants stockent des IDs, le backend/registry résout. |
+| L’input est une dépendance de construction | Visible (factories/imports vers `engine.input`). | Garder un `context` minimal, éviter que les Factories “connaissent” trop de systèmes. |
+| Pivot/offset rendu vs physique | Risque classique sprite/hitbox décalés. | Standardiser pivot (centre) + offset explicite. |
+| Mouvement cinématique vs dynamique | Risque d’incohérences si les deux coexistent sans règle claire. | Définir une règle : kinematic = Transform direct (mais géré par un système dédié), dynamic = PhysicBody. |
+
+---
 
 ## Fini (trié par priorité)
 
 | Item | Détails | Priorité | Status |
 | --- | --- | --- | --- |
-| Intégration des GameObjects dans le World | Gestion des références des objets dans le monde. Mise à jour, rendu et collisions centralisés. | moyenne | done |
-| Premier test de collisions | Scénario simple avec BoxCollider et CircleCollider. Vérification AABB puis collisions réelles. Affichage console ou rendu minimal. | moyenne | done |
-| Mise en place des tests unitaires | GameObject + Game + TagSystem. ColliderSystem avancé. Tests d’intégration simples sur Game + GameObject + Transform + Collider. | moyenne | done |
-| Player et InputSystem | Player reçoit des commandes via InputSystem. Déplacement et rotation. Interaction avec le World et les Targets. | moyenne | done |
-| PhysicMaterial | Friction, rebond. Association avec Collider ou PhysicsSystem. Chargement depuis fichier pour réutilisation. | moyenne | done |
-| Gestion activation/désactivation d’objets | Utilisation du flag `active` dans GameObject. | moyenne | done |
-| Rendering minimal | Visualiser position et rotation des objets pour debug. | faible | done |
-| Préparer architecture ECS | GameObject + composants modulaires. | faible | done |
+| Calculs géométriques isolés | Le DOT montre `engine.core.math.geometry.Geometry` avec SAT, collisions, transforms local↔scene, etc. `ColliderSystem` semble surtout orchestrer. | Haute | done |
+| ResourceRegistry + Readers | Présents dans le DOT (`resources.readers.*`, `ResourceRegistry`). | Moyenne | done |
+| Wiring central du jeu | `__main__` importe `resources`, `simulation`, `game`, etc. | Haute | done |
+| ECS de base (GameObject + Components) | Présent (`engine.objects.game_object`, `engine.components.*`). | Moyenne | done |
+| CollisionTracker | Présent (`engine.physics.collision_tracker`). | Moyenne | done |
+
+---
+
+## Vision long terme (direction)
+
+- Mode headless (sans backend) pour tests/simulations.
+- Backend “dummy” (sans fenêtre) pour CI.
+- Debug overlay riche (colliders, normales, forces, vitesses).
+- Contraintes génériques (springs, ropes, joints).
+- Hot-reload de ressources (Readers/Registry déjà bien placés pour ça).

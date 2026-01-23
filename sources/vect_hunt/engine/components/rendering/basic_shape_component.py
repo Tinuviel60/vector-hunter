@@ -69,8 +69,7 @@ class BasicShapeComponent(RenderComponent):
         return cls(shape_type, size, color, outline_color, outline_width)
 
     def render(self, surface) -> None:
-        assert self.game_object is not None, "Component must be attached to GameObject"
-        transform = self.game_object.transform
+        transform = self.parent.transform
         pos = transform.position
         x, y = int(pos.x), int(pos.y)
 

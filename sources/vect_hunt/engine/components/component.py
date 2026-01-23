@@ -70,6 +70,22 @@ class Component(ABC):
 
         Component._name_registry[component_name] = cls
 
+    @property
+    def parent(self) -> "GameObject":
+        """
+        Retourne le GameObject parent.
+
+        Ce composant doit être attaché avant utilisation.
+
+        Returns
+        -------
+        GameObject
+            Le GameObject auquel ce composant est attaché.
+        """
+        if self.game_object is None:
+            raise RuntimeError("Component not attached to any GameObject")
+        return self.game_object
+    
     @classmethod
     def get_registered_components(cls) -> dict[str, type["Component"]]:
         """

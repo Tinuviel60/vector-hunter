@@ -375,7 +375,7 @@ class Geometry:
         center2 = Geometry.get_polygon_center(corners2)
         direction = center1 - center2
         if direction.dot(normal) < 0:
-            normal = -1 * normal
+            normal = -normal
 
         return {"normal": normal, "depth": penetration}
 
@@ -424,7 +424,7 @@ class Geometry:
         if dist < circle_radius:
             normal = delta.normalized() if dist != 0 else Vector2D(1, 0)
             if reverse_normal:
-                normal = -1 * normal
+                normal = -normal
             penetration = circle_radius - dist
             if penetration < min_penetration_depth:
                 return None

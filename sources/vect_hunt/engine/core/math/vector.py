@@ -123,6 +123,22 @@ class Vector2D:
             Le produit scalaire des deux vecteurs.
         """
         return self._x * other._x + self._y * other._y
+    
+    def cross(self, other: "Vector2D") -> float:
+        """
+        Calcule le produit vectoriel (croisé) entre ce vecteur et un autre.
+
+        Parameters
+        ----------
+        other : Vector2D
+            Le vecteur avec lequel calculer le produit vectoriel.
+
+        Returns
+        -------
+        float
+            Le produit vectoriel des deux vecteurs.
+        """
+        return self._x * other._y - self._y * other._x
 
     @property
     def x(self) -> float:
@@ -250,6 +266,17 @@ class Vector2D:
             Le vecteur résultant de la soustraction.
         """
         return Vector2D(self._x - other._x, self._y - other._y)
+    
+    def __neg__(self) -> "Vector2D":
+        """
+        Renvoie l'opposé du vecteur.
+
+        Returns
+        -------
+        Vector2D
+            Le vecteur inversé (-x, -y).
+        """
+        return Vector2D(-self._x, -self._y)
 
     def __mul__(self, scalar: float) -> "Vector2D":
         """

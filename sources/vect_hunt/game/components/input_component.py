@@ -75,14 +75,11 @@ class InputComponent(Component):
         delta_time : float
             Temps écoulé depuis la dernière frame (en secondes).
         """
-        assert (
-            self.game_object is not None
-        ), "InputComponent doit être attaché à un GameObject"
 
         move_vector = self.input_system.get_vector("move")
 
         # Récupérer le PhysicBodyComponent
-        physic_body = self.game_object.get_component(PhysicBodyComponent)
+        physic_body = self.parent.get_component(PhysicBodyComponent)
         if not physic_body:
             return
 

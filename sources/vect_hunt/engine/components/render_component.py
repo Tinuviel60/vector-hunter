@@ -44,7 +44,7 @@ class RenderComponent(Component):
         """
         Dessine l'objet sur la surface donnée.
 
-        Utilise self.game_object.transform pour obtenir la position,
+        Utilise self.parent.transform pour obtenir la position,
         rotation et échelle du GameObject.
 
         Parameters

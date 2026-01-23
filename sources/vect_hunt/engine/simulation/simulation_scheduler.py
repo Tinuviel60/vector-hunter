@@ -59,8 +59,8 @@ class SimulationScheduler:
             Temps ecoule depuis la derniere frame (en secondes).
         """
         self._update_inputs(delta_time)
-        self._update_game_objects(delta_time)
         self.external_forces_system.apply_gravity(self.scene, delta_time)
+        self._update_game_objects(delta_time)
         self.update_collisions(delta_time)
         self._resolve_collisions()
 
@@ -115,13 +115,18 @@ class SimulationScheduler:
 
         Utilise un nombre maximal d'itérations pour éviter les boucles infinies.
         """
-        for _ in range(self.max_collision_passes):
+        for i in range(self.max_collision_passes):
             collisions, _, collision_info = self.collider_system.detect_collisions(
                 self.scene
             )
+            apply_impulses = True
+            if i > 0:
+                apply_impulses = False
             moved = self.collision_resolution_system.update_from_collisions(
                 list(collisions),
                 collision_info,
+                apply_position=True,
+                apply_impulses=apply_impulses,
             )
             if not moved:
                 break

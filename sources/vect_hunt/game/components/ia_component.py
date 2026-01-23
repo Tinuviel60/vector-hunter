@@ -82,10 +82,6 @@ class IaComponent(Component):
         delta_time : float
             Temps écoulé depuis la dernière frame (en secondes).
         """
-        assert (
-            self.game_object is not None
-        ), "IaComponent doit être attaché à un GameObject"
-
         self.make_decision(delta_time)
 
     def make_decision(self, delta_time: float) -> None:
@@ -110,21 +106,19 @@ class IaComponent(Component):
         delta_time : float
             Temps écoulé depuis la dernière frame (en secondes).
         """
-        assert self.game_object is not None
-
         # Récupérer le PhysicBodyComponent
-        physic_body = self.game_object.get_component(PhysicBodyComponent)
+        physic_body = self.parent.get_component(PhysicBodyComponent)
         if not physic_body:
             return
 
         # Récupérer la direction actuelle
-        direction = self.game_object.transform.forward()
+        direction = self.parent.transform.forward()
 
         # Calculer la vélocité en utilisant la vitesse du corps physique
         velocity = direction * physic_body.speed
 
         # Vérifier si on va sortir des limites
-        future_position = self.game_object.transform.position + velocity * delta_time
+        future_position = self.parent.transform.position + velocity * delta_time
 
         collision_normal = None
 
@@ -141,10 +135,10 @@ class IaComponent(Component):
 
         # Si collision détectée, inverser la rotation
         if collision_normal is not None:
-            self.game_object.transform.rotation = (
-                self.game_object.transform.rotation.reflect(collision_normal)
+            self.parent.transform.rotation = (
+                self.parent.transform.rotation.reflect(collision_normal)
             )
-            direction = self.game_object.transform.forward()
+            direction = self.parent.transform.forward()
             velocity = direction * physic_body.speed
 
         # Transmettre l'intention au PhysicBodyComponent

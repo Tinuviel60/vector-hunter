@@ -68,8 +68,7 @@ class SpriteComponent(RenderComponent):
         surface : pygame.Surface
             Surface sur laquelle dessiner le sprite.
         """
-        assert self.game_object is not None, "Component must be attached to GameObject"
-        transform = self.game_object.transform
+        transform = self.parent.transform
         pos = transform.position
         rect = self.image.get_rect(center=(int(pos.x), int(pos.y)))
         surface.blit(self.image, rect)
