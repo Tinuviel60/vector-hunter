@@ -4,8 +4,8 @@ Composant de corps physique pour gérer les déplacements et forces.
 
 from typing import TYPE_CHECKING, Any
 
-from vect_hunt.engine.components.component import Component
 from vect_hunt.engine.components.collider.collider_component import ColliderComponent
+from vect_hunt.engine.components.component import Component
 from vect_hunt.engine.core.math.vector import Vector2D
 from vect_hunt.engine.physics.physic_material import CombineMode, PhysicMaterial
 

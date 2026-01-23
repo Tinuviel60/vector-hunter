@@ -3,8 +3,8 @@ import math
 from typing import TYPE_CHECKING, Any, Optional
 
 from vect_hunt.engine.components.component import Component
-from vect_hunt.engine.core.tag import Tag
 from vect_hunt.engine.core.math.vector import Vector2D
+from vect_hunt.engine.core.tag import Tag
 from vect_hunt.engine.core.transform.transform import Transform
 
 from .game_object import GameObject
