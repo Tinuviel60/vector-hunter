@@ -1,7 +1,7 @@
 import pygame
 from typing import Dict, Set, Optional, List, Any
 
-from vect_hunt.engine.core.math import Vector2D
+from vect_hunt.engine.core.math.vector import Vector2D
 from .input_tracker import InputTracker
 from vect_hunt.engine.input.input_action import (
     InputAction,

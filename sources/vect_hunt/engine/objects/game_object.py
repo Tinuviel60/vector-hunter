@@ -1,6 +1,6 @@
 from typing import List, Optional, TypeVar, TYPE_CHECKING
 from vect_hunt.engine.core import Tag
-from vect_hunt.engine.core.transform import Transform
+from vect_hunt.engine.core.transform.transform import Transform
 
 if TYPE_CHECKING:
     from vect_hunt.engine.components.component import Component

@@ -1,7 +1,7 @@
 import logging
 from typing import Any, Optional, TYPE_CHECKING
 
-from vect_hunt.engine.core.math import Vector2D
+from vect_hunt.engine.core.math.vector import Vector2D
 from vect_hunt.engine.objects import GameObjectFactory
 from .scene import Scene
 

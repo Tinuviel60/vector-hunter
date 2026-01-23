@@ -1,4 +1,4 @@
-from vect_hunt.engine.core.math import Vector2D
+from vect_hunt.engine.core.math.vector import Vector2D
 from vect_hunt.engine.components.physic_body_component import PhysicBodyComponent
 
 from typing import TYPE_CHECKING
