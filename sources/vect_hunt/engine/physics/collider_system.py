@@ -7,6 +7,7 @@ from vect_hunt.engine.components.collider.circle_collider_component import (
     CircleColliderComponent,
 )
 from vect_hunt.engine.components.collider.collider_component import ColliderComponent
+from vect_hunt.engine.core.math.tolerance import Tolerence
 from vect_hunt.engine.core.math.geometry import Geometry
 from vect_hunt.engine.core.math.vector import Vector2D
 from vect_hunt.engine.core.tag_system import TagSystem
@@ -31,12 +32,7 @@ class ColliderSystem:
     ----------
     physic_config : dict
         Configuration physique chargée depuis les assets.
-    min_penetration_depth : float
-        Profondeur minimale de pénétration pour valider une collision.
     """
-
-    # TODO : Charger depuis la config de la scène ?
-    min_penetration_depth = 1e-9
 
     def __init__(self, tag_system: TagSystem):
         """
@@ -108,12 +104,12 @@ class ColliderSystem:
             c2, CircleColliderComponent
         ):
             return ColliderSystem._circle_box_collision_info(
-                c2, c1, reverse_normal=True
+                c2, c1, reverse_result=False
             )
         elif isinstance(c1, CircleColliderComponent) and isinstance(
             c2, BoxColliderComponent
         ):
-            return ColliderSystem._circle_box_collision_info(c1, c2)
+            return ColliderSystem._circle_box_collision_info(c1, c2, reverse_result=True)
         else:
             raise TypeError("Type de collider non supporté pour collision fine")
 
@@ -211,7 +207,7 @@ class ColliderSystem:
             c1.shape.radius,
             c2_scene_pos,
             c2.shape.radius,
-            ColliderSystem.min_penetration_depth,
+            Tolerence.COLLISION,
         )
 
     @staticmethod
@@ -244,7 +240,7 @@ class ColliderSystem:
     def _circle_box_collision_info(
         circle: CircleColliderComponent,
         box: BoxColliderComponent,
-        reverse_normal: bool = False,
+        reverse_result: bool = False,
     ) -> CollisionInfo | None:
         """
         Détecte et retourne les informations de collision entre un cercle et un box.
@@ -255,9 +251,9 @@ class ColliderSystem:
             Le cercle.
         box : BoxCollider
             Le box.
-        reverse_normal : bool, optional
-            Indique si la normale doit être inversée,
-            si l'ordre des paramètres est inversé.
+        reverse_result : bool, optional
+            Indique si les informations de collision doivent être inversées,
+            pour preserver la convention normal allant de c1 vers c2.
             Par défaut False.
 
         Returns
@@ -270,15 +266,19 @@ class ColliderSystem:
         box_scene_rot = ColliderSystem._get_collider_scene_rotation(box)
         local_corners = box.shape.local_vertices()
 
-        return Geometry.circle_box_collision_info(
+        collision_info = Geometry.circle_box_collision_info(
             circle_scene_pos,
             circle.shape.radius,
             box_scene_pos,
             box_scene_rot,
             local_corners,
-            ColliderSystem.min_penetration_depth,
-            reverse_normal,
+            Tolerence.COLLISION,
         )
+        if collision_info is not None and reverse_result:
+            # Inverser la normale
+            collision_info.normal = -collision_info.normal
+        
+        return collision_info
 
     @staticmethod
     def get_scene_corners(box: BoxColliderComponent) -> list[Vector2D]:
@@ -396,6 +396,7 @@ class ColliderSystem:
                         info = self.check_collision(c1, c2)
                         if info is None:
                             continue
+                        #print(f"Collision detected between {obj1.name} and {obj2.name} with info {info}")
 
                         pair = (obj1.id, obj2.id)
                         if c1.solid and c2.solid:

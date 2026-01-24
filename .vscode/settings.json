@@ -1,11 +1,15 @@
 {
-    "python.defaultInterpreterPath": "venv/bin/python",
+    "python.defaultInterpreterPath": "${workspaceFolder}/venv/bin/python",
     "python.languageServer": "Pylance",
     "python.analysis.typeCheckingMode": "basic",
     "python.analysis.autoSearchPaths": true,
     "python.analysis.useLibraryCodeForTypes": true,
+
     "python.analysis.exclude": [
-        "**/tests/**"
+        "**/tests/**",
+        "**/venv/**",
+        "**/.venv/**",
+        "**/.vscode/**"
     ],
     
 
@@ -22,8 +26,11 @@
         "**/.pytest_cache": true,
         "**/.mypy_cache": true,
         "**/.ruff_cache": true,
-        "**/logs": true,
-        "**/docs/_build": true
+        "**/docs/_build": true,
+        "**/.venv": true,
+        "**/.venv/**": true,
+        "**/venv": true,
+        "**/venv/**": true
     },
 
     "search.exclude": {
@@ -32,7 +39,16 @@
         "**/.mypy_cache": true,
         "**/.ruff_cache": true,
         "**/logs": true,
-        "**/docs/_build": true
+        "**/docs/_build": true,
+        "**/venv": true,
+        "**/venv/**": true,
+        "**/.venv": true,
+        "**/.venv/**": true
+    },
+
+    "files.watcherExclude": {
+        "**/venv/**": true,
+        "**/.venv/**": true
     },
 
     "editor.rulers": [88],
@@ -52,7 +68,7 @@
     ],
 
     "codeLens.enableCodeLens": true,
-    "codeLens.filterImports": false,
+    "codeLens.filterImports": true,
     "codeLens.filterDefinitions": true,
     "chatgpt.commentCodeLensEnabled": false
 }

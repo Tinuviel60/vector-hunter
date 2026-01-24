@@ -1,7 +1,7 @@
 {
-  "_comment": "Template du joueur",
-  "name": "Player",
-  "tags": ["PLAYER"],
+  "_comment": "Caisse standard en bois",
+  "name": "Crate_Standard",
+  "tags": ["OBJECT"],
   "transform": {
     "position": [0, 0],
     "rotation": 0.0
@@ -10,10 +10,10 @@
     {
       "component": "physic_body",
       "data": {
-        "speed": 300.0,
+        "speed": 0.0,
         "is_kinematic": false,
-        "is_controlled": true,
-        "mass": 1.0,
+        "is_controlled": false,
+        "mass": 10.0,
         "use_gravity": true,
         "material": "default.json"
       }
@@ -21,7 +21,7 @@
     {
       "component": "circle_collider",
       "data": {
-        "radius": 15.0,
+        "radius": 40.0,
         "solid": true,
         "transform": {
           "position": [0, 0],
@@ -35,7 +35,7 @@
         "radius": 5.0,
         "solid": true,
         "transform": {
-          "position": [0, -8],
+          "position": [0, -30],
           "rotation": 0.0
         }
       }
@@ -45,15 +45,11 @@
       "data": {
         "type": "basic_shape",
         "shape": "circle",
-        "color": "#002336",
-        "radius": 15.0,
-        "outline_color": "#000000",
+        "color": "#B2910C",
+        "radius": 40.0,
+        "outline_color": "#8B7314",
         "outline_width": 2
       }
-    },
-    {
-      "component": "input",
-      "data": {}
     }
   ]
 }

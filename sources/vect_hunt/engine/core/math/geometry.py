@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING, List, Tuple
 
 from vect_hunt.engine.core.transform.rotation import Rotation
 
+from .tolerance import Tolerence
 from .vector import Vector2D
 
 if TYPE_CHECKING:
@@ -174,9 +175,9 @@ class Geometry:
         point : Vector2D
             Point en coordonnees locales.
         position : Vector2D
-            Position du repere local.
+            Position monde.
         rotation : Rotation
-            Rotation du repere local.
+            Rotation monde.
 
         Returns
         -------
@@ -263,14 +264,13 @@ class Geometry:
             Vector2D(clamped_x, clamped_y), box_position, box_rotation
         )
 
-    # TODO : Epsilon à gérer en global
     @staticmethod
     def circle_circle_collision_info(
         pos1: Vector2D,
         radius1: float,
         pos2: Vector2D,
         radius2: float,
-        min_penetration_depth: float = 1e-9,
+        min_penetration_depth: float | None = None,
     ) -> "CollisionInfo | None":
         """
         Détecte une collision entre deux cercles.
@@ -285,7 +285,7 @@ class Geometry:
             Centre du second cercle.
         radius2 : float
             Rayon du second cercle.
-        min_penetration_depth : float, optional
+        min_penetration_depth : float | None, optional
             Profondeur minimale pour valider la collision.
 
         Returns
@@ -293,14 +293,17 @@ class Geometry:
         CollisionInfo | None
             Informations de collision ou None.
         """
-        delta = pos1 - pos2
+        if min_penetration_depth is None:
+            min_penetration_depth = Tolerence.COLLISION
+
+        delta = pos2 - pos1
         dist = delta.magnitude()
         radius_sum = radius1 + radius2
 
         if dist < radius_sum:
             from vect_hunt.engine.physics.collision_info import CollisionInfo
 
-            normal = delta.normalized() if dist != 0 else Vector2D(1, 0)
+            normal = delta.normalized() if dist != 0 else Vector2D(-1, 0)
             penetration = radius_sum - dist
 
             if penetration < min_penetration_depth:
@@ -330,7 +333,6 @@ class Geometry:
         num_corners = len(corners)
         return Vector2D(sum_x / num_corners, sum_y / num_corners)
 
-    # TODO : Epsilon à gérer en global
     @staticmethod
     def sat_collision_info(
         corners1: List[Vector2D],
@@ -345,21 +347,21 @@ class Geometry:
             Coins du polygone 1.
         corners2 : List[Vector2D]
             Coins du polygone 2.
-        eps : float, optional
-            Profondeur minimale pour valider la collision.
-
         Returns
         -------
         dict | None
             Informations de collision (normal, depth) ou None.
         """
-        axes = Geometry.get_polygon_normals(corners1) + Geometry.get_polygon_normals(
-            corners2
-        )
+        axes: List[tuple[Vector2D, bool]] = []
+        for axis in Geometry.get_polygon_normals(corners1):
+            axes.append((axis, True))
+        for axis in Geometry.get_polygon_normals(corners2):
+            axes.append((axis, False))
         penetration = float("inf")
         smallest_axis = None
+        axis_from_a = True
 
-        for axis in axes:
+        for axis, from_a in axes:
             min1, max1 = Geometry.project_polygon_on_axis(corners1, axis)
             min2, max2 = Geometry.project_polygon_on_axis(corners2, axis)
             if not Geometry.intervals_overlap(min1, max1, min2, max2):
@@ -369,9 +371,9 @@ class Geometry:
             if overlap < penetration:
                 penetration = overlap
                 smallest_axis = axis
+                axis_from_a = from_a
 
-        # TODO : Sortir le epsilon dans une constante globale
-        eps = 1e-9
+        eps = Tolerence.COLLISION
         if penetration < eps or smallest_axis is None:
             return None
 
@@ -380,19 +382,23 @@ class Geometry:
         normal = smallest_axis.normalized()
         center1 = Geometry.get_polygon_center(corners1)
         center2 = Geometry.get_polygon_center(corners2)
-        direction = center1 - center2
+        direction = center2 - center1
         if direction.dot(normal) < 0:
             normal = -normal
 
-        points = Geometry.build_contact_manifold(
+        points = Geometry._build_contact_manifold(
             corners_a=corners1,
             corners_b=corners2,
             collision_normal=normal,
             penetration_depth=penetration,
+            reference_from_a=axis_from_a,
         )
+        # print("center1:", center1, "center2:", center2)
+        # print("normal:", normal, "penetration:", penetration)
+        # print("dot:", direction.dot(normal))
+        # print("Obtained contact points:", points)
         return CollisionInfo(normal=normal, depth=penetration, points=points)
 
-    # TODO : Epsilon à gérer en global
     @staticmethod
     def circle_box_collision_info(
         circle_pos: Vector2D,
@@ -400,8 +406,7 @@ class Geometry:
         box_position: Vector2D,
         box_rotation: Rotation,
         local_corners: List[Vector2D],
-        min_penetration_depth: float = 1e-9,
-        reverse_normal: bool = False,
+        min_penetration_depth: float | None = None,
     ) -> "CollisionInfo | None":
         """
         Détecte une collision entre un cercle et un rectangle orienté.
@@ -418,16 +423,17 @@ class Geometry:
             Rotation du box.
         local_corners : List[Vector2D]
             Coins locaux du box.
-        min_penetration_depth : float, optional
+        min_penetration_depth : float | None, optional
             Profondeur minimale pour valider la collision.
-        reverse_normal : bool, optional
-            Inverse la normale si True.
 
         Returns
         -------
         CollisionInfo | None
             Informations de collision (normal, depth, point) ou None.
         """
+        if min_penetration_depth is None:
+            min_penetration_depth = Tolerence.COLLISION
+
         closest = Geometry.closest_point_on_box(
             circle_pos, box_position, box_rotation, local_corners
         )
@@ -438,8 +444,7 @@ class Geometry:
             from vect_hunt.engine.physics.collision_info import CollisionInfo
 
             normal = delta.normalized() if dist != 0 else Vector2D(1, 0)
-            if reverse_normal:
-                normal = -normal
+
             penetration = circle_radius - dist
             if penetration < min_penetration_depth:
                 return None
@@ -548,9 +553,6 @@ class Geometry:
             Normale unitaire du plan.
         plane_offset : float
             Offset du plan (n·x = offset).
-        eps : float, optional
-            Tolérance sur la distance au plan.
-
         Returns
         -------
         List[Vector2D]
@@ -560,7 +562,7 @@ class Geometry:
         d1 = plane_normal.dot(p1) - plane_offset
         d2 = plane_normal.dot(p2) - plane_offset
 
-        eps = 1e-9  # TODO : Sortir le epsilon dans une constante globale
+        eps = Tolerence.COLLISION
         inside1 = d1 <= eps
         inside2 = d2 <= eps
 
@@ -596,11 +598,12 @@ class Geometry:
         return unique[:2]
 
     @staticmethod
-    def build_contact_manifold(
+    def _build_contact_manifold(
         corners_a: List[Vector2D],
         corners_b: List[Vector2D],
         collision_normal: Vector2D,
         penetration_depth: float,
+        reference_from_a: bool | None = None,
     ) -> List[Vector2D]:
         """
         Construit 1 à 2 points de contact (manifold) par edge clipping.
@@ -627,6 +630,9 @@ class Geometry:
             Normale de collision (unitaire) pointant de A vers B.
         penetration_depth : float
             Profondeur de pénétration (SAT).
+        reference_from_a : bool | None
+            Si défini, force le choix de l'arête de référence à partir du polygone A
+            (True) ou B (False) en se basant sur l'axe SAT minimal.
 
         Returns
         -------
@@ -635,29 +641,33 @@ class Geometry:
         """
         normal = collision_normal.normalized()
 
-        # On choisit la meilleure "face de référence" : soit sur A, soit sur B
-        ref_edge_a = Geometry._find_reference_edge(corners_a, normal)
-        ref_edge_b = Geometry._find_reference_edge(corners_b, -normal)
+        # On choisit la "face de référence" en se liant à l'axe SAT minimal si demandé
+        if reference_from_a is None:
+            ref_edge_a = Geometry._find_reference_edge(corners_a, normal)
+            ref_edge_b = Geometry._find_reference_edge(corners_b, -normal)
 
-        # Normales sortantes des arêtes de référence
-        ref_n_a = (-(ref_edge_a[1] - ref_edge_a[0]).normal()).normalized()
-        ref_n_b = (-(ref_edge_b[1] - ref_edge_b[0]).normal()).normalized()
+            ref_n_a = (-(ref_edge_a[1] - ref_edge_a[0]).normal()).normalized()
+            ref_n_b = (-(ref_edge_b[1] - ref_edge_b[0]).normal()).normalized()
 
-        # Critère simple : le meilleur alignement avec la normale attendue
-        score_a = ref_n_a.dot(normal)
-        score_b = ref_n_b.dot(-normal)
+            score_a = ref_n_a.dot(normal)
+            score_b = ref_n_b.dot(-normal)
 
-        if score_a >= score_b:
-            ref_edge = ref_edge_a
-            ref_normal = ref_n_a  # sortant de A
+            if score_a >= score_b:
+                ref_edge = ref_edge_a
+                ref_normal = ref_n_a
+                inc_edge = Geometry._find_incident_edge(corners_b, ref_normal)
+            else:
+                ref_edge = ref_edge_b
+                ref_normal = ref_n_b
+                inc_edge = Geometry._find_incident_edge(corners_a, ref_normal)
+        elif reference_from_a:
+            ref_edge = Geometry._find_reference_edge(corners_a, normal)
+            ref_normal = (-(ref_edge[1] - ref_edge[0]).normal()).normalized()
             inc_edge = Geometry._find_incident_edge(corners_b, ref_normal)
         else:
-            ref_edge = ref_edge_b
-            ref_normal = ref_n_b  # sortant de B
+            ref_edge = Geometry._find_reference_edge(corners_b, -normal)
+            ref_normal = (-(ref_edge[1] - ref_edge[0]).normal()).normalized()
             inc_edge = Geometry._find_incident_edge(corners_a, ref_normal)
-            # IMPORTANT : si B est référence, notre collision normal A->B
-            # n'est plus la même. Pour rester cohérent, on pourrait inverser,
-            # mais ici on ne renvoie que des points.
 
         # Direction de l'arête de référence (unitaire)
         ref_dir = (ref_edge[1] - ref_edge[0]).normalized()
@@ -695,7 +705,7 @@ class Geometry:
         # offset = n·v1 (face plane)
         face_offset = ref_normal.dot(ref_edge[0])
 
-        eps = 1e-9  # TODO : Sortir le epsilon dans une constante globale
+        eps = Tolerence.COLLISION
         # Filtrage final : on garde les points qui sont derrière la face (pénétration)
         contacts: List[Vector2D] = []
         for p in clipped:

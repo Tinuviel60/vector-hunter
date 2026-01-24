@@ -2,6 +2,7 @@ import math
 from dataclasses import dataclass
 
 from vect_hunt.engine.core.geometries.shape import Shape
+from vect_hunt.engine.core.math.tolerance import Tolerence
 from vect_hunt.engine.core.math.vector import Vector2D
 
 
@@ -72,7 +73,7 @@ class CircleShape(Shape):
             Point de support sur le cercle en espace local.
         """
         # Si direction est nulle, on renvoie un point arbitraire.
-        if direction.magnitude_squared() <= 1e-9:  # TODO: faire appel a epsilon globale
+        if direction.magnitude_squared() <= Tolerence.GENERAL:
             return Vector2D(self.radius, 0.0)
 
         dir_norm = direction.normalized()
@@ -102,7 +103,7 @@ class CircleShape(Shape):
             return point
 
         # Point outside: clamp onto circle boundary
-        if dist_sq <= 1e-9:  # TODO: faire appel a epsilon globale
+        if dist_sq <= Tolerence.GENERAL:
             return Vector2D(self.radius, 0.0)
 
         return point.normalized() * self.radius

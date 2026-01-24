@@ -68,6 +68,8 @@ class Renderer:
         debug_config = config["debug"]
         self.draw_colliders = debug_config["draw_colliders"]
         self.print_names = debug_config["print_names"]
+        self.draw_grid = debug_config["draw_grid"]
+        self.grid_spacing_pixels = debug_config["grid_spacing_pixels"]
         self.print_fps = debug_config["print_fps"]
         self.color_for_valid = debug_config["color_for_valid"]
         self.color_for_invalid = debug_config["color_for_invalid"]
@@ -114,6 +116,36 @@ class Renderer:
                         collider,
                         False,  # TODO : Passer l'info de collision réelle
                     )
+            if self.draw_grid:
+                self.draw_grid_lines(self.grid_spacing_pixels)
+
+    def draw_grid_lines(self, spacing: float) -> None:
+        """
+        Dessine une grille sur l'écran pour le debug.
+
+        Parameters
+        ----------
+        spacing : float
+            Espacement entre les lignes de la grille en pixels.
+        """
+        width, height = self.screen.get_size()
+        color = (200, 200, 200)  # Gris clair pour la grille
+
+        # Lignes verticales
+        x = 0
+        while x < width:
+            pygame.draw.line(self.screen, color, (x, 0), (x, height), 1)
+            pixel_place = self.debug_font_style.render(str(x))
+            self.screen.blit(pixel_place, (x , 0))
+            x += spacing
+
+        # Lignes horizontales
+        y = 0
+        while y < height:
+            pygame.draw.line(self.screen, color, (0, y), (width, y), 1)
+            pixel_place = self.debug_font_style.render(str(y))
+            self.screen.blit(pixel_place, (0 , y))
+            y += spacing
 
     def draw_name(self, game_object: "GameObject") -> None:
         """

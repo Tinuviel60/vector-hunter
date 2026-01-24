@@ -1,3 +1,6 @@
+from .tolerance import Tolerence
+
+
 class Numeric:
     """
     Utilitaires numériques.
@@ -116,9 +119,8 @@ class Numeric:
         """
         return Numeric.clamp(value, 0.0, 1.0)
 
-    # TODO : Espilon par default global
     @staticmethod
-    def is_close(a: float, b: float, eps: float = 1e-9) -> bool:
+    def is_close(a: float, b: float, eps: float | None = None) -> bool:
         """
         Compare deux flottants avec tolerance pour eviter les erreurs de precision.
 
@@ -128,7 +130,7 @@ class Numeric:
             Premiere valeur.
         b : float
             Seconde valeur.
-        eps : float
+        eps : float | None
             Tolerance.
 
         Returns
@@ -136,11 +138,12 @@ class Numeric:
         bool
             True si les valeurs sont proches.
         """
+        if eps is None:
+            eps = Tolerence.GENERAL
         return abs(a - b) <= eps
 
-    # TODO : Espilon par default global
     @staticmethod
-    def nearly_zero(value: float, eps: float = 1e-9) -> bool:
+    def nearly_zero(value: float, eps: float | None = None) -> bool:
         """
         Test si une valeur est proche de zero.
 
@@ -148,7 +151,7 @@ class Numeric:
         ----------
         value : float
             Valeur a tester.
-        eps : float
+        eps : float | None
             Tolerance.
 
         Returns
@@ -156,6 +159,8 @@ class Numeric:
         bool
             True si la valeur est proche de zero.
         """
+        if eps is None:
+            eps = Tolerence.GENERAL
         return abs(value) <= eps
 
     @staticmethod

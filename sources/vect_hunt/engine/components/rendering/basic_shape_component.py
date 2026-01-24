@@ -74,7 +74,7 @@ class BasicShapeComponent(RenderComponent):
         x, y = int(pos.x), int(pos.y)
 
         if self.shape_type == "circle":
-            assert isinstance(self.size, int), "Size must be an int for circle shape"
+            assert isinstance(self.size, float), "Size must be a float for circle shape"
             radius = int(self.size)
             pygame.draw.circle(
                 surface, RenderOps.hex_to_rgb(self.color), (x, y), radius

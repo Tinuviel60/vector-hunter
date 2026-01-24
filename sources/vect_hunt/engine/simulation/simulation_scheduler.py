@@ -36,6 +36,8 @@ class SimulationScheduler:
         """
         self.scene = scene
         self.max_collision_passes = max_collision_passes
+        self.impulse_iterations = 8
+        self.reverse_point = True
 
         self.input_system = InputSystem(input_config)
         self.collider_system = ColliderSystem(tag_system)
@@ -59,10 +61,10 @@ class SimulationScheduler:
             Temps ecoule depuis la derniere frame (en secondes).
         """
         self._update_inputs(delta_time)
-        self._update_game_objects(delta_time)
         self.external_forces_system.apply_gravity(self.scene, delta_time)
-        self.update_collisions(delta_time)
+        self._update_game_objects(delta_time)
         self._resolve_collisions()
+        self.update_collisions(delta_time)
 
     def _update_inputs(self, delta_time: float) -> None:
         """
@@ -115,23 +117,27 @@ class SimulationScheduler:
 
         Utilise un nombre maximal d'itérations pour éviter les boucles infinies.
         """
-        for i in range(self.max_collision_passes):
-            collisions, _, collision_info = self.collider_system.detect_collisions(
-                self.scene
+        collisions, _, collision_info = self.collider_system.detect_collisions(self.scene)
+        for i in range(self.impulse_iterations):
+            if not collisions:
+                break
+            self.collision_resolution_system.apply_impulse_response(
+                list(collisions),
+                collision_info,
+                self.reverse_point,
             )
+        for i in range(self.max_collision_passes):
+            collisions, _, collision_info = self.collider_system.detect_collisions(self.scene)
+
             moved = self.collision_resolution_system.correct_collisions(
                 list(collisions),
                 collision_info,
             )
 
-            # Appliquer les impulsions seulement dans la premièr passe
-            if i == 0:
-                self.collision_resolution_system.apply_inpulse_response(
-                    list(collisions), collision_info
-                )
-
             if not moved:
                 break
+        
+        print("Collision resolution stabilized after", i + 1, "passes.")
 
     def _handle_enters(self) -> None:
         """
@@ -201,3 +207,4 @@ class SimulationScheduler:
                     obj1.on_trigger(obj2)
                 if obj2_has_trigger:
                     obj2.on_trigger(obj1)
+        self.reverse_point = not self.reverse_point

@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any
 
 from vect_hunt.engine.components.collider.collider_component import ColliderComponent
 from vect_hunt.engine.components.component import Component
+from vect_hunt.engine.core.math.tolerance import Tolerence
 from vect_hunt.engine.core.math.vector import Vector2D
 from vect_hunt.engine.physics.physic_material import CombineMode, PhysicMaterial
 
@@ -238,6 +239,34 @@ class PhysicBodyComponent(Component):
             bounciness_threshold=bounciness_threshold,
         )
 
+    def invert_mass(self) -> float:
+        """
+        Calcule l'inverse de la masse.
+
+        Returns
+        -------
+        float
+            Inverse de la masse (0 si masse infinie).
+        """
+        eps = Tolerence.GENERAL
+        if self.mass <= eps or self.is_kinematic:
+            return 0.0
+        return 1.0 / self.mass
+
+    def invert_inertia(self) -> float:
+        """
+        Calcule l'inverse de l'inertie.
+
+        Returns
+        -------
+        float
+            Inverse de l'inertie (0 si inertie infinie).
+        """
+        eps = Tolerence.GENERAL
+        if self.inertia <= eps or self.is_kinematic:
+            return 0.0
+        return 1.0 / self.inertia
+    
     @staticmethod
     def _parse_combine_mode(value: str | None, default: CombineMode) -> CombineMode:
         """
@@ -374,7 +403,7 @@ class PhysicBodyComponent(Component):
         """
         if self.is_kinematic:
             return
-        eps = 1e-9  # TODO : Aller chercher le epsilon global
+        eps = Tolerence.GENERAL
         if self.mass <= eps:
             return
 
@@ -472,10 +501,10 @@ class PhysicBodyComponent(Component):
             offset = local_position - self.mass_center
 
             inertia += mass_collider * offset.magnitude_squared()
-            total_inertia += inertia
+        total_inertia += inertia
 
         # Sécurité : éviter 0 (division par zéro lors d'un torque)
-        return max(1e-9, total_inertia)  # TODO : Aller chercher le epsilon global
+        return max(Tolerence.GENERAL, total_inertia)
 
     def stop(self) -> None:
         """

@@ -2,6 +2,8 @@ import logging
 import math
 from typing import TYPE_CHECKING
 
+from .tolerance import Tolerence
+
 if TYPE_CHECKING:
     from vect_hunt.engine.core.transform.rotation import Rotation
 
@@ -84,7 +86,7 @@ class Vector2D:
             Le vecteur normalisé.
         """
         mag = self.magnitude()
-        if mag <= 1e-9:  # TODO : Sortir le epsilon dans une constante globale
+        if mag <= Tolerence.GENERAL:
             logger.warning("Normalisation d'un vecteur de magnitude nulle.")
             return Vector2D(1, 0)
         return Vector2D(self._x / mag, self._y / mag)
@@ -94,7 +96,7 @@ class Vector2D:
         Normalise le vecteur (le rend de longueur 1).
         """
         mag = self.magnitude()
-        if mag <= 1e-9:  # TODO : Sortir le epsilon dans une constante globale
+        if mag <= Tolerence.GENERAL:
             logger.warning("Normalisation d'un vecteur de magnitude nulle.")
             self._x = 1.0
             self._y = 0.0
