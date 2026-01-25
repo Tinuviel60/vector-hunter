@@ -61,7 +61,21 @@ class GameObjectFactory:
         context = {"input_system": input_system, "materials": self._materials}
         self._add_components(game_object, template, context)
 
+        self._awake_game_object(game_object)
+
         return game_object
+
+    def _awake_game_object(self, game_object: GameObject) -> None:
+        """
+        Appelle la méthode awake de tous les composants du GameObject.
+        
+        Parameters
+        ----------
+        game_object : GameObject
+            Le GameObject dont les composants doivent être réveillés.
+        """
+        for component in game_object.components:
+            component.awake()
 
     def _create_base_object(
         self,

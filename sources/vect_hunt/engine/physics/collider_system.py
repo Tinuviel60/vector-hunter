@@ -396,7 +396,6 @@ class ColliderSystem:
                         info = self.check_collision(c1, c2)
                         if info is None:
                             continue
-                        #print(f"Collision detected between {obj1.name} and {obj2.name} with info {info}")
 
                         pair = (obj1.id, obj2.id)
                         if c1.solid and c2.solid:

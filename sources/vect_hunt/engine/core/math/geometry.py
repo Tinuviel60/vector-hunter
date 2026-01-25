@@ -393,10 +393,6 @@ class Geometry:
             penetration_depth=penetration,
             reference_from_a=axis_from_a,
         )
-        # print("center1:", center1, "center2:", center2)
-        # print("normal:", normal, "penetration:", penetration)
-        # print("dot:", direction.dot(normal))
-        # print("Obtained contact points:", points)
         return CollisionInfo(normal=normal, depth=penetration, points=points)
 
     @staticmethod

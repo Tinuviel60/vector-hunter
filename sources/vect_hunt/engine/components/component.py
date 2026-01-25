@@ -199,3 +199,20 @@ class Component(ABC):
         raise NotImplementedError(
             "Cette methode doit etre implementee dans les sous-classes."
         )
+
+    def awake(self) -> None:
+        """
+        Appelé une fois après que tous les composants du GameObject
+        ont été attachés.
+
+        Permet des initialisations dépendant d'autres composants.
+        """
+        pass
+
+    def start(self) -> None:
+        """
+        Appelé une fois avant la première mise à jour (update).
+
+        Permet des initialisations finales avant le début du cycle de vie.
+        """
+        pass

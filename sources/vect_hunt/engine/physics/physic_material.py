@@ -65,7 +65,7 @@ class PhysicMaterial:
         Amortissement angulaire (0.0 à 1.0).
         Correspond à la perte de vitesse angulaire au fil du temps.
         Par défaut 0.0.
-    bounciness_threshold : float, optional
+    bounce_velocity_threshold : float, optional
         Vitesse minimale (valeur absolue) pour autoriser un rebond.
         En dessous, la restitution est ignorée.
         Par défaut 10.0.
@@ -84,7 +84,7 @@ class PhysicMaterial:
         Amortissement linéaire (0.0 à 1.0).
     angular_damping : float
         Amortissement angulaire (0.0 à 1.0).
-    bounciness_threshold : float
+    bounce_velocity_threshold : float
         Seuil de vitesse pour autoriser un rebond.
     """
 
@@ -94,7 +94,7 @@ class PhysicMaterial:
     restitution_mode: CombineMode = CombineMode.MIN
     linear_damping: float = 0.0
     angular_damping: float = 0.0
-    bounciness_threshold: float = 10.0
+    bounce_velocity_threshold: float = 10.0
 
     # TODO : Nouveau paramètre pour plus tard très probable
     # self.static_friction:
@@ -130,12 +130,12 @@ class PhysicMaterial:
                 f"clamp entre 0.0 et 1.0."
             )
             self.linear_damping = Numeric.clamp(self.linear_damping, 0.0, 1.0)
-        if self.bounciness_threshold < 0.0:
+        if self.bounce_velocity_threshold < 0.0:
             logger.warning(
-                f"Bounciness Threshold {self.bounciness_threshold} hors limites, "
+                f"Bounciness Threshold {self.bounce_velocity_threshold} hors limites, "
                 "clamp à 0.0."
             )
-            self.bounciness_threshold = 0.0
+            self.bounce_velocity_threshold = 0.0
         if not (0.0 <= self.angular_damping <= 1.0):
             logger.warning(
                 f"Angular Damping {self.angular_damping} hors limites, "
@@ -229,9 +229,9 @@ class PhysicMaterial:
         )
 
         combined_linear_damping = max(self.linear_damping, other.linear_damping)
-        combined_bounciness_threshold = max(
-            self.bounciness_threshold,
-            other.bounciness_threshold,
+        combined_bounce_velocity_threshold = max(
+            self.bounce_velocity_threshold,
+            other.bounce_velocity_threshold,
         )
 
         return PhysicMaterial(
@@ -240,5 +240,5 @@ class PhysicMaterial:
             friction_mode=combined_friction_mode,
             restitution_mode=combined_restitution_mode,
             linear_damping=combined_linear_damping,
-            bounciness_threshold=combined_bounciness_threshold,
+            bounce_velocity_threshold=combined_bounce_velocity_threshold,
         )

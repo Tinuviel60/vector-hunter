@@ -3,8 +3,8 @@
   "friction": 0.5,
   "restitution": 0.2,
   "linear_damping": 0.05,
-  "angular_damping": 1.0,
+  "angular_damping": 0.1,
   "friction_mode": "MAX",
   "restitution_mode": "MIN",
-  "bounciness_threshold": 5.0
+  "bounce_velocity_threshold": 5.0
 }

@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any
 
 from vect_hunt.engine.components.collider.collider_component import ColliderComponent
 from vect_hunt.engine.components.component import Component
+from vect_hunt.engine.core.math.geometry import Geometry
 from vect_hunt.engine.core.math.tolerance import Tolerence
 from vect_hunt.engine.core.math.vector import Vector2D
 from vect_hunt.engine.physics.physic_material import CombineMode, PhysicMaterial
@@ -102,7 +103,6 @@ class PhysicBodyComponent(Component):
             mass = 1.0
 
         self.mass = mass
-        self.speed = speed  # TODO : A déplacer
         self.velocity = Vector2D(0, 0)
         self.acceleration = Vector2D(0, 0)
 
@@ -142,7 +142,6 @@ class PhysicBodyComponent(Component):
         material = cls._create_physic_material(data.get("material"), materials)
         return cls(
             mass=data.get("mass", 1.0),
-            speed=data.get("speed", 300.0),
             is_kinematic=data.get("is_kinematic", False),
             use_gravity=data.get("use_gravity", True),
             is_controlled=data.get("is_controlled", False),
@@ -161,6 +160,12 @@ class PhysicBodyComponent(Component):
             GameObject auquel le composant est attaché.
         """
         super().on_attach(game_object)
+
+    def awake(self) -> None:
+        """
+        Appelé lorsque le composant est initialisé dans la scène.
+        """
+        super().awake()
         self.mass_center = self.define_gravity_center()
         self.inertia = self.calculate_inertia()
 
@@ -220,7 +225,7 @@ class PhysicBodyComponent(Component):
         friction = material_data.get("friction", 0.5)
         restitution = material_data.get("restitution", 0.5)
         linear_damping = material_data.get("linear_damping", 0.0)
-        bounciness_threshold = material_data.get("bounciness_threshold", 0.0)
+        bounce_velocity_threshold = material_data.get("bounce_velocity_threshold", 0.0)
         angular_damping = material_data.get("angular_damping", 0.0)
         friction_mode = PhysicBodyComponent._parse_combine_mode(
             material_data.get("friction_mode"), CombineMode.MAX
@@ -236,7 +241,7 @@ class PhysicBodyComponent(Component):
             angular_damping=angular_damping,
             restitution_mode=restitution_mode,
             linear_damping=linear_damping,
-            bounciness_threshold=bounciness_threshold,
+            bounce_velocity_threshold=bounce_velocity_threshold,
         )
 
     def invert_mass(self) -> float:
@@ -266,7 +271,7 @@ class PhysicBodyComponent(Component):
         if self.inertia <= eps or self.is_kinematic:
             return 0.0
         return 1.0 / self.inertia
-    
+
     @staticmethod
     def _parse_combine_mode(value: str | None, default: CombineMode) -> CombineMode:
         """
@@ -292,55 +297,77 @@ class PhysicBodyComponent(Component):
 
     def update(self, delta_time: float) -> None:
         """
-        Met à jour la position du GameObject en fonction de la vélocité.
-
-        Applique :
-            - intégration de l'accélération (forces ponctuelles)
-            - amortissement linéaire (linear damping)
-            - déplacement via le Transform
+        Met à jour le corps physique.
 
         Parameters
         ----------
         delta_time : float
             Temps écoulé depuis la dernière frame (en secondes).
         """
-        # Un corps cinématique peut être déplacé par une logique dédiée,
-        # mais ne subit pas intégration des forces ici.
+        pass
+
+    def integrate_velocity(self, delta_time: float) -> None:
+        """
+        Intégrer les vélocités à partir des accélérations.
+        
+        cette méthode met à jour :
+        - la vélocité linéaire à partir de l'accélération linéaire
+        - la vélocité angulaire à partir de l'accélération angulaire
+        - applique l'amortissement linéaire et angulaire
+        - réinitialise les accélérations à la fin de l'étape
+
+        Parameters
+        ----------
+        delta_time : float
+            Temps écoulé depuis la dernière frame (en secondes).
+        """
         if self.is_kinematic:
             self.acceleration = Vector2D(0, 0)
             self.angular_acceleration = 0.0
             return
 
-        # Appliquer l'accélération à la vélocité
+        # Linear integration
         self.velocity += self.acceleration * delta_time
 
-        # Appliquer l'amortissement linéaire (perte de vitesse au fil du temps)
         linear_damping = self.material.linear_damping
-        if linear_damping > 0.0:
+        if linear_damping > Tolerence.GENERAL:
             damping_factor = max(0.0, 1.0 - linear_damping * delta_time)
             self.velocity *= damping_factor
 
-        # Appliquer la vélocité au déplacement
-        if self.velocity.magnitude() > 0:
-            displacement = self.velocity * delta_time
-            self.parent.transform.move(displacement)
-
-        # Appliquer l'accélération angulaire à la vitesse angulaire
+        # Angular integration
         self.angular_velocity += self.angular_acceleration * delta_time
 
-        # Appliquer l'amortissement angulaire (perte de vitesse au fil du temps)
         angular_damping = self.material.angular_damping
-        if angular_damping > 0.0:
+        if angular_damping > Tolerence.GENERAL:
             damping_factor = max(0.0, 1.0 - angular_damping * delta_time)
             self.angular_velocity *= damping_factor
 
-        # Appliquer la vitesse angulaire à la rotation
-        if self.angular_velocity != 0.0:
-            self.parent.transform.rotate(self.angular_velocity * delta_time)
-
-        # Réinitialiser l'accélération (forces ponctuelles)
+        # Reset per-frame accelerations
         self.acceleration = Vector2D(0, 0)
         self.angular_acceleration = 0.0
+
+
+    def integrate_transform(self, delta_time: float) -> None:
+        """
+        Intégrer les transformations à partir des vélocités.
+
+        Cette méthode met à jour :
+        - la position à partir de la vélocité linéaire
+        - la rotation à partir de la vélocité angulaire
+
+        Parameters
+        ----------
+        delta_time : float
+            Temps écoulé depuis la dernière frame (en secondes).
+        """
+        if self.is_kinematic:
+            return
+
+        if self.velocity.magnitude_squared() > Tolerence.GENERAL * Tolerence.GENERAL:
+            self.parent.transform.move(self.velocity * delta_time)
+
+        if abs(self.angular_velocity) > Tolerence.GENERAL:
+            self.parent.transform.rotate(self.angular_velocity * delta_time)
 
     def set_velocity(self, velocity: Vector2D) -> None:
         """
@@ -403,12 +430,52 @@ class PhysicBodyComponent(Component):
         """
         if self.is_kinematic:
             return
+        inv_mass = self.invert_mass()
         eps = Tolerence.GENERAL
-        if self.mass <= eps:
+        if inv_mass <= eps:
             return
 
-        delta_velocity = impulse / self.mass
-        self.velocity += delta_velocity
+        self.velocity += impulse * inv_mass
+
+    def apply_impulse_at_point(self, impulse: Vector2D, scene_point: Vector2D) -> None:
+        """
+        Applique une impulsion instantanée à un point du corps physique.
+
+        Cette méthode met à jour :
+        - la vélocité linéaire (translation)
+        - la vélocité angulaire (rotation) via le couple induit au point d'application
+
+        Parameters
+        ----------
+        impulse : Vector2D
+            Impulsion à appliquer en newton*seconde (pixels*kg/s).
+        scene_point : Vector2D
+            Point d'application de l'impulsion en coordonnées de la scène.
+        """
+        if self.is_kinematic:
+            return
+
+        eps = Tolerence.GENERAL
+        inv_mass = self.invert_mass()
+        inv_inertia = self.invert_inertia()
+        if inv_mass <= eps and inv_inertia <= eps:
+            return
+
+        # --- Translation ---
+        if inv_mass > eps:
+            self.velocity += impulse * inv_mass
+
+        # --- Rotation ---
+        if inv_inertia > eps:
+            parent_tr = self.parent.transform
+            com_world = Geometry.to_scene(
+                self.mass_center, parent_tr.position, parent_tr.rotation
+            )
+            lever_arm = scene_point - com_world
+
+            # Produit vectoriel 2D -> scalaire (r x J)
+            torque_impulse = (lever_arm.x * impulse.y) - (lever_arm.y * impulse.x)
+            self.angular_velocity += torque_impulse * inv_inertia
 
     def add_torque(self, torque: float) -> None:
         """
@@ -472,6 +539,10 @@ class PhysicBodyComponent(Component):
         """
         colliders = self.parent.get_components(ColliderComponent)
         if not colliders:
+            logger.warning(
+                "Aucun collider attaché au corps physique. "
+                "Inertie par défaut 1.0 utilisée."
+            )
             return 1.0
 
         # Somme des aires pour répartir la masse
@@ -501,7 +572,7 @@ class PhysicBodyComponent(Component):
             offset = local_position - self.mass_center
 
             inertia += mass_collider * offset.magnitude_squared()
-        total_inertia += inertia
+            total_inertia += inertia
 
         # Sécurité : éviter 0 (division par zéro lors d'un torque)
         return max(Tolerence.GENERAL, total_inertia)

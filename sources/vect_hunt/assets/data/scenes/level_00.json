@@ -35,6 +35,22 @@
       "template_path": "objects/crate.json",
       "name": "Crate_Standard",
       "transform": {
+        "position": [400, 200],
+        "rotation": 0.0
+      }
+    },
+    {
+      "template_path": "objects/crate.json",
+      "name": "Crate_Standard",
+      "transform": {
+        "position": [400, 0],
+        "rotation": 0.0
+      }
+    },
+    {
+      "template_path": "objects/crate.json",
+      "name": "Crate_Standard",
+      "transform": {
         "position": [500, -1100],
         "rotation": 25.0
       }

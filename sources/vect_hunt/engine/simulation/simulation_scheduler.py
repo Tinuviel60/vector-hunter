@@ -1,6 +1,7 @@
 from typing import Set, Tuple
 
 from vect_hunt.engine.components.collider.collider_component import ColliderComponent
+from vect_hunt.engine.components.physic_body_component import PhysicBodyComponent
 from vect_hunt.engine.input.input_system import InputSystem
 from vect_hunt.engine.physics.collider_system import ColliderSystem
 from vect_hunt.engine.physics.collision_resolution_system import (
@@ -35,9 +36,8 @@ class SimulationScheduler:
             Nombre max d'iterations de resolution des collisions.
         """
         self.scene = scene
-        self.max_collision_passes = max_collision_passes
+        self.max_collision_passes = 6#max_collision_passes
         self.impulse_iterations = 8
-        self.reverse_point = True
 
         self.input_system = InputSystem(input_config)
         self.collider_system = ColliderSystem(tag_system)
@@ -61,10 +61,13 @@ class SimulationScheduler:
             Temps ecoule depuis la derniere frame (en secondes).
         """
         self._update_inputs(delta_time)
-        self.external_forces_system.apply_gravity(self.scene, delta_time)
         self._update_game_objects(delta_time)
-        self._resolve_collisions()
+        self.external_forces_system.apply_gravity(self.scene, delta_time)
+        self._update_game_objects_velocities(delta_time)
+        self._resolve_collisions(delta_time)
+        self._update_game_objects_transforms(delta_time)
         self.update_collisions(delta_time)
+
 
     def _update_inputs(self, delta_time: float) -> None:
         """
@@ -76,6 +79,36 @@ class SimulationScheduler:
             Temps écoulé depuis la dernière frame (en secondes).
         """
         self.input_system.update(delta_time)
+
+    def _update_game_objects_velocities(self, delta_time: float) -> None:
+        """
+        Met à jour les vélocités de tous les GameObjects de la scène.
+
+        Parameters
+        ----------
+        delta_time : float
+            Temps écoulé depuis la dernière frame (en secondes).
+        """
+        for game_object in self.scene.game_objects.values():
+            if game_object.active:
+                physic_bodies = game_object.get_components(PhysicBodyComponent)
+                for body in physic_bodies:
+                    body.integrate_velocity(delta_time)
+    
+    def _update_game_objects_transforms(self, delta_time: float) -> None:
+        """
+        Met à jour les transformations de tous les GameObjects de la scène.
+
+        Parameters
+        ----------
+        delta_time : float
+            Temps écoulé depuis la dernière frame (en secondes).
+        """
+        for game_object in self.scene.game_objects.values():
+            if game_object.active:
+                physic_bodies = game_object.get_components(PhysicBodyComponent)
+                for body in physic_bodies:
+                    body.integrate_transform(delta_time)
 
     def _update_game_objects(self, delta_time: float) -> None:
         """
@@ -111,33 +144,48 @@ class SimulationScheduler:
         self._handle_exits()
         self._handle_stays(current_collisions, current_triggers)
 
-    def _resolve_collisions(self) -> None:
+    def _resolve_collisions(self, delta_time: float) -> None:
         """
         Résout les collisions en plusieurs passes.
 
-        Utilise un nombre maximal d'itérations pour éviter les boucles infinies.
+        Cette méthode assume que :
+        -Les vélocités des objets ont déjà été mises à jour.
+        -Les positions des objets n'ont pas encore été mises à jour.
+
+        Parameters
+        ----------
+        delta_time : float
+            Temps écoulé depuis la dernière frame (en secondes).
         """
+
+        # 1) Detect contacts once for impulse iterations
         collisions, _, collision_info = self.collider_system.detect_collisions(self.scene)
+        if not collisions:
+            return
+
         for i in range(self.impulse_iterations):
-            if not collisions:
-                break
-            self.collision_resolution_system.apply_impulse_response(
+            # Sequential impulses: same contact set, update velocities only
+            moved = self.collision_resolution_system.apply_impulse_response(
                 list(collisions),
                 collision_info,
-                self.reverse_point,
+                delta_time=delta_time
             )
-        for i in range(self.max_collision_passes):
+            if not moved:
+                break
+
+        # 2) Small position correction passes (re-detect each pass)
+        for j in range(self.max_collision_passes):
             collisions, _, collision_info = self.collider_system.detect_collisions(self.scene)
+            if not collisions:
+                break
 
             moved = self.collision_resolution_system.correct_collisions(
                 list(collisions),
                 collision_info,
             )
-
             if not moved:
                 break
-        
-        print("Collision resolution stabilized after", i + 1, "passes.")
+        print(i+1, "impulse passes performed.", j+1, "position correction passes performed.")
 
     def _handle_enters(self) -> None:
         """
@@ -207,4 +255,3 @@ class SimulationScheduler:
                     obj1.on_trigger(obj2)
                 if obj2_has_trigger:
                     obj2.on_trigger(obj1)
-        self.reverse_point = not self.reverse_point
