@@ -10,12 +10,17 @@
     {
       "component": "physic_body",
       "data": {
-        "speed": 150.0,
         "is_kinematic": false,
         "is_controlled": true,
         "mass": 1.0,
         "use_gravity": true,
         "material": "default.json"
+      }
+    },
+    {
+      "component": "attributes",
+      "data": {
+        "speed": 150
       }
     },
     {

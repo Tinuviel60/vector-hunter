@@ -6,6 +6,7 @@ from typing import Any
 
 from vect_hunt.engine.components.component import Component
 from vect_hunt.engine.components.physic_body_component import PhysicBodyComponent
+from vect_hunt.game.components.attributes_component import AttributesComponent
 from vect_hunt.engine.core.math.vector import Vector2D
 
 
@@ -106,16 +107,22 @@ class IaComponent(Component):
         delta_time : float
             Temps écoulé depuis la dernière frame (en secondes).
         """
+        # TODO : Sortir les components requis dans l'init ou via système de dépendances
         # Récupérer le PhysicBodyComponent
         physic_body = self.parent.get_component(PhysicBodyComponent)
         if not physic_body:
+            return
+        
+        # Récupérer le PhysicBodyComponent
+        attributes = self.parent.get_component(AttributesComponent)
+        if not attributes:
             return
 
         # Récupérer la direction actuelle
         direction = self.parent.transform.forward()
 
         # Calculer la vélocité en utilisant la vitesse du corps physique
-        velocity = direction * physic_body.speed
+        velocity = direction * attributes.speed
 
         # Vérifier si on va sortir des limites
         future_position = self.parent.transform.position + velocity * delta_time
@@ -139,9 +146,9 @@ class IaComponent(Component):
                 collision_normal
             )
             direction = self.parent.transform.forward()
-            velocity = direction * physic_body.speed
+            velocity = direction * attributes.speed
 
-        desired_velocity = direction * physic_body.speed
+        desired_velocity = direction * attributes.speed
         acceleration = desired_velocity - physic_body.velocity
         physic_body.add_acceleration(acceleration)
 

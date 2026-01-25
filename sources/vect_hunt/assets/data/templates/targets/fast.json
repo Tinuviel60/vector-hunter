@@ -10,12 +10,17 @@
     {
       "component": "physic_body",
       "data": {
-        "speed": 250.0,
         "is_kinematic": false,
         "is_controlled": true,
         "mass": 1.0,
         "use_gravity": true,
         "material": "ice.json"
+      }
+    },
+    {
+      "component": "attributes",
+      "data": {
+        "speed": 250
       }
     },
     {

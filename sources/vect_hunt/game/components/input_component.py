@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any
 
 from vect_hunt.engine.components.component import Component
 from vect_hunt.engine.components.physic_body_component import PhysicBodyComponent
+from vect_hunt.game.components.attributes_component import AttributesComponent
 
 if TYPE_CHECKING:
     from vect_hunt.engine.input.input_system import InputSystem
@@ -77,10 +78,15 @@ class InputComponent(Component):
         """
 
         move_vector = self.input_system.get_vector("move")
-
+        # TODO : Sortir les components requis dans l'init ou via système de dépendances
         # Récupérer le PhysicBodyComponent
         physic_body = self.parent.get_component(PhysicBodyComponent)
         if not physic_body:
+            return
+        
+        # Récupérer le PhysicBodyComponent
+        attributes = self.parent.get_component(AttributesComponent)
+        if not attributes:
             return
 
         # Versions plateforme
@@ -101,7 +107,7 @@ class InputComponent(Component):
         #     physic_body.add_acceleration(acceleration_y)
 
         # Versions vu du dessus
-        desired_velocity = move_vector * physic_body.speed
+        desired_velocity = move_vector * attributes.speed
         acceleration = desired_velocity - physic_body.velocity
         physic_body.add_acceleration(acceleration)
 
