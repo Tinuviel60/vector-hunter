@@ -3,7 +3,7 @@ from typing import Set, Tuple
 from vect_hunt.engine.components.collider.collider_component import ColliderComponent
 from vect_hunt.engine.components.physic_body_component import PhysicBodyComponent
 from vect_hunt.engine.input.input_system import InputSystem
-from vect_hunt.engine.physics.collider_system import ColliderSystem
+from vect_hunt.engine.physics.collider_detection import ColliderDetection
 from vect_hunt.engine.physics.collision_resolution_system import (
     CollisionResolutionSystem,
 )
@@ -36,11 +36,11 @@ class SimulationScheduler:
             Nombre max d'iterations de resolution des collisions.
         """
         self.scene = scene
-        self.max_collision_passes = 6#max_collision_passes
+        self.max_collision_passes = 6  # max_collision_passes
         self.impulse_iterations = 8
 
         self.input_system = InputSystem(input_config)
-        self.collider_system = ColliderSystem(tag_system)
+        self.collider_detection = ColliderDetection(tag_system)
         self.collision_tracker = CollisionTracker()
         self.collision_resolution_system = CollisionResolutionSystem(scene)
         self.external_forces_system = ExternalForcesSystem()
@@ -68,7 +68,6 @@ class SimulationScheduler:
         self._update_game_objects_transforms(delta_time)
         self.update_collisions(delta_time)
 
-
     def _update_inputs(self, delta_time: float) -> None:
         """
         Met à jour le système d'entrée.
@@ -94,7 +93,7 @@ class SimulationScheduler:
                 physic_bodies = game_object.get_components(PhysicBodyComponent)
                 for body in physic_bodies:
                     body.integrate_velocity(delta_time)
-    
+
     def _update_game_objects_transforms(self, delta_time: float) -> None:
         """
         Met à jour les transformations de tous les GameObjects de la scène.
@@ -132,17 +131,13 @@ class SimulationScheduler:
         delta_time : float
             Temps écoulé depuis la dernière frame (en secondes).
         """
-        current_collisions, current_triggers, collision_info = (
-            self.collider_system.detect_collisions(self.scene)
-        )
+        collision_result = self.collider_detection.detect(self.scene)
 
-        self.collision_tracker.update(
-            current_collisions, current_triggers, collision_info, delta_time
-        )
+        self.collision_tracker.update(collision_result, delta_time)
 
         self._handle_enters()
         self._handle_exits()
-        self._handle_stays(current_collisions, current_triggers)
+        self._handle_stays(collision_result.collisions, collision_result.triggers)
 
     def _resolve_collisions(self, delta_time: float) -> None:
         """
@@ -159,33 +154,38 @@ class SimulationScheduler:
         """
 
         # 1) Detect contacts once for impulse iterations
-        collisions, _, collision_info = self.collider_system.detect_collisions(self.scene)
-        if not collisions:
+        collision_result = self.collider_detection.detect(self.scene)
+        if not collision_result.collisions:
             return
 
         for i in range(self.impulse_iterations):
             # Sequential impulses: same contact set, update velocities only
             moved = self.collision_resolution_system.apply_impulse_response(
-                list(collisions),
-                collision_info,
-                delta_time=delta_time
+                list(collision_result.collisions),
+                collision_result.collision_info,
+                delta_time=delta_time,
             )
             if not moved:
                 break
 
         # 2) Small position correction passes (re-detect each pass)
         for j in range(self.max_collision_passes):
-            collisions, _, collision_info = self.collider_system.detect_collisions(self.scene)
-            if not collisions:
+            collision_result = self.collider_detection.detect(self.scene)
+            if not collision_result.collisions:
                 break
 
             moved = self.collision_resolution_system.correct_collisions(
-                list(collisions),
-                collision_info,
+                list(collision_result.collisions),
+                collision_result.collision_info,
             )
             if not moved:
                 break
-        print(i+1, "impulse passes performed.", j+1, "position correction passes performed.")
+        print(
+            i + 1,
+            "impulse passes performed.",
+            j + 1,
+            "position correction passes performed.",
+        )
 
     def _handle_enters(self) -> None:
         """

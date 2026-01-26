@@ -83,7 +83,7 @@ class InputComponent(Component):
         physic_body = self.parent.get_component(PhysicBodyComponent)
         if not physic_body:
             return
-        
+
         # Récupérer le PhysicBodyComponent
         attributes = self.parent.get_component(AttributesComponent)
         if not attributes:

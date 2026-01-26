@@ -7,9 +7,10 @@ Fournit les primitives mathématiques pour le moteur :
 - Numeric : utilitaires numériques (clamp, etc.)
 """
 
-from .tolerance import Tolerence
 from .geometry import Geometry
+from .manifold import Manifold
 from .numeric import Numeric
+from .tolerance import Tolerence
 from .vector import Vector2D
 
 __all__ = [
@@ -17,4 +18,5 @@ __all__ = [
     "Geometry",
     "Numeric",
     "Tolerence",
+    "Manifold",
 ]

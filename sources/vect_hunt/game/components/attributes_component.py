@@ -56,7 +56,7 @@ class AttributesComponent(Component):
         """
         speed = data.get("speed", 300.0)
         return cls(speed=speed)
-    
+
     def update(self, delta_time: float) -> None:
         """
         Mise à jour du composant (non utilisé ici).

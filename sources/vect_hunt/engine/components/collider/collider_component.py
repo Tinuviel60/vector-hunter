@@ -52,11 +52,14 @@ class ColliderComponent(Component, ABC):
         """
         super().__init__()
         self.shape = shape
-        self.transform = transform 
+        self.transform = transform
         self.solid = solid
         self.nb_collision = 0
         self._transform_version = -1
-        self._cached_world_aabb: tuple[Vector2D, Vector2D] = (Vector2D(0, 0), Vector2D(0, 0))
+        self._cached_world_aabb: tuple[Vector2D, Vector2D] = (
+            Vector2D(0, 0),
+            Vector2D(0, 0),
+        )
 
     def update(self, delta_time: float) -> None:
         """
@@ -81,7 +84,7 @@ class ColliderComponent(Component, ABC):
         """
 
         raise NotImplementedError("get_scene_aabb must be implemented in subclasses.")
-    
+
     def get_scene_transform(self) -> Transform:
         """
         Calcule la position mondiale du collider en combinant

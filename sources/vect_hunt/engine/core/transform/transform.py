@@ -170,3 +170,35 @@ class Transform:
         new_rotation = self.rotation.compose(other.rotation)
 
         return Transform(position=new_position, rotation=new_rotation.angle)
+
+    def to_local_point(self, point: Vector2D) -> Vector2D:
+        """
+        Convertit un point de la scène aux coordonnées locales de ce Transform.
+
+        Parameters
+        ----------
+        point : Vector2D
+            Point en coordonnées de la scène.
+
+        Returns
+        -------
+        Vector2D
+            Point en coordonnées locales.
+        """
+        return self.rotation.apply_inverse(point - self.position)
+
+    def to_scene_point(self, point: Vector2D) -> Vector2D:
+        """
+        Convertit un point des coordonnées locales de ce Transform vers la scène.
+
+        Parameters
+        ----------
+        point : Vector2D
+            Point en coordonnées locales.
+
+        Returns
+        -------
+        Vector2D
+            Point en coordonnées de la scène.
+        """
+        return self.position + self.rotation.apply(point)

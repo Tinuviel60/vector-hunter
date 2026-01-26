@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, Any
 
 from vect_hunt.engine.components.collider.collider_component import ColliderComponent
 from vect_hunt.engine.components.component import Component
-from vect_hunt.engine.core.math.geometry import Geometry
 from vect_hunt.engine.core.math.tolerance import Tolerence
 from vect_hunt.engine.core.math.vector import Vector2D
 from vect_hunt.engine.physics.physic_material import CombineMode, PhysicMaterial
@@ -309,7 +308,7 @@ class PhysicBodyComponent(Component):
     def integrate_velocity(self, delta_time: float) -> None:
         """
         Intégrer les vélocités à partir des accélérations.
-        
+
         cette méthode met à jour :
         - la vélocité linéaire à partir de l'accélération linéaire
         - la vélocité angulaire à partir de l'accélération angulaire
@@ -346,7 +345,6 @@ class PhysicBodyComponent(Component):
         self.acceleration = Vector2D(0, 0)
         self.angular_acceleration = 0.0
 
-
     def integrate_transform(self, delta_time: float) -> None:
         """
         Intégrer les transformations à partir des vélocités.
@@ -365,9 +363,9 @@ class PhysicBodyComponent(Component):
 
         if self.velocity.magnitude_squared() > Tolerence.GENERAL * Tolerence.GENERAL:
             self.parent.transform.move(self.velocity * delta_time)
- 
+
         if abs(self.angular_velocity) > Tolerence.GENERAL:
-            self.parent.transform.rotate(self.angular_velocity * delta_time)    
+            self.parent.transform.rotate(self.angular_velocity * delta_time)
 
     def set_velocity(self, velocity: Vector2D) -> None:
         """
@@ -448,7 +446,7 @@ class PhysicBodyComponent(Component):
         # --- Rotation ---
         if inv_inertia > eps:
             parent_tr = self.parent.transform
-            com_world = Geometry.to_scene(self.mass_center, parent_tr)
+            com_world = parent_tr.to_scene_point(self.mass_center)
             lever_arm = scene_point - com_world
 
             # Produit vectoriel 2D -> scalaire (r x J)

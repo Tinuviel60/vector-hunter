@@ -12,7 +12,7 @@ class CollisionInfo:
     Attributes
     ----------
     normal : Vector2D
-        Normale de collision (unitaire, de B vers A).
+        Normale de collision (unitaire, de A vers B).
     depth : float
         Profondeur de pénétration.
     points : List[Vector2D]

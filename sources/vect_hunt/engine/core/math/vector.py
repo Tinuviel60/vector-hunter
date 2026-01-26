@@ -1,11 +1,7 @@
 import logging
 import math
-from typing import TYPE_CHECKING
 
 from .tolerance import Tolerence
-
-if TYPE_CHECKING:
-    from vect_hunt.engine.core.transform.rotation import Rotation
 
 logger = logging.getLogger(__name__)
 
@@ -88,7 +84,7 @@ class Vector2D:
         mag2 = self.magnitude_squared()
         if mag2 <= Tolerence.GENERAL * Tolerence.GENERAL:
             return Vector2D(1, 0)
-        
+
         # Manipulation pour éviter une racine carrée inutile et des divisions
         inv_mag = 1.0 / math.sqrt(mag2)
         return Vector2D(self._x * inv_mag, self._y * inv_mag)
@@ -103,7 +99,7 @@ class Vector2D:
             self._x = 1.0
             self._y = 0.0
             return
-        
+
         # Manipulation pour éviter une racine carrée inutile et des divisions
         inv_mag = 1.0 / math.sqrt(mag2)
         self._x *= inv_mag
@@ -225,28 +221,6 @@ class Vector2D:
         """
         return (self._x, self._y)
 
-    @staticmethod
-    def from_direction(direction: "Rotation") -> "Vector2D":
-        """
-        Crée un vecteur unitaire à partir d'une direction (rotation).
-
-        Utilise la première colonne de la matrice de rotation, qui correspond
-        à l'axe X transformé (direction de la rotation).
-
-        Parameters
-        ----------
-        direction : Rotation
-            La rotation à partir de laquelle créer le vecteur unitaire.
-
-        Returns
-        -------
-        Vector2D
-            Vecteur unitaire correspondant à la direction de rotation.
-        """
-        # Applique la rotation au vecteur unitaire (1,0)
-        v = Vector2D(1.0, 0.0)
-        return direction.apply(v)
-
     def __add__(self, other: "Vector2D") -> "Vector2D":
         """
         Additionne deux vecteurs.
@@ -366,7 +340,9 @@ class Vector2D:
             True si les vecteurs sont égaux, False sinon.
         """
 
-        return math.isclose(self._x, other._x, rel_tol=Tolerence.GENERAL) and math.isclose(self._y, other._y, rel_tol=Tolerence.GENERAL)
+        return math.isclose(
+            self._x, other._x, rel_tol=Tolerence.GENERAL
+        ) and math.isclose(self._y, other._y, rel_tol=Tolerence.GENERAL)
 
     @staticmethod
     def top() -> "Vector2D":
@@ -435,7 +411,7 @@ class Vector2D:
         self._x += other._x
         self._y += other._y
         return self
-    
+
     def __isub__(self, other: "Vector2D") -> "Vector2D":
         """
         Soustraction en place de deux vecteurs.
@@ -443,7 +419,7 @@ class Vector2D:
         self._x -= other._x
         self._y -= other._y
         return self
-    
+
     def __imul__(self, scalar: float) -> "Vector2D":
         """
         Multiplication scalaire en place.
@@ -451,7 +427,7 @@ class Vector2D:
         self._x *= scalar
         self._y *= scalar
         return self
-    
+
     def __itruediv__(self, scalar: float) -> "Vector2D":
         """
         Division scalaire en place.

@@ -5,7 +5,7 @@ from vect_hunt.engine.components.collider import (
 )
 from vect_hunt.engine.core.math import Vector2D
 from vect_hunt.engine.objects import GameObject
-from vect_hunt.engine.physics.collider_system import ColliderSystem
+from vect_hunt.engine.physics.collider_detection import ColliderSystem
 
 
 @pytest.mark.parametrize(

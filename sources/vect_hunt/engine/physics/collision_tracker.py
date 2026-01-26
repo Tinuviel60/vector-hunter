@@ -1,6 +1,7 @@
 from typing import Dict, List, Optional, Set, Tuple
 
-from vect_hunt.engine.physics.collision_info import CollisionInfo
+from vect_hunt.engine.core.collisions.collision_info import CollisionInfo
+from vect_hunt.engine.core.collisions.collision_result import CollisionResult
 
 """Module de tracking des collisions entre objets du jeu."""
 
@@ -52,24 +53,14 @@ class CollisionTracker:
         """
         return (min(obj1_id, obj2_id), max(obj1_id, obj2_id))
 
-    def update(
-        self,
-        current_collisions: Set[Tuple[int, int]],
-        current_triggers: Set[Tuple[int, int]],
-        collision_info: Dict[Tuple[int, int], CollisionInfo],
-        delta_time: float,
-    ):
+    def update(self, collision_result: CollisionResult, delta_time: float):
         """
         Met à jour le tracking des collisions pour la frame courante.
 
         Parameters
         ----------
-        current_collisions : Set[Tuple[int, int]]
-            Ensemble des collisions détectées cette frame
-        current_triggers : Set[Tuple[int, int]]
-            Ensemble des triggers détectés cette frame
-        collision_info : Dict[Tuple[int, int], CollisionInfo]
-            Informations de collision pour chaque paire
+        collision_result : CollisionResult
+            Résultat de la détection des collisions pour cette frame.
         delta_time : float
             Temps écoulé depuis la dernière frame en secondes
         """
@@ -83,17 +74,18 @@ class CollisionTracker:
         self._collision_info.clear()
         normalized_collisions = set()
 
-        for pair in current_collisions:
+        for pair in collision_result.collisions:
             norm_pair = self._normalize_pair(*pair)
             normalized_collisions.add(norm_pair)
-            info = collision_info.get(pair)
+            info = collision_result.collision_info.get(pair)
             if info is None:
-                info = collision_info.get((pair[1], pair[0]))
+                info = collision_result.collision_info.get((pair[1], pair[0]))
             if info is not None:
                 self._collision_info[norm_pair] = info
 
-        normalized_triggers = {self._normalize_pair(*pair) for pair in current_triggers}
-
+        normalized_triggers = {
+            self._normalize_pair(*pair) for pair in collision_result.triggers
+        }
         # Traiter les collisions
         self._update_category(
             normalized_collisions,

@@ -68,7 +68,7 @@ class GameObjectFactory:
     def _awake_game_object(self, game_object: GameObject) -> None:
         """
         Appelle la méthode awake de tous les composants du GameObject.
-        
+
         Parameters
         ----------
         game_object : GameObject

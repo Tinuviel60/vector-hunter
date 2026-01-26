@@ -6,8 +6,8 @@ from typing import Any
 
 from vect_hunt.engine.components.component import Component
 from vect_hunt.engine.components.physic_body_component import PhysicBodyComponent
-from vect_hunt.game.components.attributes_component import AttributesComponent
 from vect_hunt.engine.core.math.vector import Vector2D
+from vect_hunt.game.components.attributes_component import AttributesComponent
 
 
 class IaComponent(Component):
@@ -112,7 +112,7 @@ class IaComponent(Component):
         physic_body = self.parent.get_component(PhysicBodyComponent)
         if not physic_body:
             return
-        
+
         # Récupérer le PhysicBodyComponent
         attributes = self.parent.get_component(AttributesComponent)
         if not attributes:

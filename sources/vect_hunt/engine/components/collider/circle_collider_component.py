@@ -76,7 +76,7 @@ class CircleColliderComponent(ColliderComponent):
 
     def get_scene_aabb(self) -> tuple[Vector2D, Vector2D]:
         if self._transform_version == self.parent.transform._version:
-            return self._cached_world_aabb  
+            return self._cached_world_aabb
 
         scene_center = self.get_scene_transform().position
         radius = self.shape.radius

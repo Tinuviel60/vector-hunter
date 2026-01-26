@@ -280,3 +280,26 @@ class Numeric:
             return cycle
         else:
             return 2.0 * length - cycle
+
+    @staticmethod
+    def intervals_overlap(min1: float, max1: float, min2: float, max2: float) -> bool:
+        """
+        Vérifie si deux intervalles [min1, max1] et [min2, max2] se chevauchent.
+
+        Parameters
+        ----------
+        min1 : float
+            Borne inférieure du premier intervalle.
+        max1 : float
+            Borne supérieure du premier intervalle.
+        min2 : float
+            Borne inférieure du deuxième intervalle.
+        max2 : float
+            Borne supérieure du deuxième intervalle.
+
+        Returns
+        -------
+        bool
+            True si les intervalles se chevauchent, False sinon.
+        """
+        return max1 >= min2 and max2 >= min1

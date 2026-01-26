@@ -9,7 +9,6 @@ from vect_hunt.engine.components.render_component import RenderComponent
 from vect_hunt.engine.core.geometries.box_shape import BoxShape
 from vect_hunt.engine.core.geometries.circle_shape import CircleShape
 from vect_hunt.engine.core.render_ops import RenderOps
-from vect_hunt.engine.physics.collider_system import ColliderSystem
 from vect_hunt.engine.rendering.font.font_system import FontSystem
 
 if TYPE_CHECKING:
@@ -78,6 +77,10 @@ class Renderer:
         # Style de police pour le debug (géré par FontSystem)
         self.debug_font_style = font_system.get("debug")
 
+        self.grid_surface = None
+        if self.draw_grid:
+            self.grid_surface = self.build_grid_surface(self.grid_spacing_pixels)
+
     def clear(self) -> None:
         """
         Efface l'écran avec la couleur de fond.
@@ -116,8 +119,6 @@ class Renderer:
                         collider,
                         False,  # TODO : Passer l'info de collision réelle
                     )
-            if self.draw_grid:
-                self.draw_grid_lines(self.grid_spacing_pixels)
 
     def draw_grid_lines(self, spacing: float) -> None:
         """
@@ -128,24 +129,52 @@ class Renderer:
         spacing : float
             Espacement entre les lignes de la grille en pixels.
         """
+        if self.grid_surface is not None:
+            self.screen.blit(self.grid_surface, (0, 0))
+
+    def build_grid_surface(self, spacing: float) -> pygame.Surface:
+        """
+        Construit une surface contenant la grille de debug pré-rendue.
+
+        Cette surface peut ensuite être blitée telle quelle à chaque frame,
+        afin d'éviter de redessiner ligne par ligne la grille en permanence.
+
+        Parameters
+        ----------
+        spacing : float
+            Espacement entre les lignes de la grille en pixels.
+
+        Returns
+        -------
+        pygame.Surface
+            Surface contenant la grille pré-rendue.
+        """
         width, height = self.screen.get_size()
-        color = (200, 200, 200)  # Gris clair pour la grille
+        color = (200, 200, 200)
+
+        step = max(1, int(spacing))
+
+        # Surface avec canal alpha pour superposition propre
+        grid_surface = pygame.Surface((width, height), flags=pygame.SRCALPHA)
+        grid_surface = grid_surface.convert_alpha()
 
         # Lignes verticales
         x = 0
         while x < width:
-            pygame.draw.line(self.screen, color, (x, 0), (x, height), 1)
+            pygame.draw.line(grid_surface, color, (x, 0), (x, height), 1)
             pixel_place = self.debug_font_style.render(str(x))
-            self.screen.blit(pixel_place, (x , 0))
-            x += spacing
+            grid_surface.blit(pixel_place, (x, 0))
+            x += step
 
         # Lignes horizontales
         y = 0
         while y < height:
-            pygame.draw.line(self.screen, color, (0, y), (width, y), 1)
+            pygame.draw.line(grid_surface, color, (0, y), (width, y), 1)
             pixel_place = self.debug_font_style.render(str(y))
-            self.screen.blit(pixel_place, (0 , y))
-            y += spacing
+            grid_surface.blit(pixel_place, (0, y))
+            y += step
+
+        return grid_surface
 
     def draw_name(self, game_object: "GameObject") -> None:
         """
@@ -227,6 +256,10 @@ class Renderer:
             des objets de jeu.
         """
         self.draw_background()
+
+        if self.draw_grid:
+            self.draw_grid_lines(self.grid_spacing_pixels)
+
         self.draw_game_objects(scene.game_objects)
         pygame.display.flip()
 

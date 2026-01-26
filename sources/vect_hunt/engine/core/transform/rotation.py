@@ -66,7 +66,7 @@ class Rotation:
             vector.x * self.m00 + vector.y * self.m01,
             vector.x * self.m10 + vector.y * self.m11,
         )
-    
+
     def apply_inverse(self, vector: Vector2D) -> Vector2D:
         """
         Applique la rotation inverse à un vecteur 2D.
@@ -85,7 +85,7 @@ class Rotation:
             vector.x * self.m00 + vector.y * self.m10,
             vector.x * self.m01 + vector.y * self.m11,
         )
-    
+
     def apply_xy(self, x: float, y: float) -> tuple[float, float]:
         """
         Applique la rotation à des composantes x/y sans créer de Vector2D intermédiaire.
@@ -106,10 +106,10 @@ class Rotation:
             x * self.m00 + y * self.m01,
             x * self.m10 + y * self.m11,
         )
-    
+
     def apply_inverse_xy(self, x: float, y: float) -> tuple[float, float]:
         """
-        Applique la rotation inverse à des composantes x/y sans créer de 
+        Applique la rotation inverse à des composantes x/y sans créer de
         Vector2D intermédiaire.
 
         Parameters

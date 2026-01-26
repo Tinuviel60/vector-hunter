@@ -1,6 +1,10 @@
 # vect_hunt/__main__.py
 
+import cProfile
 import logging
+import pstats
+import time
+from pathlib import Path
 from typing import Any
 
 import pygame
@@ -14,11 +18,6 @@ from vect_hunt.engine.simulation.game_loop import GameLoop
 from vect_hunt.engine.utils.component_loader import load_all_components
 from vect_hunt.game.game_main import Game
 from vect_hunt.logging_config import setup_logging
-
-import cProfile
-import pstats
-import time
-from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -81,9 +80,11 @@ def build_resource_registry() -> ResourceRegistry:
         materials=MaterialReader().configs,
     )
 
+
 def _run_with_cprofile(run_callable, profile_dir: str = "profiles") -> None:
     """
-    Exécute une fonction en l'entourant d'un profilage cProfile, et écrit un fichier .prof.
+    Exécute une fonction en l'entourant d'un profilage cProfile,
+    et écrit un fichier .prof.
 
     Parameters
     ----------
@@ -119,6 +120,7 @@ def _run_with_cprofile(run_callable, profile_dir: str = "profiles") -> None:
         print(f"\nProfil sauvegardé : {profile_path}")
         print("Analyse détaillée : python -m pstats -s cumtime <fichier.prof>")
         print("Ou visuel : snakeviz <fichier.prof> (si installé)\n")
+
 
 def main(app_config: dict[str, Any], resources: ResourceRegistry) -> None:
     """
@@ -163,7 +165,7 @@ def main(app_config: dict[str, Any], resources: ResourceRegistry) -> None:
             sim_dt=sim_dt,
             logger=logger,
         )
-        #loop.run()
+        # loop.run()
         _run_with_cprofile(loop.run)
     finally:
         pygame.quit()

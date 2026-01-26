@@ -3,11 +3,10 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Optional, Tuple
 
 from vect_hunt.engine.components.physic_body_component import PhysicBodyComponent
-from vect_hunt.engine.core.math.geometry import Geometry
+from vect_hunt.engine.core.collisions.collision_info import CollisionInfo
 from vect_hunt.engine.core.math.numeric import Numeric
 from vect_hunt.engine.core.math.tolerance import Tolerence
 from vect_hunt.engine.core.math.vector import Vector2D
-from vect_hunt.engine.physics.collision_info import CollisionInfo
 
 if TYPE_CHECKING:
     from vect_hunt.engine.objects.game_object import GameObject
@@ -297,7 +296,7 @@ class CollisionResolutionSystem:
         self,
         collisions: list[tuple[int, int]],
         collision_info: dict[tuple[int, int], CollisionInfo],
-        delta_time: float
+        delta_time: float,
     ) -> bool:
         """
         Applique la réponse d'impulsion pour un ensemble de collisions.
@@ -330,17 +329,12 @@ class CollisionResolutionSystem:
             game_object_a, game_object_b, body_a, body_b = context
 
             impulsion = self._apply_velocity_response(
-                game_object_a,
-                game_object_b,
-                body_a,
-                body_b,
-                info_collision,
-                delta_time
+                game_object_a, game_object_b, body_a, body_b, info_collision, delta_time
             )
             if impulsion > impulsion_max:
                 impulsion_max = impulsion
 
-        return impulsion_max > 5.0 # TODO : Valeurs arbitraire à retravailler
+        return impulsion_max > 5.0  # TODO : Valeurs arbitraire à retravailler
 
     def _apply_velocity_response(
         self,
@@ -349,7 +343,7 @@ class CollisionResolutionSystem:
         body_a: PhysicBodyComponent,
         body_b: PhysicBodyComponent,
         info_collision: CollisionInfo,
-        delta_time: float
+        delta_time: float,
     ) -> float:
         """
         Applique restitution + friction d'une collision en utilisant
@@ -371,7 +365,7 @@ class CollisionResolutionSystem:
             Pas de temps de la frame (secondes).
         reverse_point : bool
             Inverse l'ordre des points de contact pour la résolution.
-        
+
         """
 
         if len(info_collision.points) == 0:
@@ -399,8 +393,8 @@ class CollisionResolutionSystem:
         tr_a = game_object_a.transform
         tr_b = game_object_b.transform
 
-        com_a = Geometry.to_scene(body_a.mass_center, tr_a)
-        com_b = Geometry.to_scene(body_b.mass_center, tr_b)
+        com_a = tr_a.to_scene_point(body_a.mass_center)
+        com_b = tr_b.to_scene_point(body_b.mass_center)
 
         impulsion_max = 0.0
         for point in info_collision.points:
@@ -421,15 +415,17 @@ class CollisionResolutionSystem:
             )
             if impulsion > impulsion_max:
                 impulsion_max = impulsion
-                
+
         return impulsion_max
 
-    def _compute_penetration_bias(self, depth: float, delta_time: float, slop: float, beta: float) -> float:
+    def _compute_penetration_bias(
+        self, depth: float, delta_time: float, slop: float, beta: float
+    ) -> float:
         """
-        Calcule le bias de pénétration de Baumgarte utilisé 
+        Calcule le bias de pénétration de Baumgarte utilisé
         pour corriger la pénétration.
 
-        Ce biais agit comme une vélocité de fermeture supplémentaire 
+        Ce biais agit comme une vélocité de fermeture supplémentaire
         le long de la normale de contact, pour forcer le solveur
         à générer une impulsion de séparation lorsque les objets sont déjà
         en pénétration.
@@ -441,10 +437,10 @@ class CollisionResolutionSystem:
         delta_time : float
             Pas de temps de la frame (secondes).
         slop : float
-            Tolérance de pénétration autorisée (pixels). 
+            Tolérance de pénétration autorisée (pixels).
             La profondeur en dessous de cette valeur est ignorée.
         beta : float
-            Facteur de biais (sans dimension). 
+            Facteur de biais (sans dimension).
             Les valeurs typiques sont dans [0.1, 0.3].
 
         Returns
@@ -520,10 +516,10 @@ class CollisionResolutionSystem:
         )
 
         # Calcul du bias de pénétration, pour forcer la séparation
-        slop_px = 0.5       # commence à 0.5 px (à ajuster selon ton échelle)
-        beta = 0.2          # commence à 0.2
+        slop_px = 0.5  # commence à 0.5 px (à ajuster selon ton échelle)
+        beta = 0.2  # commence à 0.2
 
-        bias = self._compute_penetration_bias(depth, delta_time, slop_px, beta) 
+        bias = self._compute_penetration_bias(depth, delta_time, slop_px, beta)
 
         # If separating, do nothing
         if kin.normal_velocity > 0.0 and bias <= Tolerence.GENERAL:
