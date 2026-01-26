@@ -62,6 +62,14 @@
         "position": [600, -1100],
         "rotation": 45.0
       }
+    },
+    {
+      "template_path": "objects/ball.json",
+      "name": "Ball_Standard",
+      "transform": {
+        "position": [100, 300],
+        "rotation": 25.0
+      }
     }
   ]
 }

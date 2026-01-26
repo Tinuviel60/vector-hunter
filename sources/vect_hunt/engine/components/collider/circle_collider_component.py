@@ -73,3 +73,20 @@ class CircleColliderComponent(ColliderComponent):
             radius=data.get("radius", 5.0),
             solid=data.get("solid", True),
         )
+
+    def get_scene_aabb(self) -> tuple[Vector2D, Vector2D]:
+        if self._transform_version == self.parent.transform._version:
+            return self._cached_world_aabb  
+
+        scene_center = self.get_scene_transform().position
+        radius = self.shape.radius
+
+        min_x = scene_center.x - radius
+        min_y = scene_center.y - radius
+        max_x = scene_center.x + radius
+        max_y = scene_center.y + radius
+
+        self._cached_world_aabb = (Vector2D(min_x, min_y), Vector2D(max_x, max_y))
+        self._transform_version = self.parent.transform._version
+
+        return self._cached_world_aabb

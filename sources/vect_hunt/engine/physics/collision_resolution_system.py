@@ -399,8 +399,8 @@ class CollisionResolutionSystem:
         tr_a = game_object_a.transform
         tr_b = game_object_b.transform
 
-        com_a = Geometry.to_scene(body_a.mass_center, tr_a.position, tr_a.rotation)
-        com_b = Geometry.to_scene(body_b.mass_center, tr_b.position, tr_b.rotation)
+        com_a = Geometry.to_scene(body_a.mass_center, tr_a)
+        com_b = Geometry.to_scene(body_b.mass_center, tr_b)
 
         impulsion_max = 0.0
         for point in info_collision.points:

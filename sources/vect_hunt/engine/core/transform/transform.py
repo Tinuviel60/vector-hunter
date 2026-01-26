@@ -28,7 +28,7 @@ class Transform:
         Rotation de l'objet en radians.
     """
 
-    __slots__ = ("position", "rotation")
+    __slots__ = ("position", "rotation", "_version")
 
     def __init__(self, position: Optional[Vector2D] = None, rotation: float = 0.0):
         """
@@ -44,8 +44,9 @@ class Transform:
         """
         self.position: Vector2D = position if position is not None else Vector2D()
         self.rotation: Rotation = Rotation(rotation)
+        self._version = 0
 
-    def translate(self, position: Vector2D) -> None:
+    def set_position(self, position: Vector2D) -> None:
         """
         Déplace le Transform dans l'espace.
 
@@ -57,6 +58,7 @@ class Transform:
             Nouvelle position.
         """
         self.position = position
+        self._version += 1
 
     def move(self, direction: Vector2D) -> None:
         """
@@ -68,6 +70,7 @@ class Transform:
             Vecteur représentant le déplacement à appliquer.
         """
         self.position += direction
+        self._version += 1
 
     def rotate(self, delta: float) -> None:
         """
@@ -80,6 +83,7 @@ class Transform:
         """
         rotation_delta = Rotation(delta)
         self.rotation = self.rotation.compose(rotation_delta)
+        self._version += 1
 
     def set_rotation(self, rotation: float) -> None:
         """
@@ -91,6 +95,7 @@ class Transform:
             Angle en radians.
         """
         self.rotation = Rotation(rotation)
+        self._version += 1
 
     def forward(self) -> Vector2D:
         """
@@ -143,3 +148,25 @@ class Transform:
         """
 
         return self.rotation.apply(Vector2D.left())
+
+    def combine(self, other: "Transform") -> "Transform":
+        """
+        Combine ce Transform avec un autre, en appliquant le Transform `other`
+        dans le repère de ce Transform.
+
+        Le résultat est exprimé dans le même espace que ce Transform.
+
+        Parameters
+        ----------
+        other : Transform
+            Le Transform à appliquer après celui-ci.
+
+        Returns
+        -------
+        Transform
+            Nouveau Transform résultant de la combinaison.
+        """
+        new_position = self.position + self.rotation.apply(other.position)
+        new_rotation = self.rotation.compose(other.rotation)
+
+        return Transform(position=new_position, rotation=new_rotation.angle)

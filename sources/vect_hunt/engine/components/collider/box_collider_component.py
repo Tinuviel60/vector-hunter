@@ -2,6 +2,7 @@ import math
 from typing import Any, Optional
 
 from vect_hunt.engine.core.geometries.box_shape import BoxShape
+from vect_hunt.engine.core.math.geometry import Geometry
 from vect_hunt.engine.core.math.vector import Vector2D
 from vect_hunt.engine.core.transform.transform import Transform
 
@@ -61,6 +62,7 @@ class BoxColliderComponent(ColliderComponent):
         transform = Transform(position=center, rotation=orientation)
         shape = BoxShape(width=width, height=height)
         super().__init__(shape=shape, transform=transform, solid=solid)
+        self._cached_scene_corners: list[Vector2D] = []
 
     @classmethod
     def from_data(
@@ -93,3 +95,70 @@ class BoxColliderComponent(ColliderComponent):
             orientation=rotation,
             solid=data.get("solid", True),
         )
+
+    def get_scene_aabb(self) -> tuple[Vector2D, Vector2D]:
+        """
+        Calcule l'AABB mondiale du collider en combinant
+        le Transform du GameObject parent et le Transform local.
+
+        Returns
+        -------
+        tuple[Vector2D, Vector2D]
+            Coin inférieur gauche et coin supérieur droit de l'AABB mondiale.
+        """
+
+        self._compute_cached_values()
+        
+        return self._cached_world_aabb
+    
+    def get_scene_corners(self) -> list[Vector2D]:
+        """
+        Obtient les coins du rectangle dans le système de coordonnées de la scène.
+
+        Returns
+        -------
+        list[Vector2D]
+            Liste des coins du rectangle dans le système de coordonnées de la scène.
+        """       
+        self._compute_cached_values()
+
+        return self._cached_scene_corners
+    
+    def _compute_cached_values(self) -> None:
+        """
+        Met à jour les valeurs mises en cache si le Transform parent a changé.
+        """
+        if self._transform_version == self.parent.transform._version:
+            return
+        
+        self._cached_scene_corners = self._compute_scene_corners()
+        self._cached_world_aabb = self._compute_scene_aabb()
+
+        self._transform_version = self.parent.transform._version
+
+    def _compute_scene_corners(self) -> list[Vector2D]:
+        """
+        Calcule les coins du rectangle dans le système de coordonnées de la scène.
+
+        Returns
+        -------
+        list[Vector2D]
+            Liste des coins du rectangle dans le système de coordonnées de la scène.
+        """
+        scene_tr = self.parent.transform.combine(self.transform)
+        corners = Geometry.get_scene_corners(self.shape.local_vertices(), scene_tr)
+        return corners
+    
+    def _compute_scene_aabb(self) -> tuple[Vector2D, Vector2D]:
+        """
+        Calcule l'AABB mondiale du collider en combinant
+        le Transform du GameObject parent et le Transform local.
+        """
+        scene_corners = self._cached_scene_corners
+        
+        min_x = min(corner.x for corner in scene_corners)
+        max_x = max(corner.x for corner in scene_corners)
+        min_y = min(corner.y for corner in scene_corners)
+        max_y = max(corner.y for corner in scene_corners)
+
+        return (Vector2D(min_x, min_y), Vector2D(max_x, max_y))

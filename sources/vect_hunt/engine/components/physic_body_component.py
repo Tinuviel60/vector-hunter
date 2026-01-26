@@ -365,9 +365,9 @@ class PhysicBodyComponent(Component):
 
         if self.velocity.magnitude_squared() > Tolerence.GENERAL * Tolerence.GENERAL:
             self.parent.transform.move(self.velocity * delta_time)
-
+ 
         if abs(self.angular_velocity) > Tolerence.GENERAL:
-            self.parent.transform.rotate(self.angular_velocity * delta_time)
+            self.parent.transform.rotate(self.angular_velocity * delta_time)    
 
     def set_velocity(self, velocity: Vector2D) -> None:
         """
@@ -417,26 +417,6 @@ class PhysicBodyComponent(Component):
         """
         self.acceleration += acceleration
 
-    def apply_impulse(self, impulse: Vector2D) -> None:
-        """
-        Applique une impulsion instantanée au corps physique.
-
-        L'impulsion est convertie en changement de vélocité en fonction de la masse.
-
-        Parameters
-        ----------
-        impulse : Vector2D
-            Impulsion à appliquer en newton*seconde (pixels*kg/s).
-        """
-        if self.is_kinematic:
-            return
-        inv_mass = self.invert_mass()
-        eps = Tolerence.GENERAL
-        if inv_mass <= eps:
-            return
-
-        self.velocity += impulse * inv_mass
-
     def apply_impulse_at_point(self, impulse: Vector2D, scene_point: Vector2D) -> None:
         """
         Applique une impulsion instantanée à un point du corps physique.
@@ -468,9 +448,7 @@ class PhysicBodyComponent(Component):
         # --- Rotation ---
         if inv_inertia > eps:
             parent_tr = self.parent.transform
-            com_world = Geometry.to_scene(
-                self.mass_center, parent_tr.position, parent_tr.rotation
-            )
+            com_world = Geometry.to_scene(self.mass_center, parent_tr)
             lever_arm = scene_point - com_world
 
             # Produit vectoriel 2D -> scalaire (r x J)

@@ -85,24 +85,29 @@ class Vector2D:
         Vector2D
             Le vecteur normalisé.
         """
-        mag = self.magnitude()
-        if mag <= Tolerence.GENERAL:
-            logger.warning("Normalisation d'un vecteur de magnitude nulle.")
+        mag2 = self.magnitude_squared()
+        if mag2 <= Tolerence.GENERAL * Tolerence.GENERAL:
             return Vector2D(1, 0)
-        return Vector2D(self._x / mag, self._y / mag)
+        
+        # Manipulation pour éviter une racine carrée inutile et des divisions
+        inv_mag = 1.0 / math.sqrt(mag2)
+        return Vector2D(self._x * inv_mag, self._y * inv_mag)
 
     def normalize(self) -> None:
         """
         Normalise le vecteur (le rend de longueur 1).
         """
-        mag = self.magnitude()
-        if mag <= Tolerence.GENERAL:
+        mag2 = self.magnitude_squared()
+        if mag2 <= Tolerence.GENERAL * Tolerence.GENERAL:
             logger.warning("Normalisation d'un vecteur de magnitude nulle.")
             self._x = 1.0
             self._y = 0.0
             return
-        self._x /= mag
-        self._y /= mag
+        
+        # Manipulation pour éviter une racine carrée inutile et des divisions
+        inv_mag = 1.0 / math.sqrt(mag2)
+        self._x *= inv_mag
+        self._y *= inv_mag
 
     def normal(self) -> "Vector2D":
         """
@@ -361,7 +366,7 @@ class Vector2D:
             True si les vecteurs sont égaux, False sinon.
         """
 
-        return math.isclose(self._x, other._x) and math.isclose(self._y, other._y)
+        return math.isclose(self._x, other._x, rel_tol=Tolerence.GENERAL) and math.isclose(self._y, other._y, rel_tol=Tolerence.GENERAL)
 
     @staticmethod
     def top() -> "Vector2D":
@@ -410,3 +415,49 @@ class Vector2D:
             Vecteur unitaire (1, 0).
         """
         return Vector2D(1.0, 0.0)
+
+    def __iadd__(self, other: "Vector2D") -> "Vector2D":
+        """
+        Addition en place de deux vecteurs.
+
+        Modifie ce vecteur sans créer de nouvel objet.
+
+        Parameters
+        ----------
+        other : Vector2D
+            Vecteur à ajouter.
+
+        Returns
+        -------
+        Vector2D
+            Référence sur ce vecteur modifié.
+        """
+        self._x += other._x
+        self._y += other._y
+        return self
+    
+    def __isub__(self, other: "Vector2D") -> "Vector2D":
+        """
+        Soustraction en place de deux vecteurs.
+        """
+        self._x -= other._x
+        self._y -= other._y
+        return self
+    
+    def __imul__(self, scalar: float) -> "Vector2D":
+        """
+        Multiplication scalaire en place.
+        """
+        self._x *= scalar
+        self._y *= scalar
+        return self
+    
+    def __itruediv__(self, scalar: float) -> "Vector2D":
+        """
+        Division scalaire en place.
+        """
+        if scalar == 0:
+            raise ValueError("Division par zéro dans Vector2D.__itruediv__")
+        self._x /= scalar
+        self._y /= scalar
+        return self

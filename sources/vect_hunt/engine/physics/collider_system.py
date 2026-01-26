@@ -114,74 +114,6 @@ class ColliderSystem:
             raise TypeError("Type de collider non supporté pour collision fine")
 
     @staticmethod
-    def get_collider_scene_transform(collider: ColliderComponent) -> Transform:
-        """
-        Retourne la transform monde du collider (position + rotation),
-        en composant Transform du GameObject et Transform local du collider.
-
-        Parameters
-        ----------
-        collider : ColliderComponent
-            Le collider dont on veut la transform monde.
-
-        Returns
-        -------
-        Transform
-            La transform monde du collider.
-        """
-        scene_tr = Transform(ColliderSystem._get_collider_scene_position(collider))
-        scene_tr.rotation = ColliderSystem._get_collider_scene_rotation(collider)
-
-        return scene_tr
-
-    @staticmethod
-    def _get_collider_scene_position(collider: ColliderComponent) -> Vector2D:
-        """
-        Calcule la position mondiale du centre du ColliderComponent :
-        - Applique la rotation du parent à la position locale du collider (offset)
-        - Ajoute la position du parent
-        La rotation locale du collider n'affecte pas la position de son centre.
-
-        Parameters
-        ----------
-        collider : ColliderComponent
-            Le ColliderComponent dont on veut la position mondiale.
-
-        Returns
-        -------
-        Vector2D
-            La position mondiale du centre du ColliderComponent.
-        """
-        parent_tr = collider.parent.transform
-
-        local_offset = collider.transform.position
-        rotated_offset = parent_tr.rotation.apply(local_offset)
-
-        world_pos = parent_tr.position + rotated_offset
-        return world_pos
-
-    @staticmethod
-    def _get_collider_scene_rotation(collider: ColliderComponent) -> Rotation:
-        """
-        Calcule la rotation mondiale d'un ColliderComponent, en tenant compte
-        de la rotation locale du collider et de la rotation du GameObject parent.
-
-        Parameters
-        ----------
-        collider : ColliderComponent
-            Le ColliderComponent dont on veut la rotation mondiale.
-
-        Returns
-        -------
-        Rotation
-            La rotation mondiale du ColliderComponent.
-        """
-        parent_tr = collider.parent.transform
-        local_rot = collider.transform.rotation
-        # On suppose que la méthode compose existe sur Rotation
-        return parent_tr.rotation.compose(local_rot)
-
-    @staticmethod
     def _circle_circle_collision_info(
         c1: CircleColliderComponent, c2: CircleColliderComponent
     ) -> CollisionInfo | None:
@@ -200,14 +132,13 @@ class ColliderSystem:
         CollisionInfo or None
             Informations de collision (normal, depth, points) si collision, sinon None.
         """
-        c1_scene_pos = ColliderSystem._get_collider_scene_position(c1)
-        c2_scene_pos = ColliderSystem._get_collider_scene_position(c2)
+        c1_scene_pos = c1.get_scene_transform().position
+        c2_scene_pos = c2.get_scene_transform().position
         return Geometry.circle_circle_collision_info(
             c1_scene_pos,
             c1.shape.radius,
             c2_scene_pos,
-            c2.shape.radius,
-            Tolerence.COLLISION,
+            c2.shape.radius
         )
 
     @staticmethod
@@ -232,8 +163,8 @@ class ColliderSystem:
         """
         # SAT avec calcul de la plus petite séparation
 
-        corners1 = ColliderSystem.get_scene_corners(box1)
-        corners2 = ColliderSystem.get_scene_corners(box2)
+        corners1 = box1.get_scene_corners()
+        corners2 = box2.get_scene_corners()
         return Geometry.sat_collision_info(corners1, corners2)
 
     @staticmethod
@@ -261,72 +192,21 @@ class ColliderSystem:
         CollisionInfo or None
             Informations de collision (normal, depth, points) si collision, sinon None.
         """
-        circle_scene_pos = ColliderSystem._get_collider_scene_position(circle)
-        box_scene_pos = ColliderSystem._get_collider_scene_position(box)
-        box_scene_rot = ColliderSystem._get_collider_scene_rotation(box)
-        local_corners = box.shape.local_vertices()
+        circle_scene_pos = circle.get_scene_transform().position
+        box_scene_tr = box.get_scene_transform()
+        box_shape = box.shape
 
         collision_info = Geometry.circle_box_collision_info(
             circle_scene_pos,
             circle.shape.radius,
-            box_scene_pos,
-            box_scene_rot,
-            local_corners,
-            Tolerence.COLLISION,
+            box_scene_tr,
+            box_shape
         )
         if collision_info is not None and reverse_result:
             # Inverser la normale
             collision_info.normal = -collision_info.normal
         
         return collision_info
-
-    @staticmethod
-    def get_scene_corners(box: BoxColliderComponent) -> list[Vector2D]:
-        """
-        Calcule les coins mondiaux d'un BoxCollider orienté.
-
-        Parameters
-        ----------
-        box : BoxCollider
-            Le BoxCollider dont on veut les coins mondiaux.
-
-        Returns
-        -------
-        list[Vector2D]
-            La liste des coins mondiaux du BoxCollider.
-        """
-        scene_position = ColliderSystem._get_collider_scene_position(box)
-        scene_rotation = ColliderSystem._get_collider_scene_rotation(box)
-
-        local_corners = box.shape.local_vertices()
-        return Geometry.get_scene_corners(local_corners, scene_position, scene_rotation)
-
-    def compute_aabb(self, collider: ColliderComponent) -> tuple[Vector2D, Vector2D]:
-        """
-        Calcule l'AABB monde d'un collider.
-
-        Returns
-        -------
-        tuple[Vector2D, Vector2D]
-            (min, max) de l'AABB monde du collider.
-        """
-
-        center = self._get_collider_scene_position(collider)
-        local_min, local_max = collider.shape.aabb_local()
-
-        # Cercle: rotation inutile, AABB directe
-        if isinstance(collider, CircleColliderComponent):
-            scene_aabb = (local_min + center, local_max + center)
-            return scene_aabb
-        # Box: calcul des coins monde
-        elif isinstance(collider, BoxColliderComponent):
-            scene_corners = ColliderSystem.get_scene_corners(collider)
-
-            xs = [p.x for p in scene_corners]
-            ys = [p.y for p in scene_corners]
-            return Vector2D(min(xs), min(ys)), Vector2D(max(xs), max(ys))
-        else:
-            raise TypeError("Type de collider non supporté pour AABB monde")
 
     # --------------------
     # Détection globale
@@ -387,8 +267,8 @@ class ColliderSystem:
                     for c2 in colliders2:
                         # AABB rapide (broad phase)
                         if not self.aabb_overlap(
-                            self.compute_aabb(c1),
-                            self.compute_aabb(c2),
+                            c1.get_scene_aabb(),
+                            c2.get_scene_aabb(),
                         ):
                             continue
 

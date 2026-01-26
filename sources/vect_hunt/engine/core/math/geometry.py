@@ -1,12 +1,13 @@
 from typing import TYPE_CHECKING, List, Tuple
 
-from vect_hunt.engine.core.transform.rotation import Rotation
+from vect_hunt.engine.core.geometries.box_shape import BoxShape
+from vect_hunt.engine.core.math.numeric import Numeric
+from vect_hunt.engine.core.transform.transform import Transform
 
 from .tolerance import Tolerence
 from .vector import Vector2D
 
-if TYPE_CHECKING:
-    from vect_hunt.engine.physics.collision_info import CollisionInfo
+from vect_hunt.engine.physics.collision_info import CollisionInfo
 
 
 class Geometry:
@@ -53,8 +54,8 @@ class Geometry:
             normal = edge.normal()
 
             # Normalise le vecteur normal
-            normalized_normal = normal.normalized()
-            normals.append(normalized_normal)
+            normal.normalize()
+            normals.append(normal)
 
         return normals
 
@@ -145,7 +146,7 @@ class Geometry:
         ) and Geometry.intervals_overlap(a_min.y, a_max.y, b_min.y, b_max.y)
 
     @staticmethod
-    def to_local(point: Vector2D, position: Vector2D, rotation: Rotation) -> Vector2D:
+    def to_local(point: Vector2D, scene_tr: Transform) -> Vector2D:
         """
         Convertit un point scene vers un repere local.
 
@@ -153,20 +154,18 @@ class Geometry:
         ----------
         point : Vector2D
             Point en coordonnees monde.
-        position : Vector2D
-            Position du repere local.
-        rotation : Rotation
-            Rotation du repere local.
+        scene_tr : Transform
+            Transform du repere monde.
 
         Returns
         -------
         Vector2D
             Point en coordonnees locales.
         """
-        return rotation.inverse().apply(point - position)
+        return scene_tr.rotation.apply_inverse(point - scene_tr.position)
 
     @staticmethod
-    def to_scene(point: Vector2D, position: Vector2D, rotation: Rotation) -> Vector2D:
+    def to_scene(point: Vector2D, scene_tr: Transform) -> Vector2D:
         """
         Convertit un point local vers le repere scene.
 
@@ -174,21 +173,19 @@ class Geometry:
         ----------
         point : Vector2D
             Point en coordonnees locales.
-        position : Vector2D
-            Position monde.
-        rotation : Rotation
-            Rotation monde.
+        scene_tr : Transform
+            Transform du repere monde.
 
         Returns
         -------
         Vector2D
             Point en coordonnees monde.
         """
-        return position + rotation.apply(point)
+        return scene_tr.position + scene_tr.rotation.apply(point)
 
     @staticmethod
     def get_scene_corners(
-        local_corners: List[Vector2D], position: Vector2D, rotation: Rotation
+        local_corners: List[Vector2D], scene_tr: Transform
     ) -> List[Vector2D]:
         """
         Transforme des coins locaux vers des coins monde.
@@ -197,43 +194,22 @@ class Geometry:
         ----------
         local_corners : List[Vector2D]
             Coins en repere local.
-        position : Vector2D
-            Position monde.
-        rotation : Rotation
-            Rotation monde.
+        scene_tr : Transform
+            Transform du repere monde.
 
         Returns
         -------
         List[Vector2D]
             Coins en repere monde.
         """
-        return [rotation.apply(corner) + position for corner in local_corners]
+        return [scene_tr.rotation.apply(corner) + scene_tr.position for corner in local_corners]
 
-    @staticmethod
-    def _local_bounds(corners: List[Vector2D]) -> Tuple[float, float, float, float]:
-        """
-        Calcule les bornes min et max en x et y d'un ensemble de coins locaux.
-
-        Parameters
-        ----------
-        corners : List[Vector2D]
-            Coins en repere local.
-
-        Returns
-        -------
-        Tuple[float, float, float, float]
-            (min_x, max_x, min_y, max_y)
-        """
-        xs = [p.x for p in corners]
-        ys = [p.y for p in corners]
-        return min(xs), max(xs), min(ys), max(ys)
 
     @staticmethod
     def closest_point_on_box(
         point: Vector2D,
-        box_position: Vector2D,
-        box_rotation: Rotation,
-        local_corners: List[Vector2D],
+        box_scene_tr: Transform,
+        box_shape: BoxShape,
     ) -> Vector2D:
         """
         Calcule le point le plus proche sur un rectangle oriente.
@@ -242,27 +218,25 @@ class Geometry:
         ----------
         point : Vector2D
             Point en coordonnees monde.
-        box_position : Vector2D
-            Centre du box en monde.
-        box_rotation : Rotation
-            Rotation du box en monde.
-        local_corners : List[Vector2D]
-            Coins locaux du box.
+        box_scene_tr : Transform
+            Transform du box.
+        box_shape: BoxShape
+            Forme du box.
 
         Returns
         -------
         Vector2D
             Point le plus proche en monde.
         """
-        local_point = Geometry.to_local(point, box_position, box_rotation)
-        min_x, max_x, min_y, max_y = Geometry._local_bounds(local_corners)
+        local_point = Geometry.to_local(point, box_scene_tr)
 
-        clamped_x = max(min_x, min(max_x, local_point.x))
-        clamped_y = max(min_y, min(max_y, local_point.y))
+        half_w = box_shape.width / 2
+        half_h = box_shape.height / 2
 
-        return Geometry.to_scene(
-            Vector2D(clamped_x, clamped_y), box_position, box_rotation
-        )
+        clamped_x = Numeric.clamp(local_point.x, -half_w, half_w)
+        clamped_y = Numeric.clamp(local_point.y, -half_h, half_h)
+
+        return Geometry.to_scene(Vector2D(clamped_x, clamped_y), box_scene_tr)
 
     @staticmethod
     def circle_circle_collision_info(
@@ -270,7 +244,6 @@ class Geometry:
         radius1: float,
         pos2: Vector2D,
         radius2: float,
-        min_penetration_depth: float | None = None,
     ) -> "CollisionInfo | None":
         """
         Détecte une collision entre deux cercles.
@@ -285,33 +258,38 @@ class Geometry:
             Centre du second cercle.
         radius2 : float
             Rayon du second cercle.
-        min_penetration_depth : float | None, optional
-            Profondeur minimale pour valider la collision.
 
         Returns
         -------
         CollisionInfo | None
             Informations de collision ou None.
         """
-        if min_penetration_depth is None:
-            min_penetration_depth = Tolerence.COLLISION
-
         delta = pos2 - pos1
-        dist = delta.magnitude()
         radius_sum = radius1 + radius2
+        radius_sum2 = radius_sum * radius_sum
 
-        if dist < radius_sum:
-            from vect_hunt.engine.physics.collision_info import CollisionInfo
+        dist2 = delta.magnitude_squared()
+        if dist2 >= radius_sum2:
+            return None
+        
+        # Cas collision : on calcule la distance réelle une seule fois
+        if dist2 <= Tolerence.GENERAL:
+            # Centres (quasi) confondus : normale arbitraire mais stable
+            normal = Vector2D(-1.0, 0.0)
+            dist = 0.0
+        else:
+            dist = dist2 ** 0.5
+            inv_dist = 1.0 / dist
+            normal = Vector2D(delta.x * inv_dist, delta.y * inv_dist)
 
-            normal = delta.normalized() if dist != 0 else Vector2D(-1, 0)
-            penetration = radius_sum - dist
+        penetration = radius_sum - dist
+        if penetration < Tolerence.COLLISION:
+            return None
 
-            if penetration < min_penetration_depth:
-                return None
-            closest = pos2 + normal * radius2
+        # Point de contact côté cercle 2 (sur sa surface, vers l'extérieur)
+        contact_point = pos2 + (-normal) * radius2
 
-            return CollisionInfo(normal=normal, depth=penetration, points=[closest])
-        return None
+        return CollisionInfo(normal=normal, depth=penetration, points=[contact_point])
 
     @staticmethod
     def get_polygon_center(corners: List[Vector2D]) -> Vector2D:
@@ -337,7 +315,7 @@ class Geometry:
     def sat_collision_info(
         corners1: List[Vector2D],
         corners2: List[Vector2D],
-    ) -> "CollisionInfo | None":
+    ) -> CollisionInfo | None:
         """
         Détecte une collision SAT entre deux polygones.
 
@@ -377,9 +355,8 @@ class Geometry:
         if penetration < eps or smallest_axis is None:
             return None
 
-        from vect_hunt.engine.physics.collision_info import CollisionInfo
-
         normal = smallest_axis.normalized()
+
         center1 = Geometry.get_polygon_center(corners1)
         center2 = Geometry.get_polygon_center(corners2)
         direction = center2 - center1
@@ -399,10 +376,8 @@ class Geometry:
     def circle_box_collision_info(
         circle_pos: Vector2D,
         circle_radius: float,
-        box_position: Vector2D,
-        box_rotation: Rotation,
-        local_corners: List[Vector2D],
-        min_penetration_depth: float | None = None,
+        box_scene_tr: Transform,
+        box_shape: BoxShape,
     ) -> "CollisionInfo | None":
         """
         Détecte une collision entre un cercle et un rectangle orienté.
@@ -413,37 +388,32 @@ class Geometry:
             Centre du cercle.
         circle_radius : float
             Rayon du cercle.
-        box_position : Vector2D
-            Centre du box.
-        box_rotation : Rotation
-            Rotation du box.
-        local_corners : List[Vector2D]
-            Coins locaux du box.
-        min_penetration_depth : float | None, optional
-            Profondeur minimale pour valider la collision.
+        box_scene_tr : Transform
+            Transform du box.
+        box_shape: BoxShape
+            Forme du box.
 
         Returns
         -------
         CollisionInfo | None
             Informations de collision (normal, depth, point) ou None.
         """
-        if min_penetration_depth is None:
-            min_penetration_depth = Tolerence.COLLISION
-
-        closest = Geometry.closest_point_on_box(
-            circle_pos, box_position, box_rotation, local_corners
-        )
+        closest = Geometry.closest_point_on_box(circle_pos, box_scene_tr, box_shape)
         delta = circle_pos - closest
-        dist = delta.magnitude()
+        dist2 = delta.magnitude_squared()
 
-        if dist < circle_radius:
-            from vect_hunt.engine.physics.collision_info import CollisionInfo
-
-            normal = delta.normalized() if dist != 0 else Vector2D(1, 0)
-
+        if dist2 < circle_radius * circle_radius:
+            dist = dist2 ** 0.5
             penetration = circle_radius - dist
-            if penetration < min_penetration_depth:
+            if penetration < Tolerence.COLLISION:
                 return None
+
+            if dist2 <= Tolerence.GENERAL:
+                normal = Vector2D(-1.0, 0.0)  # fallback stable
+            else:
+                inv_dist = 1.0 / dist
+                normal = Vector2D(delta.x * inv_dist, delta.y * inv_dist)
+
             return CollisionInfo(normal=normal, depth=penetration, points=[closest])
         return None
 

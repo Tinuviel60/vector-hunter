@@ -1,8 +1,8 @@
 from abc import ABC
-from typing import Optional
 
 from vect_hunt.engine.components.component import Component
 from vect_hunt.engine.core.geometries.shape import Shape
+from vect_hunt.engine.core.math.vector import Vector2D
 from vect_hunt.engine.core.transform.transform import Transform
 
 
@@ -35,7 +35,7 @@ class ColliderComponent(Component, ABC):
     def __init__(
         self,
         shape: Shape,
-        transform: Optional[Transform] = None,
+        transform: Transform,
         solid: bool = True,
     ):
         """
@@ -52,9 +52,11 @@ class ColliderComponent(Component, ABC):
         """
         super().__init__()
         self.shape = shape
-        self.transform = transform if transform is not None else Transform()
+        self.transform = transform 
         self.solid = solid
         self.nb_collision = 0
+        self._transform_version = -1
+        self._cached_world_aabb: tuple[Vector2D, Vector2D] = (Vector2D(0, 0), Vector2D(0, 0))
 
     def update(self, delta_time: float) -> None:
         """
@@ -66,3 +68,29 @@ class ColliderComponent(Component, ABC):
             Temps écoulé depuis la dernière frame (en secondes).
         """
         pass
+
+    def get_scene_aabb(self) -> tuple[Vector2D, Vector2D]:
+        """
+        Calcule l'AABB mondiale du collider en combinant
+        le Transform du GameObject parent et le Transform local.
+
+        Returns
+        -------
+        tuple[Vector2D, Vector2D]
+            Les coins min et max de l'AABB mondiale.
+        """
+
+        raise NotImplementedError("get_scene_aabb must be implemented in subclasses.")
+    
+    def get_scene_transform(self) -> Transform:
+        """
+        Calcule la position mondiale du collider en combinant
+        le Transform du GameObject parent et le Transform local.
+
+        Returns
+        -------
+        Transform
+            Le transform mondiale du collider.
+        """
+        scene_transform = self.parent.transform.combine(self.transform)
+        return scene_transform

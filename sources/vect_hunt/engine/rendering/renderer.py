@@ -181,7 +181,7 @@ class Renderer:
 
         if isinstance(shape, CircleShape):
             # Pour les cercles, center est local et on ajoute la position du GameObject
-            col_tr = ColliderSystem.get_collider_scene_transform(collider)
+            col_tr = collider.get_scene_transform()
             col_pos = col_tr.position
             center = (int(col_pos.x), int(col_pos.y))
             pygame.draw.circle(
@@ -191,7 +191,7 @@ class Renderer:
         elif isinstance(shape, BoxShape):
             # Pour les polygones, les points incluent déjà la position absolue
             assert isinstance(collider, BoxColliderComponent)
-            corners = ColliderSystem.get_scene_corners(collider)
+            corners = collider.get_scene_corners()
             pygame.draw.polygon(
                 self.screen,
                 color,

@@ -15,6 +15,11 @@ from vect_hunt.engine.utils.component_loader import load_all_components
 from vect_hunt.game.game_main import Game
 from vect_hunt.logging_config import setup_logging
 
+import cProfile
+import pstats
+import time
+from pathlib import Path
+
 logger = logging.getLogger(__name__)
 
 """
@@ -76,6 +81,44 @@ def build_resource_registry() -> ResourceRegistry:
         materials=MaterialReader().configs,
     )
 
+def _run_with_cprofile(run_callable, profile_dir: str = "profiles") -> None:
+    """
+    Exécute une fonction en l'entourant d'un profilage cProfile, et écrit un fichier .prof.
+
+    Parameters
+    ----------
+    run_callable : callable
+        Fonction à exécuter (typiquement loop.run).
+    profile_dir : str, optional
+        Dossier de sortie des profils.
+
+    Returns
+    -------
+    None
+    """
+    output_dir = Path(profile_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    timestamp = time.strftime("%Y%m%d-%H%M%S")
+    profile_path = output_dir / f"cprofile-{timestamp}.prof"
+
+    profiler = cProfile.Profile()
+    profiler.enable()
+    try:
+        run_callable()
+    finally:
+        profiler.disable()
+        profiler.dump_stats(str(profile_path))
+
+        # Affiche un top console pour lecture rapide
+        stats = pstats.Stats(profiler).strip_dirs()
+        stats.sort_stats("cumtime")  # temps cumulé = bon pour trouver le vrai goulet
+        print("\n==== cProfile TOP (cumtime) ====")
+        stats.print_stats(30)
+
+        print(f"\nProfil sauvegardé : {profile_path}")
+        print("Analyse détaillée : python -m pstats -s cumtime <fichier.prof>")
+        print("Ou visuel : snakeviz <fichier.prof> (si installé)\n")
 
 def main(app_config: dict[str, Any], resources: ResourceRegistry) -> None:
     """
@@ -120,7 +163,8 @@ def main(app_config: dict[str, Any], resources: ResourceRegistry) -> None:
             sim_dt=sim_dt,
             logger=logger,
         )
-        loop.run()
+        #loop.run()
+        _run_with_cprofile(loop.run)
     finally:
         pygame.quit()
 
