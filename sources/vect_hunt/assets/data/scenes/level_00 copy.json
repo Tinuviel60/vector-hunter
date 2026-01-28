@@ -16,26 +16,10 @@
       }
     },
     {
-      "template_path": "targets/basic.json",
-      "name": "Target_Basic",
-      "transform": {
-        "position": [600, 200],
-        "rotation": 45.0
-      }
-    },
-    {
-      "template_path": "targets/test.json",
-      "name": "Target_Basic",
-      "transform": {
-        "position": [600, 200],
-        "rotation": -45.0
-      }
-    },
-    {
       "template_path": "objects/standard.json",
       "name": "Wall_Standard",
       "transform": {
-        "position": [400, 800],
+        "position": [600, 0],
         "rotation": 0.0
       }
     },
@@ -43,8 +27,40 @@
       "template_path": "objects/crate.json",
       "name": "Crate_Standard",
       "transform": {
-        "position": [400, 100],
-        "rotation": 45.0
+        "position": [400, 12000],
+        "rotation": 0.0
+      }
+    },
+    {
+      "template_path": "objects/crate.json",
+      "name": "Crate_Standard",
+      "transform": {
+        "position": [400, 11000],
+        "rotation": 0.0
+      }
+    },
+    {
+      "template_path": "objects/crate.json",
+      "name": "Crate_Standard",
+      "transform": {
+        "position": [400, 13000],
+        "rotation": 0.0
+      }
+    },
+    {
+      "template_path": "objects/crate.json",
+      "name": "Crate_Standard",
+      "transform": {
+        "position": [500, 1100],
+        "rotation": 25.0
+      }
+    },
+    {
+      "template_path": "objects/ball.json",
+      "name": "Ball_Standard",
+      "transform": {
+        "position": [800, 0],
+        "rotation": 25.0
       }
     }
   ]

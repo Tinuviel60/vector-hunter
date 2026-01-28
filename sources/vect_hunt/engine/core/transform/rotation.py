@@ -166,7 +166,7 @@ class Rotation:
 
         Returns
         -------
-        Rotation
+        RotationA
             La rotation résultante de la composition.
         """
         result = Rotation.__new__(Rotation)
@@ -237,9 +237,9 @@ class Rotation:
         reflected = Vector2D(reflected_x, reflected_y)
 
         # Calculer l'angle de la nouvelle direction
-        new_angle = (
-            math.atan2(reflected.y, reflected.x) + math.pi / 2
-        )  # +π/2 car forward est (0, -1)
+        # Convertit l'angle "direction" (repère X) vers un angle de rotation
+        # dont l'axe forward est Vector2D.top() (repère Y-up).
+        new_angle = math.atan2(reflected.y, reflected.x) - math.pi / 2
 
         reflected_rotation = Rotation(new_angle)
         return reflected_rotation

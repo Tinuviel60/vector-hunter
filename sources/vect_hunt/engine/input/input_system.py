@@ -55,6 +55,7 @@ class InputSystem:
         self._mouse_position = Vector2D(0.0, 0.0)
         self._mouse_wheel_delta = 0.0
         self._previous_mouse_position = Vector2D(0.0, 0.0)
+        self._mouse_origin_y: float | None = None
 
         # Mapping pygame → noms de touches
         self._pygame_key_mapping = self._build_key_mapping()
@@ -182,7 +183,14 @@ class InputSystem:
         mouse_pos = pygame.mouse.get_pos()
 
         # Calculer le delta de la souris
-        current_mouse_position = Vector2D(float(mouse_pos[0]), float(mouse_pos[1]))
+        raw_mouse_position = Vector2D(float(mouse_pos[0]), float(mouse_pos[1]))
+        origin_y = self._resolve_mouse_origin_y()
+        if origin_y is None:
+            current_mouse_position = raw_mouse_position
+        else:
+            current_mouse_position = Vector2D(
+                raw_mouse_position.x, origin_y - raw_mouse_position.y
+            )
         self._mouse_delta = current_mouse_position - self._previous_mouse_position
         self._previous_mouse_position = current_mouse_position
         self._mouse_position = current_mouse_position
@@ -415,12 +423,12 @@ class InputSystem:
             for key_name in action.keys.get("down", []):
                 pygame_key = self._get_pygame_key(key_name)
                 if pygame_key is not None and keys_pressed[pygame_key]:
-                    y_input += 1.0
+                    y_input -= 1.0
 
             for key_name in action.keys.get("up", []):
                 pygame_key = self._get_pygame_key(key_name)
                 if pygame_key is not None and keys_pressed[pygame_key]:
-                    y_input -= 1.0
+                    y_input += 1.0
 
             vector = Vector2D(x_input, y_input)
 
@@ -668,7 +676,7 @@ class InputSystem:
         Returns
         -------
         Vector2D
-            Position en pixels.
+            Position en pixels (repère Y-up).
         """
         return self._mouse_position
 
@@ -679,7 +687,7 @@ class InputSystem:
         Returns
         -------
         Vector2D
-            Delta en pixels.
+            Delta en pixels (repère Y-up).
         """
         return self._mouse_delta
 
@@ -741,3 +749,17 @@ class InputSystem:
             state.reset()
         self._mouse_delta = Vector2D(0.0, 0.0)
         self._mouse_wheel_delta = 0.0
+
+    def set_mouse_origin_y(self, origin_y: float | None) -> None:
+        """
+        Définit l'origine Y écran utilisée pour convertir la souris en Y-up.
+        """
+        self._mouse_origin_y = origin_y
+
+    def _resolve_mouse_origin_y(self) -> float | None:
+        if self._mouse_origin_y is not None:
+            return self._mouse_origin_y
+        surface = pygame.display.get_surface()
+        if surface is None:
+            return None
+        return float(surface.get_height())

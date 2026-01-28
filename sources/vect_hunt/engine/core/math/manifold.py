@@ -5,271 +5,286 @@ from .vector import Vector2D
 
 
 class Manifold:
+    """
+    Utilitaires de génération de points de contact (manifold).
+
+    Version spécialisée pour OBB (rectangles orientés) : 4 coins en ordre cyclique.
+    """
+
     @staticmethod
     def build_contact_manifold(
         corners_a: List[Vector2D],
         corners_b: List[Vector2D],
         collision_normal: Vector2D,
-        penetration_depth: float,
-        reference_from_a: bool | None = None,
+        reference_from_a: bool,
     ) -> List[Vector2D]:
         """
-        Construit 1 à 2 points de contact (manifold) par edge clipping.
-
-        Cette fonction suppose :
-        - polygones convexes,
-        - sommets en sens horaire (CW),
-        - collision_normal pointe de A vers B,
-        - penetration_depth provient d'un SAT préalable.
-
-        Étapes :
-        1) Choisir reference edge sur A ou B (celle la plus alignée à collision_normal).
-        2) Choisir incident edge sur l'autre polygone.
-        3) Clipper l'incident edge contre les deux side planes de la reference edge.
-        4) Filtrer les points conservés qui sont "derrière" le plan de référence.
+        Construit 0 à 2 points de contact pour une collision OBB/OBB.
 
         Parameters
         ----------
         corners_a : List[Vector2D]
-            Sommets du polygone A (CW) en coordonnées scène.
+            4 coins du rectangle A en coordonnées scène (ordre cyclique).
         corners_b : List[Vector2D]
-            Sommets du polygone B (CW) en coordonnées scène.
+            4 coins du rectangle B en coordonnées scène (ordre cyclique).
         collision_normal : Vector2D
-            Normale de collision (unitaire) pointant de A vers B.
-        penetration_depth : float
-            Profondeur de pénétration (SAT).
-        reference_from_a : bool | None
-            Si défini, force le choix de l'arête de référence à partir du polygone A
-            (True) ou B (False) en se basant sur l'axe SAT minimal.
+            Normale unitaire A -> B (issue du SAT).
+        reference_from_a : bool
+            True si l'axe SAT minimal vient de A, sinon False.
 
         Returns
         -------
         List[Vector2D]
-            Une liste de 0 à 2 points de contact en coordonnées scène.
+            Liste de 0 à 2 points de contact en coordonnées scène.
         """
-        normal = collision_normal.normalized()
+        if len(corners_a) != 4 or len(corners_b) != 4:
+            raise ValueError("build_contact_manifold attend 4 coins par rectangle.")
 
-        # On choisit la "face de référence" en se liant à l'axe SAT minimal si demandé
-        if reference_from_a is None:
-            ref_edge_a = Manifold._find_reference_edge(corners_a, normal)
-            ref_edge_b = Manifold._find_reference_edge(corners_b, -normal)
-
-            ref_n_a = (-(ref_edge_a[1] - ref_edge_a[0]).normal()).normalized()
-            ref_n_b = (-(ref_edge_b[1] - ref_edge_b[0]).normal()).normalized()
-
-            score_a = ref_n_a.dot(normal)
-            score_b = ref_n_b.dot(-normal)
-
-            if score_a >= score_b:
-                ref_edge = ref_edge_a
-                ref_normal = ref_n_a
-                inc_edge = Manifold._find_incident_edge(corners_b, ref_normal)
-            else:
-                ref_edge = ref_edge_b
-                ref_normal = ref_n_b
-                inc_edge = Manifold._find_incident_edge(corners_a, ref_normal)
-        elif reference_from_a:
-            ref_edge = Manifold._find_reference_edge(corners_a, normal)
-            ref_normal = (-(ref_edge[1] - ref_edge[0]).normal()).normalized()
-            inc_edge = Manifold._find_incident_edge(corners_b, ref_normal)
+        # Ref = polygone dont provient l'axe SAT minimal
+        if reference_from_a:
+            ref_corners = corners_a
+            inc_corners = corners_b
+            ref_normal = collision_normal  # déjà unitaire et (A -> B)
         else:
-            ref_edge = Manifold._find_reference_edge(corners_b, -normal)
-            ref_normal = (-(ref_edge[1] - ref_edge[0]).normal()).normalized()
-            inc_edge = Manifold._find_incident_edge(corners_a, ref_normal)
+            ref_corners = corners_b
+            inc_corners = corners_a
+            ref_normal = -collision_normal  # face de B qui fait face à A
 
-        # Direction de l'arête de référence (unitaire)
-        ref_dir = (ref_edge[1] - ref_edge[0]).normalized()
-        # "Side planes" : on clippe l'incident edge dans la bande délimitée
-        # par les côtés. Les normales des side planes pointent vers l'intérieur
-        # de la face de référence. Pour CW, l'intérieur de la face
-        # (par rapport à l'arête) est du côté opposé à la normale sortante.
-        # On construit deux planes passant par v1 et v2, perpendiculaires à ref_dir.
-        side_normal_1 = (
-            -ref_dir
-        )  # plan perpendiculaire à ref_dir passant par v1 (garde vers v2)
-        side_offset_1 = side_normal_1.dot(ref_edge[0])
+        # 1) Choisir l'arête de référence 
+        # (celle dont la normale sortante est la plus alignée)
+        ref_i = Manifold._box_reference_edge_index(ref_corners, ref_normal)
+        ref_v1 = ref_corners[ref_i]
+        ref_v2 = ref_corners[(ref_i + 1) & 3]
 
-        side_normal_2 = (
-            ref_dir  # plan perpendiculaire à ref_dir passant par v2 (garde vers v1)
-        )
-        side_offset_2 = side_normal_2.dot(ref_edge[1])
+        # 2) Choisir l'arête incidente (normale la plus opposée à ref_normal)
+        inc_i = Manifold._box_incident_edge_index(inc_corners, ref_normal)
+        inc_p1 = inc_corners[inc_i]
+        inc_p2 = inc_corners[(inc_i + 1) & 3]
 
-        # On clippe l'incident edge contre les side planes, si moins de 2 points restent
-        # , on arrête
-        clipped = Manifold._clip_segment_to_line(
-            inc_edge[0], inc_edge[1], side_normal_1, side_offset_1
-        )
-        if len(clipped) < 2:
+        # 3) Side planes de la face de référence
+        # ref_dir = direction de l'arête (unitaire) -> dérivée de la normale (perp)
+        ref_edge = ref_v2 - ref_v1
+
+        if ref_edge.magnitude_squared() <= Tolerence.GENERAL * Tolerence.GENERAL:
             return []
 
-        # On clippe contre le second plan, si rien ne reste, on arrête
-        clipped = Manifold._clip_segment_to_line(
-            clipped[0], clipped[1], side_normal_2, side_offset_2
-        )
-        if not clipped:
-            return []
+        ref_dir = ref_edge.normalized()  # direction arête (tangent)
 
-        # Plan de la face de référence : n·x = offset
-        # offset = n·v1 (face plane)
-        face_offset = ref_normal.dot(ref_edge[0])
+        # deux demi-plans latéraux qui délimitent la face
+        side_n1 = -ref_dir
+        side_o1 = side_n1.dot(ref_v1)
+
+        side_n2 = ref_dir
+        side_o2 = side_n2.dot(ref_v2)
+
+        clipped = Manifold._clip_segment_to_line_2pts(inc_p1, inc_p2, side_n1, side_o1)
+        if clipped is None:
+            return []
+        c1, c2 = clipped
+
+        clipped = Manifold._clip_segment_to_line_2pts(c1, c2, side_n2, side_o2)
+        if clipped is None:
+            return []
+        c1, c2 = clipped
+
+        # 4) Face plane : ref_normal · x = ref_normal · ref_v1
+        face_offset = ref_normal.dot(ref_v1)
 
         eps = Tolerence.COLLISION
-        # Filtrage final : on garde les points qui sont derrière la face (pénétration)
+        eps2 = eps * eps
+        #TODO : Remettre epsilon
         contacts: List[Vector2D] = []
-        for p in clipped:
-            separation = ref_normal.dot(p) - face_offset
-            # séparation <= 0 => point sur ou derrière le plan de face (donc en contact)
-            if separation <= eps:
-                contacts.append(p)
 
-        # En pratique, tu obtiens 0..2 points. On peut réduire si >2 (rare).
-        if len(contacts) > 2:
-            contacts = contacts[:2]
+        sep1 = ref_normal.dot(c1) - face_offset
+        if sep1 <= 0.5:
+            contacts.append(c1)
+
+        sep2 = ref_normal.dot(c2) - face_offset
+        if sep2 <= 0.5:
+            if not contacts or (c2 - contacts[0]).magnitude_squared() > 0.5 * 0.5:
+                contacts.append(c2)
 
         return contacts
 
     @staticmethod
-    def _find_incident_edge(
-        corners: List[Vector2D],
-        reference_normal: Vector2D,
-    ) -> Tuple[Vector2D, Vector2D]:
+    def _box_reference_edge_index(corners: List[Vector2D], face_dir: Vector2D) -> int:
         """
-        Choisit l'arête "incidente" sur un polygone.
-
-        L'arête incidente est celle dont la normale sortante est la plus opposée
-        à la normale de la face de référence (celle qui "fait face" à la collision).
+        Choisit l'arête référence d'une box (OBB).
 
         Parameters
         ----------
         corners : List[Vector2D]
-            Sommets du polygone (CW) en coordonnées scène.
-        reference_normal : Vector2D
-            Normale sortante de l'arête référence (unitaire).
+            4 coins en ordre cyclique.
+        face_dir : Vector2D
+            Normale cible unitaire (normale de face issue du SAT).
 
         Returns
         -------
-        Tuple[Vector2D, Vector2D]
-            Arête incidente.
+        int
+            Index i de l'arête (corners[i] -> corners[i+1]).
         """
-        best_index = 0
-        best_dot = float("inf")  # on veut minimiser dot(n_edge, reference_normal)
+        # Normales de face unitaires de la box (4) 
+        # calculées avec seulement 2 normalisations
+        n0, n1, n2, n3 = Manifold._box_face_normals(corners)
 
-        for i in range(len(corners)):
-            v1 = corners[i]
-            v2 = corners[(i + 1) % len(corners)]
-            edge = v2 - v1
+        # On maximise dot(n_i, face_dir)
+        d0 = n0.dot(face_dir)
+        d1 = n1.dot(face_dir)
+        d2 = n2.dot(face_dir)
+        d3 = n3.dot(face_dir)
 
-            normal = (-edge.normal()).normalized()
-            dot = normal.dot(reference_normal)
-            if dot < best_dot:
-                best_dot = dot
-                best_index = i
+        best_i = 0
+        best_d = d0
 
-        return (corners[best_index], corners[(best_index + 1) % len(corners)])
+        if d1 > best_d:
+            best_d = d1
+            best_i = 1
+        if d2 > best_d:
+            best_d = d2
+            best_i = 2
+        if d3 > best_d:
+            best_i = 3
+
+        return best_i
 
     @staticmethod
-    def _clip_segment_to_line(
+    def _box_incident_edge_index(corners: List[Vector2D], ref_normal: Vector2D) -> int:
+        """
+        Choisit l'arête incidente d'une box (OBB).
+
+        Parameters
+        ----------
+        corners : List[Vector2D]
+            4 coins en ordre cyclique.
+        ref_normal : Vector2D
+            Normale unitaire de la face de référence.
+
+        Returns
+        -------
+        int
+            Index i de l'arête (corners[i] -> corners[i+1]).
+        """
+        n0, n1, n2, n3 = Manifold._box_face_normals(corners)
+
+        # On minimise dot(n_i, ref_normal) (la plus opposée)
+        d0 = n0.dot(ref_normal)
+        d1 = n1.dot(ref_normal)
+        d2 = n2.dot(ref_normal)
+        d3 = n3.dot(ref_normal)
+
+        best_i = 0
+        best_d = d0
+
+        if d1 < best_d:
+            best_d = d1
+            best_i = 1
+        if d2 < best_d:
+            best_d = d2
+            best_i = 2
+        if d3 < best_d:
+            best_i = 3
+
+        return best_i
+
+    @staticmethod
+    def _box_face_normals(
+        corners: List[Vector2D],
+    ) -> Tuple[Vector2D, Vector2D, Vector2D, Vector2D]:
+        """
+        Calcule les 4 normales sortantes unitaires d'une box.
+
+        Contrairement à une approche basée sur CW/CCW, on choisit le signe
+        de la normale en vérifiant qu'elle pointe vers l'extérieur (loin du centre).
+
+        Parameters
+        ----------
+        corners : List[Vector2D]
+            4 coins dans un ordre cyclique (CW ou CCW).
+
+        Returns
+        -------
+        Tuple[Vector2D, Vector2D, Vector2D, Vector2D]
+            (n0, n1, n2, n3) normales sortantes unitaires des 4 arêtes.
+        """
+        if len(corners) != 4:
+            raise ValueError("_box_face_normals attend 4 coins.")
+
+        # Centre (centroïde simple)
+        center = Vector2D(
+            (corners[0].x + corners[1].x + corners[2].x + corners[3].x) * 0.25,
+            (corners[0].y + corners[1].y + corners[2].y + corners[3].y) * 0.25,
+        )
+
+        normals: List[Vector2D] = []
+        eps2 = Tolerence.GENERAL * Tolerence.GENERAL
+
+        for i in range(4):
+            a = corners[i]
+            b = corners[(i + 1) & 3]
+            edge = b - a
+            if edge.magnitude_squared() <= eps2:
+                normals.append(Vector2D(1.0, 0.0))
+                continue
+
+            # Normale candidate (perpendiculaire)
+            n = edge.normal().normalized()
+
+            # On force la normale à pointer vers l'extérieur :
+            # si elle pointe vers le centre, on l'inverse.
+            mid = (a + b) * 0.5
+            to_mid = mid - center
+            if n.dot(to_mid) < 0.0:
+                n = -n
+
+            normals.append(n)
+
+        return normals[0], normals[1], normals[2], normals[3]
+
+    @staticmethod
+    def _clip_segment_to_line_2pts(
         p1: Vector2D,
         p2: Vector2D,
         plane_normal: Vector2D,
         plane_offset: float,
-    ) -> List[Vector2D]:
+    ) -> Tuple[Vector2D, Vector2D] | None:
         """
-        Clippe un segment contre un demi-plan défini par une normale et un offset.
-
-        On renvoie 0 à 2 points (les extrémités du segment résultant après clipping).
-        Cette fonction est la brique centrale du "edge clipping".
+        Clippe un segment contre un demi-plan et retourne 2 points si survivant.
 
         Parameters
         ----------
         p1 : Vector2D
-            Premier point du segment (scène).
+            Premier point du segment.
         p2 : Vector2D
-            Second point du segment (scène).
+            Second point du segment.
         plane_normal : Vector2D
             Normale unitaire du plan.
         plane_offset : float
             Offset du plan (n·x = offset).
+
         Returns
         -------
-        List[Vector2D]
-            Liste de 0 à 2 points correspondant au segment clippé.
+        Tuple[Vector2D, Vector2D] | None
+            Segment clippé (2 points), ou None si rejeté.
         """
-        # Calcul des distances des points au plan
+        eps = 0.5#Tolerence.COLLISION
+
         d1 = plane_normal.dot(p1) - plane_offset
         d2 = plane_normal.dot(p2) - plane_offset
 
-        eps = Tolerence.COLLISION
         inside1 = d1 <= eps
         inside2 = d2 <= eps
 
-        points: List[Vector2D] = []
+        if not inside1 and not inside2:
+            return None
+        if inside1 and inside2:
+            return (p1, p2)
 
-        # Si un point est dedans, on le garde
-        if inside1:
-            points.append(p1)
-        if inside2:
-            points.append(p2)
+        direction = p2 - p1
+        denom = plane_normal.dot(direction)
+        if abs(denom) <= Tolerence.GENERAL:
+            return (p1, p1) if inside1 else (p2, p2)
 
-        # Si le segment traverse le plan, on ajoute le point d'intersection
-        if inside1 ^ inside2:  # XOR, équivalent à len(points) == 1
-            # t (lambda) tel que :
-            # point d'intersection = p1 + t * (p2 - p1) et n·p = offset
-            direction = p2 - p1
-            denominateur = plane_normal.dot(direction)
-            if abs(denominateur) > eps:
-                t = (plane_offset - plane_normal.dot(p1)) / denominateur
-                intersection = p1 + direction * t
-                points.append(intersection)
+        t = (plane_offset - plane_normal.dot(p1)) / denom
+        inter = p1 + direction * t
 
-        # On s'assure de ne pas renvoyer plus de 2 points (au cas où)
-        if len(points) <= 2:
-            return points
-
-        # Déduplique les points très proches dans le cas où on en a plus de 2 points
-        unique: List[Vector2D] = []
-        for p in points:
-            if all((p - q).magnitude_squared() > (eps * eps) for q in unique):
-                unique.append(p)
-
-        return unique[:2]
-
-    @staticmethod
-    def _find_reference_edge(
-        corners: List[Vector2D],
-        collision_normal: Vector2D,
-    ) -> Tuple[Vector2D, Vector2D]:
-        """
-        Choisit l'arête "référence" sur un polygone.
-
-        On cherche l'arête dont la normale sortante est la plus alignée
-        avec la normale de collision.
-
-        Parameters
-        ----------
-        corners : List[Vector2D]
-            Sommets du polygone (CW) en coordonnées scène.
-        collision_normal : Vector2D
-            Normale de collision (unitaire) pointant de A vers B.
-
-        Returns
-        -------
-        Tuple[Vector2D, Vector2D]
-            L'arête de référence (Vector2D start, Vector2D end).
-        """
-        best_index = 0
-        best_dot = float("-inf")
-
-        for i in range(len(corners)):
-            v1 = corners[i]
-            v2 = corners[(i + 1) % len(corners)]
-            edge = v2 - v1
-
-            normal = (-edge.normal()).normalized()
-            dot = normal.dot(collision_normal)
-            if dot > best_dot:
-                best_dot = dot
-                best_index = i
-
-        ref_edge = (corners[best_index], corners[(best_index + 1) % len(corners)])
-        return ref_edge
+        return (p1, inter) if inside1 else (inter, p2)

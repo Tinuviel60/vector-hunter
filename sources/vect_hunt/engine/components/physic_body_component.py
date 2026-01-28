@@ -71,7 +71,6 @@ class PhysicBodyComponent(Component):
     def __init__(
         self,
         mass: float = 1.0,
-        speed: float = 300.0,
         is_kinematic: bool = False,
         use_gravity: bool = True,
         is_controlled: bool = False,
@@ -84,8 +83,6 @@ class PhysicBodyComponent(Component):
         ----------
         mass : float, optional
             Masse du corps physique (par défaut 1.0).
-        speed : float, optional
-            Vitesse de déplacement en pixels/seconde (par défaut 300.0).
         is_kinematic : bool, optional
             Indique si le corps est cinématique (par défaut False).
         material : PhysicMaterial | None, optional
@@ -452,6 +449,7 @@ class PhysicBodyComponent(Component):
             # Produit vectoriel 2D -> scalaire (r x J)
             torque_impulse = (lever_arm.x * impulse.y) - (lever_arm.y * impulse.x)
             self.angular_velocity += torque_impulse * inv_inertia
+ 
 
     def add_torque(self, torque: float) -> None:
         """
@@ -487,6 +485,9 @@ class PhysicBodyComponent(Component):
         total_area = 0.0
         weighted_position_sum = Vector2D(0, 0)
         for collider in self.parent.get_components(ColliderComponent):
+            if collider.solid is False:
+                continue
+
             area = collider.shape.area()
             local_position = collider.transform.position
 
@@ -524,6 +525,9 @@ class PhysicBodyComponent(Component):
         # Somme des aires pour répartir la masse
         areas: list[float] = []
         for collider in colliders:
+            if collider.solid is False:
+                continue
+
             area = float(collider.shape.area())
             areas.append(area)
 

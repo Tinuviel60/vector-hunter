@@ -58,7 +58,7 @@ class SpriteComponent(RenderComponent):
         scale = data.get("scale", 1.0)
         return cls(image_path, scale=scale)
 
-    def render(self, surface) -> None:
+    def render(self, surface, viewport=None) -> None:
         """
         Rend le sprite sur la surface donnee.
 
@@ -69,7 +69,12 @@ class SpriteComponent(RenderComponent):
         """
         transform = self.parent.transform
         pos = transform.position
-        rect = self.image.get_rect(center=(int(pos.x), int(pos.y)))
+        if viewport is not None:
+            screen_pos = viewport.world_to_screen(pos)
+            center = (int(screen_pos.x), int(screen_pos.y))
+        else:
+            center = (int(pos.x), int(pos.y))
+        rect = self.image.get_rect(center=center)
         surface.blit(self.image, rect)
 
     def update(self, delta_time: float) -> None:

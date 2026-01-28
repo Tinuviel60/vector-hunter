@@ -31,7 +31,7 @@ def test_ia_component_sets_velocity_based_on_forward_direction(game_object_with_
     """
     game_object = game_object_with_ia
 
-    # Position au centre, direction vers le bas (rotation 0)
+    # Position au centre, direction vers le haut (rotation 0)
     game_object.transform.translate(Vector2D(400, 300))
     game_object.transform.set_rotation(0)
 
@@ -41,19 +41,19 @@ def test_ia_component_sets_velocity_based_on_forward_direction(game_object_with_
 
     ia_comp.update(0.016)
 
-    # La direction forward avec rotation 0 est (0, -1) donc vers le haut
-    # Vélocité attendue = (0, -1) * 150.0 = (0, -150)
+    # La direction forward avec rotation 0 est (0, 1) donc vers le haut
+    # Vélocité attendue = (0, 1) * 150.0 = (0, 150)
     assert physic_body.velocity.x == pytest.approx(0.0, abs=0.01)
-    assert physic_body.velocity.y == pytest.approx(-150.0, abs=0.01)
+    assert physic_body.velocity.y == pytest.approx(150.0, abs=0.01)
 
 
 @pytest.mark.parametrize(
     "rotation, expected_vx, expected_vy",
     [
-        (0, 0, -150),  # Haut
-        (math.pi / 2, 150, 0),  # Droite
-        (math.pi, 0, 150),  # Bas
-        (-math.pi / 2, -150, 0),  # Gauche
+        (0, 0, 150),  # Haut
+        (math.pi / 2, -150, 0),  # Gauche
+        (math.pi, 0, -150),  # Bas
+        (-math.pi / 2, 150, 0),  # Droite
     ],
 )
 def test_ia_respects_transform_rotation(
@@ -89,7 +89,7 @@ def test_ia_reflects_on_boundary_and_updates_rotation(game_object_with_ia):
 
     # Position très proche du bord gauche (1px), direction gauche
     # Limites du fixture: (0, 0) à (800, 600)
-    # Convention: rotation 0 = haut, π/2 = droite, π = bas, -π/2 = gauche
+    # Convention: rotation 0 = haut, π/2 = gauche, π = bas, -π/2 = droite
     game_object.transform.translate(Vector2D(1, 300))
     game_object.transform.set_rotation(-math.pi / 2)  # Gauche (-1, 0)
 
@@ -140,9 +140,9 @@ def test_ia_boundary_reflection_multiple_updates(game_object_with_ia):
     ia_comp = game_object.get_component(IaComponent)
     physic_body = game_object.get_component(PhysicBodyComponent)
 
-    # Position proche du bord supérieur, direction vers le haut
+    # Position proche du bord supérieur, direction vers le bas
     game_object.transform.translate(Vector2D(400, 100))
-    game_object.transform.set_rotation(math.pi)  # Haut
+    game_object.transform.set_rotation(math.pi)  # Bas
 
     # Plusieurs updates pour forcer le rebond
     for _ in range(5):

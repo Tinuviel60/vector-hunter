@@ -83,10 +83,10 @@ def test_transform_set_rotation(rotation, expected_rotation):
 @pytest.mark.parametrize(
     "rotation, expected_forward, expected_right, expected_behind, expected_left",
     [
-        (0.0, (0.0, -1.0), (1.0, 0.0), (0.0, 1.0), (-1.0, 0.0)),
-        (math.pi / 2, (1.0, 0.0), (0.0, 1.0), (-1.0, 0.0), (0.0, -1.0)),
-        (math.pi, (0.0, 1.0), (-1.0, 0.0), (0.0, -1.0), (1.0, 0.0)),
-        (-math.pi / 2, (-1.0, 0.0), (0.0, -1.0), (1.0, 0.0), (0.0, 1.0)),
+        (0.0, (0.0, 1.0), (1.0, 0.0), (0.0, -1.0), (-1.0, 0.0)),
+        (math.pi / 2, (-1.0, 0.0), (0.0, 1.0), (1.0, 0.0), (0.0, -1.0)),
+        (math.pi, (0.0, -1.0), (-1.0, 0.0), (0.0, 1.0), (1.0, 0.0)),
+        (-math.pi / 2, (1.0, 0.0), (0.0, -1.0), (-1.0, 0.0), (0.0, 1.0)),
     ],
 )
 def test_transform_directions(

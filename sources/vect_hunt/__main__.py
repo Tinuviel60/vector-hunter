@@ -165,8 +165,8 @@ def main(app_config: dict[str, Any], resources: ResourceRegistry) -> None:
             sim_dt=sim_dt,
             logger=logger,
         )
-        # loop.run()
-        _run_with_cprofile(loop.run)
+        loop.run()
+        #_run_with_cprofile(loop.run)
     finally:
         pygame.quit()
 

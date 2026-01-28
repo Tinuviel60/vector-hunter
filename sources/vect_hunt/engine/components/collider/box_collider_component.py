@@ -62,7 +62,14 @@ class BoxColliderComponent(ColliderComponent):
         transform = Transform(position=center, rotation=orientation)
         shape = BoxShape(width=width, height=height)
         super().__init__(shape=shape, transform=transform, solid=solid)
+
+        # Cache pour le coins en coordonnées scène
+        self._corner_version = -1
         self._cached_scene_corners: list[Vector2D] = []
+
+        # Axe en cache
+        self._cached_axis_u: Vector2D = Vector2D(1.0, 0.0)  # axe local X en scène
+        self._cached_axis_v: Vector2D = Vector2D(0.0, 1.0)  # axe local Y en scène
 
     @classmethod
     def from_data(
@@ -98,16 +105,44 @@ class BoxColliderComponent(ColliderComponent):
 
     def get_scene_aabb(self) -> tuple[Vector2D, Vector2D]:
         """
-        Calcule l'AABB mondiale du collider en combinant
-        le Transform du GameObject parent et le Transform local.
+        Obtient l'AABB du rectangle dans le système de coordonnées de la scène.
+        Ne calcule pas les coins.
 
         Returns
         -------
         tuple[Vector2D, Vector2D]
             Coin inférieur gauche et coin supérieur droit de l'AABB mondiale.
         """
+        parent_version = self.parent.transform._version
+        if self._aabb_version == parent_version:
+            return self._cached_world_aabb
 
-        self._compute_cached_values()
+        # Transform scène complet (parent + local collider)
+        scene_transform = self.parent.transform.combine(self.transform)
+
+        # Centre scène
+        scene_center = scene_transform.position
+
+        # Axes unitaires scène : rotation appliquée aux axes locaux
+        axis_u = scene_transform.rotation.apply(Vector2D.right())
+        axis_v = scene_transform.rotation.apply(Vector2D.top())
+        # Note: adapte Vector2D.top() si ton "up" est (0, -1) vs (0, +1).
+
+        # Demi-extents (en local)
+        half_w = self.shape.width * 0.5
+        half_h = self.shape.height * 0.5
+
+        # Projection des demi-extents sur X/Y monde via valeurs absolues
+        ex = abs(axis_u.x) * half_w + abs(axis_v.x) * half_h
+        ey = abs(axis_u.y) * half_w + abs(axis_v.y) * half_h
+
+        min_point = Vector2D(scene_center.x - ex, scene_center.y - ey)
+        max_point = Vector2D(scene_center.x + ex, scene_center.y + ey)
+
+        self._cached_axis_u = axis_u
+        self._cached_axis_v = axis_v
+        self._cached_world_aabb = (min_point, max_point)
+        self._aabb_version = parent_version
 
         return self._cached_world_aabb
 
@@ -120,45 +155,14 @@ class BoxColliderComponent(ColliderComponent):
         list[Vector2D]
             Liste des coins du rectangle dans le système de coordonnées de la scène.
         """
-        self._compute_cached_values()
+        if self._corner_version == self.parent.transform._version:
+            return self._cached_scene_corners
+
+        scene_tr = self.parent.transform.combine(self.transform)
+        self._cached_scene_corners = Geometry.get_scene_corners(
+            self.shape.local_vertices(), scene_tr
+        )
+
+        self._corner_version = self.parent.transform._version
 
         return self._cached_scene_corners
-
-    def _compute_cached_values(self) -> None:
-        """
-        Met à jour les valeurs mises en cache si le Transform parent a changé.
-        """
-        if self._transform_version == self.parent.transform._version:
-            return
-
-        self._cached_scene_corners = self._compute_scene_corners()
-        self._cached_world_aabb = self._compute_scene_aabb()
-
-        self._transform_version = self.parent.transform._version
-
-    def _compute_scene_corners(self) -> list[Vector2D]:
-        """
-        Calcule les coins du rectangle dans le système de coordonnées de la scène.
-
-        Returns
-        -------
-        list[Vector2D]
-            Liste des coins du rectangle dans le système de coordonnées de la scène.
-        """
-        scene_tr = self.parent.transform.combine(self.transform)
-        corners = Geometry.get_scene_corners(self.shape.local_vertices(), scene_tr)
-        return corners
-
-    def _compute_scene_aabb(self) -> tuple[Vector2D, Vector2D]:
-        """
-        Calcule l'AABB mondiale du collider en combinant
-        le Transform du GameObject parent et le Transform local.
-        """
-        scene_corners = self._cached_scene_corners
-
-        min_x = min(corner.x for corner in scene_corners)
-        max_x = max(corner.x for corner in scene_corners)
-        min_y = min(corner.y for corner in scene_corners)
-        max_y = max(corner.y for corner in scene_corners)
-
-        return (Vector2D(min_x, min_y), Vector2D(max_x, max_y))

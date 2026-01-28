@@ -115,14 +115,17 @@ from-type place_module for dataclasses returned STDLIB
 from-type place_module for typing returned STDLIB
 from-type place_module for vect_hunt.engine.core.collisions.collision_info returned THIRDPARTY
 from-type place_module for typing returned STDLIB
+from-type place_module for vect_hunt.engine.components.collider.box_collider_component returned THIRDPARTY
+from-type place_module for vect_hunt.engine.components.collider.circle_collider_component returned THIRDPARTY
+from-type place_module for vect_hunt.engine.components.collider.collider_component returned THIRDPARTY
 from-type place_module for vect_hunt.engine.core.collisions.collision_info returned THIRDPARTY
 from-type place_module for vect_hunt.engine.core.geometries.box_shape returned THIRDPARTY
-from-type place_module for vect_hunt.engine.core.math.geometry returned THIRDPARTY
 from-type place_module for vect_hunt.engine.core.math.manifold returned THIRDPARTY
 from-type place_module for vect_hunt.engine.core.math.numeric returned THIRDPARTY
 from-type place_module for vect_hunt.engine.core.math.tolerance returned THIRDPARTY
 from-type place_module for vect_hunt.engine.core.math.vector returned THIRDPARTY
 from-type place_module for vect_hunt.engine.core.transform.transform returned THIRDPARTY
+Fixing /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/engine/core/collisions/collision.py
 from-type place_module for .collision returned LOCALFOLDER
 from-type place_module for .collision_info returned LOCALFOLDER
 from-type place_module for typing returned STDLIB
@@ -145,6 +148,7 @@ else-type place_module for logging returned STDLIB
 from-type place_module for dataclasses returned STDLIB
 from-type place_module for typing returned STDLIB
 from-type place_module for vect_hunt.engine.components.physic_body_component returned THIRDPARTY
+from-type place_module for vect_hunt.engine.core.collisions returned THIRDPARTY
 from-type place_module for vect_hunt.engine.core.collisions.collision_info returned THIRDPARTY
 from-type place_module for vect_hunt.engine.core.math.numeric returned THIRDPARTY
 from-type place_module for vect_hunt.engine.core.math.tolerance returned THIRDPARTY
@@ -163,6 +167,8 @@ from-type place_module for vect_hunt.engine.scenes.scene returned THIRDPARTY
 from-type place_module for typing returned STDLIB
 from-type place_module for vect_hunt.engine.components.collider.collider_component returned THIRDPARTY
 from-type place_module for vect_hunt.engine.core.math.vector returned THIRDPARTY
+from-type place_module for vect_hunt.engine.core.math.tolerance returned THIRDPARTY
+Fixing /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/engine/physics/broad_phase.py
 from-type place_module for vect_hunt.engine.components.collider.box_collider_component returned THIRDPARTY
 from-type place_module for vect_hunt.engine.components.collider.circle_collider_component returned THIRDPARTY
 from-type place_module for vect_hunt.engine.components.collider.collider_component returned THIRDPARTY

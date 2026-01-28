@@ -57,23 +57,23 @@ class ColliderDetection:
         triggers: Set[Tuple[int, int]] = set()
         collision_info: Dict[Tuple[int, int], CollisionInfo] = {}
 
-        for collider_a, collider_b in candidates_can_collide:            
-            id_a = collider_a.parent.id
-            id_b = collider_b.parent.id
+        for collider_a, collider_b in candidates_can_collide:
+            parent_id_a = collider_a.parent.id
+            parent_id_b = collider_b.parent.id
 
-            if id_a == id_b:
-                continue  # Ignorer les auto-collisions.
+            if parent_id_a == parent_id_b:
+                continue  # Ignorer les auto-collisions du même objet
 
             info = self._narrow_phase.check_collision(collider_a, collider_b)
             if info is None:
                 continue
 
+            id_a = collider_a.id
+            id_b = collider_b.id
+            
             pair = (min(id_a, id_b), max(id_a, id_b))
 
-            # Garder le contact le plus "pénétrant" pour cette paire d'objets
-            prev = collision_info.get(pair)
-            if prev is None or info.depth > prev.depth:
-                collision_info[pair] = info
+            collision_info[pair] = info
 
             if self._is_trigger_pair(collider_a, collider_b):
                 triggers.add(pair)

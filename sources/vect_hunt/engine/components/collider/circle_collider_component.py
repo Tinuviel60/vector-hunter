@@ -75,7 +75,15 @@ class CircleColliderComponent(ColliderComponent):
         )
 
     def get_scene_aabb(self) -> tuple[Vector2D, Vector2D]:
-        if self._transform_version == self.parent.transform._version:
+        """
+        Obtient l'AABB du cercle dans le système de coordonnées de la scène.
+
+        Returns
+        -------
+        tuple[Vector2D, Vector2D]
+            Coin inférieur gauche et coin supérieur droit de l'AABB mondiale.
+        """
+        if self._aabb_version == self.parent.transform._version:
             return self._cached_world_aabb
 
         scene_center = self.get_scene_transform().position
@@ -87,6 +95,18 @@ class CircleColliderComponent(ColliderComponent):
         max_y = scene_center.y + radius
 
         self._cached_world_aabb = (Vector2D(min_x, min_y), Vector2D(max_x, max_y))
-        self._transform_version = self.parent.transform._version
+        self._aabb_version = self.parent.transform._version
 
         return self._cached_world_aabb
+
+    def update(self, delta_time: float) -> None:
+        """
+        Met a jour le collider si necessaire.
+
+        Parameters
+        ----------
+        delta_time : float
+            Temps écoulé depuis la dernière frame (en secondes).
+        """
+
+        pass#print("radius =", self.shape.radius, "x;", round(self.get_scene_transform().position.x, 2), "y;", round(self.get_scene_transform().position.y, 2))  # DEBUG

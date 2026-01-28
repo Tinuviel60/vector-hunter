@@ -130,12 +130,12 @@ def test_move_in_limits_does_nothing_without_physic_body(mock_game_object):
         # Proche du bord droit (699), direction droite:
         # future_position = 699 + 150*0.016 = 701.4 > 700 → reflect
         (699, 300, 1, 0, 100, 100, 700, 500, True),
-        # Proche du bord supérieur (101), direction haut:
-        # future_position = 101 - 150*0.016 = 98.6 < 100 → reflect
-        (400, 101, 0, -1, 100, 100, 700, 500, True),
-        # Proche du bord inférieur (499), direction bas:
+        # Proche du bord supérieur (499), direction haut:
         # future_position = 499 + 150*0.016 = 501.4 > 500 → reflect
         (400, 499, 0, 1, 100, 100, 700, 500, True),
+        # Proche du bord inférieur (101), direction bas:
+        # future_position = 101 - 150*0.016 = 98.6 < 100 → reflect
+        (400, 101, 0, -1, 100, 100, 700, 500, True),
         # Au centre, aucune limite déclenchée
         (400, 300, 1, 0, 100, 100, 700, 500, False),
         # Proche du bord mais direction opposée (éloignement)

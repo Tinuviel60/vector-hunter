@@ -167,6 +167,9 @@ class Game:
         """
         font_system = FontSystem(self._configs["fonts.json"])
         self.renderer = Renderer(screen, self._configs["renderer.json"], font_system)
+        self.simulation_scheduler.input_system.set_mouse_origin_y(
+            self.renderer.viewport.origin.y
+        )
         self.start_render = True
 
     def update(self, delta_time: float) -> None:

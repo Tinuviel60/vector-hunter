@@ -45,5 +45,5 @@ class ExternalForcesSystem:
                 units = scene.units
                 gravity_m_s2 = units.get("gravity_m_s2", 9.81)
                 pixels_per_meter = units.get("pixels_per_meter", 100.0)
-                gravity_accel = Vector2D(0, gravity_m_s2 * pixels_per_meter)
+                gravity_accel = Vector2D(0, -gravity_m_s2 * pixels_per_meter)
                 body.add_acceleration(gravity_accel)

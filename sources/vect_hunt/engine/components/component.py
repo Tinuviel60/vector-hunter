@@ -28,6 +28,7 @@ class Component(ABC):
 
     component_name: ClassVar[str] = "Component"
     _name_registry: ClassVar[dict[str, type["Component"]]] = {}
+    _next_id: int = 1  # Compteur de classe pour générer des IDs uniques
 
     def __init_subclass__(cls, **kwargs: Any) -> None:
         """
@@ -106,6 +107,9 @@ class Component(ABC):
         """
         self.game_object: "GameObject | None" = None
         self.active: bool = True
+
+        self.id = Component._next_id
+        Component._next_id += 1
 
     def on_attach(self, game_object: "GameObject") -> None:
         """

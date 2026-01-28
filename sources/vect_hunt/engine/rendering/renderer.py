@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Optional
 
 import pygame
 from vect_hunt.engine.components.collider.box_collider_component import (
@@ -8,6 +8,7 @@ from vect_hunt.engine.components.collider.collider_component import ColliderComp
 from vect_hunt.engine.components.render_component import RenderComponent
 from vect_hunt.engine.core.geometries.box_shape import BoxShape
 from vect_hunt.engine.core.geometries.circle_shape import CircleShape
+from vect_hunt.engine.core.math.vector import Vector2D
 from vect_hunt.engine.core.render_ops import RenderOps
 from vect_hunt.engine.rendering.font.font_system import FontSystem
 
@@ -19,6 +20,68 @@ if TYPE_CHECKING:
 Module de rendu pour le jeu Vector Hunter.
 Contient la classe Renderer qui gère l'affichage graphique du jeu.
 """
+
+
+class Viewport:
+    """
+    Convertit les coordonnées monde (Y-up) vers l'espace écran Pygame (Y-down).
+
+    Par défaut, l'origine monde (0,0) est mappée en bas-gauche de l'écran.
+    """
+
+    __slots__ = ("width", "height", "scale", "origin")
+
+    def __init__(
+        self,
+        width: int,
+        height: int,
+        scale: float = 1.0,
+        origin: Optional[Vector2D] = None,
+    ) -> None:
+        self.width = width
+        self.height = height
+        self.scale = scale
+        self.origin = origin if origin is not None else Vector2D(0.0, float(height))
+
+    @classmethod
+    def from_screen(
+        cls,
+        screen: pygame.Surface,
+        scale: float = 1.0,
+        origin: Optional[Vector2D] = None,
+    ) -> "Viewport":
+        width, height = screen.get_size()
+        return cls(width, height, scale=scale, origin=origin)
+
+    def world_to_screen(self, point: Vector2D) -> Vector2D:
+        return Vector2D(
+            self.origin.x + point.x * self.scale,
+            self.origin.y - point.y * self.scale,
+        )
+
+    def world_to_screen_xy(self, x: float, y: float) -> tuple[float, float]:
+        return (
+            self.origin.x + x * self.scale,
+            self.origin.y - y * self.scale,
+        )
+
+    def screen_to_world(self, point: Vector2D) -> Vector2D:
+        return Vector2D(
+            (point.x - self.origin.x) / self.scale,
+            (self.origin.y - point.y) / self.scale,
+        )
+
+    def screen_to_world_xy(self, x: float, y: float) -> tuple[float, float]:
+        return (
+            (x - self.origin.x) / self.scale,
+            (self.origin.y - y) / self.scale,
+        )
+
+    def world_vec_to_screen(self, vec: Vector2D) -> Vector2D:
+        return Vector2D(vec.x * self.scale, -vec.y * self.scale)
+
+    def screen_vec_to_world(self, vec: Vector2D) -> Vector2D:
+        return Vector2D(vec.x / self.scale, -vec.y / self.scale)
 
 
 class Renderer:
@@ -73,6 +136,17 @@ class Renderer:
         self.color_for_valid = debug_config["color_for_valid"]
         self.color_for_invalid = debug_config["color_for_invalid"]
         self.collider_thickness = debug_config["collider_thickness"]
+
+        viewport_config = config.get("viewport", {})
+        viewport_scale = float(viewport_config.get("scale", 1.0))
+        origin_data = viewport_config.get("origin")
+        origin = None
+        if isinstance(origin_data, (list, tuple)) and len(origin_data) == 2:
+            origin = Vector2D(float(origin_data[0]), float(origin_data[1]))
+
+        self.viewport = Viewport.from_screen(
+            self.screen, scale=viewport_scale, origin=origin
+        )
 
         # Style de police pour le debug (géré par FontSystem)
         self.debug_font_style = font_system.get("debug")
@@ -152,26 +226,42 @@ class Renderer:
         width, height = self.screen.get_size()
         color = (200, 200, 200)
 
-        step = max(1, int(spacing))
-
         # Surface avec canal alpha pour superposition propre
         grid_surface = pygame.Surface((width, height), flags=pygame.SRCALPHA)
         grid_surface = grid_surface.convert_alpha()
 
+        # Bornes monde visibles
+        world_tl = self.viewport.screen_to_world(Vector2D(0.0, 0.0))
+        world_br = self.viewport.screen_to_world(Vector2D(float(width), float(height)))
+        min_x = min(world_tl.x, world_br.x)
+        max_x = max(world_tl.x, world_br.x)
+        min_y = min(world_tl.y, world_br.y)
+        max_y = max(world_tl.y, world_br.y)
+
+        step = max(1.0, float(spacing))
+
         # Lignes verticales
-        x = 0
-        while x < width:
-            pygame.draw.line(grid_surface, color, (x, 0), (x, height), 1)
-            pixel_place = self.debug_font_style.render(str(x))
-            grid_surface.blit(pixel_place, (x, 0))
+        x = (int(min_x // step) * step)
+        while x <= max_x:
+            screen_x, _ = self.viewport.world_to_screen_xy(x, 0.0)
+            screen_x_int = int(screen_x)
+            pygame.draw.line(
+                grid_surface, color, (screen_x_int, 0), (screen_x_int, height), 1
+            )
+            pixel_place = self.debug_font_style.render(str(int(x)))
+            grid_surface.blit(pixel_place, (screen_x_int, 0))
             x += step
 
         # Lignes horizontales
-        y = 0
-        while y < height:
-            pygame.draw.line(grid_surface, color, (0, y), (width, y), 1)
-            pixel_place = self.debug_font_style.render(str(y))
-            grid_surface.blit(pixel_place, (0, y))
+        y = (int(min_y // step) * step)
+        while y <= max_y:
+            _, screen_y = self.viewport.world_to_screen_xy(0.0, y)
+            screen_y_int = int(screen_y)
+            pygame.draw.line(
+                grid_surface, color, (0, screen_y_int), (width, screen_y_int), 1
+            )
+            pixel_place = self.debug_font_style.render(str(int(y)))
+            grid_surface.blit(pixel_place, (0, screen_y_int))
             y += step
 
         return grid_surface
@@ -187,9 +277,14 @@ class Renderer:
         """
         name_surf = self.debug_font_style.render(game_object.name)
         pos = game_object.transform.position
+        label_world = Vector2D(pos.x, pos.y + 20.0)
+        label_screen = self.viewport.world_to_screen(label_world)
         self.screen.blit(
             name_surf,
-            (int(pos.x - name_surf.get_width() / 2), int(pos.y - 20)),
+            (
+                int(label_screen.x - name_surf.get_width() / 2),
+                int(label_screen.y),
+            ),
         )
 
     def draw_collider(self, collider: ColliderComponent, is_colliding: bool = False):
@@ -212,9 +307,11 @@ class Renderer:
             # Pour les cercles, center est local et on ajoute la position du GameObject
             col_tr = collider.get_scene_transform()
             col_pos = col_tr.position
-            center = (int(col_pos.x), int(col_pos.y))
+            center_pos = self.viewport.world_to_screen(col_pos)
+            center = (int(center_pos.x), int(center_pos.y))
+            radius = int(shape.radius * self.viewport.scale)
             pygame.draw.circle(
-                self.screen, color, center, int(shape.radius), self.collider_thickness
+                self.screen, color, center, radius, self.collider_thickness
             )
 
         elif isinstance(shape, BoxShape):
@@ -224,7 +321,13 @@ class Renderer:
             pygame.draw.polygon(
                 self.screen,
                 color,
-                [(int(p.x), int(p.y)) for p in corners],
+                [
+                    (
+                        int(screen_corner.x),
+                        int(screen_corner.y),
+                    )
+                    for screen_corner in (self.viewport.world_to_screen(p) for p in corners)
+                ],
                 self.collider_thickness,
             )
 
@@ -243,7 +346,7 @@ class Renderer:
             return
 
         # Le composant utilise directement game_object.transform
-        render_component.render(self.screen)
+        render_component.render(self.screen, self.viewport)
 
     def render(self, scene: "Scene") -> None:
         """

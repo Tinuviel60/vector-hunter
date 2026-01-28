@@ -1,11 +1,13 @@
 from typing import Dict, List, Optional, Set, Tuple
 
 from vect_hunt.engine.core.collisions.collision_info import CollisionInfo
-from vect_hunt.engine.core.collisions.collision_result import CollisionResult
 
 """Module de tracking des collisions entre objets du jeu."""
 
 
+# TODO : Ne plus travailler en object mais en collider? (mieux pour le système de tags)
+# WARNING : Si un objet possèdent un trigger, le moidre colllider de l'objet
+# déclenchera le trigger pour tout l'objet.
 class CollisionTracker:
     """
     Gestionnaire de suivi des collisions entre objets.
@@ -53,7 +55,12 @@ class CollisionTracker:
         """
         return (min(obj1_id, obj2_id), max(obj1_id, obj2_id))
 
-    def update(self, collision_result: CollisionResult, delta_time: float):
+    def update(
+        self,
+        collisions: Set[Tuple[int, int]],
+        triggers: Set[Tuple[int, int]],
+        delta_time: float,
+    ):
         """
         Met à jour le tracking des collisions pour la frame courante.
 
@@ -74,18 +81,11 @@ class CollisionTracker:
         self._collision_info.clear()
         normalized_collisions = set()
 
-        for pair in collision_result.collisions:
+        for pair in collisions:
             norm_pair = self._normalize_pair(*pair)
             normalized_collisions.add(norm_pair)
-            info = collision_result.collision_info.get(pair)
-            if info is None:
-                info = collision_result.collision_info.get((pair[1], pair[0]))
-            if info is not None:
-                self._collision_info[norm_pair] = info
 
-        normalized_triggers = {
-            self._normalize_pair(*pair) for pair in collision_result.triggers
-        }
+        normalized_triggers = {self._normalize_pair(*pair) for pair in triggers}
         # Traiter les collisions
         self._update_category(
             normalized_collisions,

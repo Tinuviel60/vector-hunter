@@ -52,11 +52,11 @@ class NarrowPhase:
         elif isinstance(c1, BoxColliderComponent) and isinstance(
             c2, CircleColliderComponent
         ):
-            return NarrowPhase._circle_box_collision_info(c2, c1, reverse_result=False)
+            return NarrowPhase._circle_box_collision_info(c2, c1)
         elif isinstance(c1, CircleColliderComponent) and isinstance(
             c2, BoxColliderComponent
         ):
-            return NarrowPhase._circle_box_collision_info(c1, c2, reverse_result=True)
+            return NarrowPhase._circle_box_collision_info(c1, c2)
         else:
             raise TypeError("Type de collider non supporté pour collision fine")
 
@@ -105,17 +105,14 @@ class NarrowPhase:
         CollisionInfo or None
             Informations de collision (normal, depth) si collision, sinon None.
         """
-        # SAT avec calcul de la plus petite séparation
-
         corners1 = box1.get_scene_corners()
         corners2 = box2.get_scene_corners()
-        return Collision.sat_collision_info(corners1, corners2)
+        return Collision.sat_box_box_collision_info(corners1, corners2)
 
     @staticmethod
     def _circle_box_collision_info(
         circle: CircleColliderComponent,
         box: BoxColliderComponent,
-        reverse_result: bool = False,
     ) -> CollisionInfo | None:
         """
         Détecte et retourne les informations de collision entre un cercle et un box.
@@ -126,10 +123,6 @@ class NarrowPhase:
             Le cercle.
         box : BoxCollider
             Le box.
-        reverse_result : bool, optional
-            Indique si les informations de collision doivent être inversées,
-            pour preserver la convention normal allant de c1 vers c2.
-            Par défaut False.
 
         Returns
         -------
@@ -143,8 +136,5 @@ class NarrowPhase:
         collision_info = Collision.circle_box_collision_info(
             circle_scene_pos, circle.shape.radius, box_scene_tr, box_shape
         )
-        if collision_info is not None and reverse_result:
-            # Inverser la normale
-            collision_info.normal = -collision_info.normal
 
         return collision_info

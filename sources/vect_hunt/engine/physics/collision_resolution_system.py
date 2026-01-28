@@ -3,6 +3,8 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Optional, Tuple
 
 from vect_hunt.engine.components.physic_body_component import PhysicBodyComponent
+from vect_hunt.engine.components.collider.collider_component import ColliderComponent
+from vect_hunt.engine.core.collisions import Collision
 from vect_hunt.engine.core.collisions.collision_info import CollisionInfo
 from vect_hunt.engine.core.math.numeric import Numeric
 from vect_hunt.engine.core.math.tolerance import Tolerence
@@ -79,7 +81,7 @@ class CollisionResolutionSystem:
         Parameters
         ----------
         collisions : list[tuple[int, int]]
-            Paires d'IDs d'objets en collision.
+            Paires d'IDs de colliders en collision.
         collision_info : dict[tuple[int, int], dict]
             Informations de collision associées aux paires.
 
@@ -90,37 +92,34 @@ class CollisionResolutionSystem:
         """
         correction_applied = False
 
+
         # Résoudre chaque collision
-        for id_obj_a, id_obj_b in collisions:
-            info_collision = collision_info.get((id_obj_a, id_obj_b))
-            if info_collision is None:
+        for col_id_a, col_id_b in collisions:
+            info = collision_info.get((col_id_a, col_id_b))
+            if info is None:
                 continue
 
-            if self._resolve_collision(
-                id_obj_a,
-                id_obj_b,
-                info_collision,
-            ):
+            if self._resolve_collision(col_id_a, col_id_b, info):
                 correction_applied = True
 
         return correction_applied
 
     def _resolve_collision(
         self,
-        obj_a: int,
-        obj_b: int,
+        col_id_a: int,
+        col_id_b: int,
         collision_info: CollisionInfo,
     ) -> bool:
         """
-        Résout une collision entre deux GameObjects avec correction de position,
+        Résout une collision entre deux colliders avec correction de position,
         en utilisant les infos détaillées.
 
         Parameters
         ----------
-        obj_a : int
-            ID du premier objet en collision.
-        obj_b : int
-            ID du deuxième objet en collision.
+        col_id_a : int
+            ID du premier collider en collision.
+        col_id_b : int
+            ID du deuxième collider en collision.
         collision_info : CollisionInfo
             Informations supplémentaires sur la collision (normal, depth, points).
 
@@ -129,30 +128,24 @@ class CollisionResolutionSystem:
         bool
             True si une correction a été appliquée, False sinon.
         """
-        # Recupérer les GameObjects et leurs PhysicBodyComponents
-        context = self._get_collision_context(obj_a, obj_b)
+        # Recupérer les Collider et leurs PhysicBodyComponents
+        context = self._get_collision_context(col_id_a, col_id_b)
         if context is None:
             return False
+    
+        col_a, col_b, parent_a, parent_b, body_a, body_b = context
 
-        game_object_a, game_object_b, body_a, body_b = context
-
-        # Résoudre la normale et la profondeur de collision
-        collision_info = self._resolve_collision_info(
-            collision_info,
-            game_object_a.transform.position,
-            game_object_b.transform.position,
-        )
 
         # Si pas de pénétration, ne rien faire
         if collision_info.depth <= 0:
             return False
 
-        # Appliquer la correction de position
+        # Appliquer la correction de la normal
         correction_applied = self._apply_position_correction(
             body_a,
             body_b,
-            game_object_a,
-            game_object_b,
+            parent_a,
+            parent_b,
             collision_info,
         )
 
@@ -160,71 +153,98 @@ class CollisionResolutionSystem:
 
     def _get_collision_context(
         self,
-        obj_a: int,
-        obj_b: int,
+        col_id_a: int,
+        col_id_b: int,
     ) -> Optional[
-        Tuple["GameObject", "GameObject", PhysicBodyComponent, PhysicBodyComponent]
+        Tuple[ColliderComponent, ColliderComponent, "GameObject", "GameObject", "PhysicBodyComponent", "PhysicBodyComponent"]
     ]:
         """
-        Récupère le contexte de collision (objets et PhysicBody associés).
+        Récupère le contexte de collision (colliders et PhysicBody associés).
 
         Parameters
         ----------
-        obj_a : int
-            ID du premier objet en collision.
-        obj_b : int
-            ID du deuxième objet en collision.
+        col_id_a : int
+            ID du premier collider en collision.
+        col_id_b : int
+            ID du deuxième collider en collision.
 
         Returns
         -------
         tuple or None
-            (game_object_a, game_object_b, body_a, body_b) si disponible,
+            (collider_a, collider_b, parent_a, parent_b, body_a, body_b) si disponible,
             sinon None si un PhysicBody manque.
         """
-        game_object_a = self.scene.game_objects[obj_a]
-        game_object_b = self.scene.game_objects[obj_b]
+        collider_a = self.scene.components.get(col_id_a)
+        collider_b = self.scene.components.get(col_id_b)
 
-        body_a = game_object_a.get_component(PhysicBodyComponent)
-        body_b = game_object_b.get_component(PhysicBodyComponent)
+        if not collider_a or not collider_b:
+            return None
+        else:
+            assert isinstance(collider_a, ColliderComponent)
+            assert isinstance(collider_b, ColliderComponent)
 
+        parent_a = collider_a.parent
+        parent_b = collider_b.parent
+        
+        body_a = parent_a.get_component(PhysicBodyComponent)
+        body_b = parent_b.get_component(PhysicBodyComponent)
         if not body_a or not body_b:
             return None
 
-        return game_object_a, game_object_b, body_a, body_b
+        return collider_a, collider_b, parent_a, parent_b, body_a, body_b
 
     def _resolve_collision_info(
         self,
-        collision_info: CollisionInfo,
-        pos_a: Vector2D,
-        pos_b: Vector2D,
+        info_collision: CollisionInfo,
+        col_a: ColliderComponent,
+        col_b: ColliderComponent,
+        body_a: PhysicBodyComponent,
+        body_b: PhysicBodyComponent,
     ) -> CollisionInfo:
         """
-        Résout la normale et la profondeur de collision, avec fallback.
+        Oriente et nettoie la normale pour garantir une convention A -> B.
 
-        Parameters
+        Stratégie
         ----------
-        collision_info : CollisionInfo
-            Informations supplémentaires sur la collision (normal, depth, points).
-        pos_a : Vector2D
-            Position du premier objet.
-        pos_b : Vector2D
-            Position du deuxième objet.
-
-        Returns
-        -------
-        tuple
-            (normal, depth) validés, avec valeurs par défaut si absentes.
+        - On n'édite pas CollisionInfo in-place.
+        - On oriente la normale avec COM->COM (corps composé),
+        fallback sur centre collider si COM trop proche.
         """
 
-        # if collision_info.normal is None or collision_info.depth is None:
-        #     delta = pos_a - pos_b
-        #     if delta.magnitude() == 0:
-        #         collision_info.normal = Vector2D(1, 0)
-        #     else:
-        #         collision_info.normal = delta.normalized()
-        #     collision_info.depth = 1.0
+        info = info_collision.copy()
+        eps = Tolerence.COLLISION
+        eps2 = eps * eps
 
-        return collision_info
+        if info.normal.magnitude_squared() <= eps2:
+            info.normal = Vector2D(1.0, 0.0)
+            return info
+
+        info.normal.normalize()
+
+        # COM -> COM (corps composé)
+        parent_a = col_a.parent
+        parent_b = col_b.parent
+        com_a = parent_a.transform.to_scene_point(body_a.mass_center)
+        com_b = parent_b.transform.to_scene_point(body_b.mass_center)
+        delta = com_b - com_a
+
+        # Fallback si COM trop proche (cas ambigu)
+        if delta.magnitude_squared() <= Tolerence.GENERAL * Tolerence.GENERAL:
+            pos_a = col_a.get_scene_transform().position
+            pos_b = col_b.get_scene_transform().position
+            delta = pos_b - pos_a
+
+        dot = info.normal.dot(delta)
+
+        if dot < 0.0:
+            info.normal = -info.normal
+            if info.reference_from_a is not None:
+                info.reference_from_a = not info.reference_from_a
+
+        if info.points is None or len(info.points) == 0:
+            info.points = Collision.generate_contact_points(col_a, col_b, info)
+        
+        return info
 
     def _apply_position_correction(
         self,
@@ -292,6 +312,43 @@ class CollisionResolutionSystem:
 
         return True
 
+    def resolve_all_collision_info(
+        self,
+        collisions: set[tuple[int, int]],
+        collision_info: dict[tuple[int, int], CollisionInfo],
+    ) -> dict[tuple[int, int], CollisionInfo]:
+        """
+        Résout toutes les informations de collision pour un ensemble de collisions.
+
+        Parameters
+        ----------
+        collisions : set[tuple[int, int]]
+            Paires d'IDs d'objets en collision.
+        collision_info : dict[tuple[int, int], CollisionInfo]
+            Informations de collision associées aux paires.
+        
+        Returns
+        -------
+        dict[tuple[int, int], CollisionInfo]
+            Informations de collision mises à jour associées aux paires.
+        """
+        
+        for col_id_a, col_id_b in collisions:
+            info = collision_info.get((col_id_a, col_id_b))
+            if info is None:
+                continue
+            context = self._get_collision_context(col_id_a, col_id_b)
+            if context is None:
+                continue
+
+            col_a, col_b, parent_a, parent_b, body_a, body_b = context
+
+            # Résoudre la normale, la profondeur de collision et calculer les points
+            info = self._resolve_collision_info(info, col_a, col_b, body_a, body_b)
+            collision_info[(col_id_a, col_id_b)] = info
+
+        return collision_info
+    
     def apply_impulse_response(
         self,
         collisions: list[tuple[int, int]],
@@ -315,26 +372,32 @@ class CollisionResolutionSystem:
             Inverse l'ordre des points de contact pour la résolution.
         """
 
+
+
+
         impulsion_max = 0.0
-        for id_obj_a, id_obj_b in collisions:
-            info_collision = collision_info.get((id_obj_a, id_obj_b))
-            if info_collision is None:
 
+        for col_id_a, col_id_b in collisions:
+            info = collision_info.get((col_id_a, col_id_b))
+            if info is None:
                 continue
-
-            context = self._get_collision_context(id_obj_a, id_obj_b)
+            
+            context = self._get_collision_context(col_id_a, col_id_b)
             if context is None:
                 continue
 
-            game_object_a, game_object_b, body_a, body_b = context
+            col_a, col_b, parent_a, parent_b, body_a, body_b = context
+            
+            if info.points is None or len(info.points) == 0 or info.depth <= 0:
+                continue
 
             impulsion = self._apply_velocity_response(
-                game_object_a, game_object_b, body_a, body_b, info_collision, delta_time
+                parent_a, parent_b, body_a, body_b, info, delta_time
             )
             if impulsion > impulsion_max:
                 impulsion_max = impulsion
 
-        return impulsion_max > 5.0  # TODO : Valeurs arbitraire à retravailler
+        return impulsion_max > 1  # TODO : Valeurs arbitraire à retravailler
 
     def _apply_velocity_response(
         self,
@@ -367,15 +430,9 @@ class CollisionResolutionSystem:
             Inverse l'ordre des points de contact pour la résolution.
 
         """
-
-        if len(info_collision.points) == 0:
+        if info_collision.points is None or len(info_collision.points) == 0:
             return 0.0
-
-        collision_eps = Tolerence.COLLISION
-        general_eps = Tolerence.GENERAL
-        if info_collision.normal.magnitude_squared() <= collision_eps * collision_eps:
-            return 0.0
-
+            
         normal = info_collision.normal.normalized()
         contact_material = body_a.material.combine_with(body_b.material)
 
@@ -387,7 +444,7 @@ class CollisionResolutionSystem:
         inv_inertia_b = body_b.invert_inertia()
 
         # Si les deux corps sont cinématiques, ne rien faire
-        if (inv_mass_a + inv_mass_b + inv_inertia_a + inv_inertia_b) <= general_eps:
+        if (inv_mass_a + inv_mass_b + inv_inertia_a + inv_inertia_b) <= Tolerence.GENERAL:
             return 0.0
 
         tr_a = game_object_a.transform
@@ -522,7 +579,7 @@ class CollisionResolutionSystem:
         bias = self._compute_penetration_bias(depth, delta_time, slop_px, beta)
 
         # If separating, do nothing
-        if kin.normal_velocity > 0.0 and bias <= Tolerence.GENERAL:
+        if kin.normal_velocity > 0.0 and depth <= slop_px:
             return 0.0
 
         # Reduit la restitution si en dessous du seuil
@@ -572,6 +629,7 @@ class CollisionResolutionSystem:
             return jn
 
         jt = self._compute_friction_impulse(vt, k_t, material.friction, jn)
+
         if abs(jt) > Tolerence.GENERAL:
             impulse_t = tangent * jt
             self._apply_impulses_at_contact(body_a, body_b, contact_point, impulse_t)

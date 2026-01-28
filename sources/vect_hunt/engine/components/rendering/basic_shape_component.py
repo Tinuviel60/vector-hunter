@@ -68,14 +68,20 @@ class BasicShapeComponent(RenderComponent):
 
         return cls(shape_type, size, color, outline_color, outline_width)
 
-    def render(self, surface) -> None:
+    def render(self, surface, viewport=None) -> None:
         transform = self.parent.transform
         pos = transform.position
-        x, y = int(pos.x), int(pos.y)
+        if viewport is not None:
+            screen_pos = viewport.world_to_screen(pos)
+            x, y = int(screen_pos.x), int(screen_pos.y)
+            scale = viewport.scale
+        else:
+            x, y = int(pos.x), int(pos.y)
+            scale = 1.0
 
         if self.shape_type == "circle":
             assert isinstance(self.size, float), "Size must be a float for circle shape"
-            radius = int(self.size)
+            radius = int(self.size * scale)
             pygame.draw.circle(
                 surface, RenderOps.hex_to_rgb(self.color), (x, y), radius
             )
@@ -106,7 +112,18 @@ class BasicShapeComponent(RenderComponent):
                 scene_corner = transform.position + corner_rotated
                 scene_corners.append(scene_corner)
 
-            points = [(int(corner.x), int(corner.y)) for corner in scene_corners]
+            if viewport is not None:
+                points = [
+                    (
+                        int(screen_corner.x),
+                        int(screen_corner.y),
+                    )
+                    for screen_corner in (
+                        viewport.world_to_screen(corner) for corner in scene_corners
+                    )
+                ]
+            else:
+                points = [(int(corner.x), int(corner.y)) for corner in scene_corners]
 
             pygame.draw.polygon(surface, RenderOps.hex_to_rgb(self.color), points)
             if self.outline_color:

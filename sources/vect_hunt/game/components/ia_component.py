@@ -130,15 +130,20 @@ class IaComponent(Component):
         collision_normal = None
 
         # Vérifier les limites et calculer la normale de collision
-        if future_position.x < self.top_left.x and direction.x < 0:
+        min_x = min(self.top_left.x, self.bottom_right.x)
+        max_x = max(self.top_left.x, self.bottom_right.x)
+        min_y = min(self.top_left.y, self.bottom_right.y)
+        max_y = max(self.top_left.y, self.bottom_right.y)
+
+        if future_position.x < min_x and direction.x < 0:
             collision_normal = Vector2D(1, 0)  # Normal pointant vers la droite
-        elif future_position.x > self.bottom_right.x and direction.x > 0:
+        elif future_position.x > max_x and direction.x > 0:
             collision_normal = Vector2D(-1, 0)  # Normal pointant vers la gauche
 
-        if future_position.y < self.top_left.y and direction.y < 0:
-            collision_normal = Vector2D(0, 1)  # Normal pointant vers le bas
-        elif future_position.y > self.bottom_right.y and direction.y > 0:
-            collision_normal = Vector2D(0, -1)  # Normal pointant vers le haut
+        if future_position.y < min_y and direction.y < 0:
+            collision_normal = Vector2D(0, 1)  # Normal pointant vers le haut
+        elif future_position.y > max_y and direction.y > 0:
+            collision_normal = Vector2D(0, -1)  # Normal pointant vers le bas
 
         # Si collision détectée, inverser la rotation
         if collision_normal is not None:

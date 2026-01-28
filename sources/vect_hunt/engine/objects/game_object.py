@@ -145,6 +145,28 @@ class GameObject:
         """
         return [comp for comp in self.components if isinstance(comp, component_type)]
 
+    def get_all_components_id(self) -> List[int]:
+        """
+        Récupère les IDs de tous les composants attachés à ce GameObject.
+
+        Returns
+        -------
+        List[int]
+            Liste des IDs des composants.
+        """
+        return [comp.id for comp in self.components]
+    
+    def get_all_components(self) -> List["Component"]:
+        """
+        Récupère tous les composants attachés à ce GameObject.
+
+        Returns
+        -------
+        List["Component"]
+            Liste des composants.
+        """
+        return self.components
+
     def add_tag(self, tag: Tag) -> None:
         """
         Ajoute un tag à ce GameObject.

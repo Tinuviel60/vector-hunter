@@ -55,7 +55,7 @@ class ColliderComponent(Component, ABC):
         self.transform = transform
         self.solid = solid
         self.nb_collision = 0
-        self._transform_version = -1
+        self._aabb_version = -1
         self._cached_world_aabb: tuple[Vector2D, Vector2D] = (
             Vector2D(0, 0),
             Vector2D(0, 0),

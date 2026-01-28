@@ -1,6 +1,7 @@
 from typing import List, Tuple
 
 from vect_hunt.engine.components.collider.collider_component import ColliderComponent
+from vect_hunt.engine.core.math.tolerance import Tolerence
 from vect_hunt.engine.core.math.vector import Vector2D
 
 
@@ -54,8 +55,8 @@ class BroadPhase:
         """
         Produit la liste des paires candidates à tester en narrow phase.
 
-        Stratégie actuelle : O(n²) avec test AABB.
-        Améliorable plus tard (spatial hash, quadtree, sweep&prune, etc.).
+        Utilisation d'un algorithme de balayage (sweep and prune)
+        sur l'axe X pour réduire le nombre de tests AABB.
 
         Parameters
         ----------
@@ -70,15 +71,33 @@ class BroadPhase:
         candidates: List[Tuple[ColliderComponent, ColliderComponent]] = []
         count = len(colliders)
 
-        for i in range(count):
-            c1 = colliders[i]
-            aabb1 = c1.get_scene_aabb()
+        aabbs: List[Tuple[Vector2D, Vector2D]] = [c.get_scene_aabb() for c in colliders]
 
-            for j in range(i + 1, count):
-                c2 = colliders[j]
+        indices = list(range(count))
 
-                aabb2 = c2.get_scene_aabb()
-                if self.aabb_overlap(aabb1, aabb2):
-                    candidates.append((c1, c2))
+        # Trie des indices de colliders par min.x
+        indices.sort(key=lambda i: aabbs[i][0].x)
+
+        active: List[int] = []
+
+        for i in indices:
+            min_x = aabbs[i][0].x
+
+            # Retirer ceux qui ne peuvent plus overlap sur X
+            kept: List[int] = []
+            for j in active:
+                if aabbs[j][1].x + Tolerence.COLLISION >= min_x:
+                    kept.append(j)
+            active = kept
+
+            # Tester contre ceux qui overlap sur X
+            for j in active:
+                if self.aabb_overlap(aabbs[i], aabbs[j]):
+                    if colliders[i].parent.id < colliders[j].parent.id:
+                        candidates.append((colliders[i], colliders[j]))
+                    else:
+                        candidates.append((colliders[j], colliders[i]))
+
+            active.append(i)
 
         return candidates

@@ -347,19 +347,7 @@ class Vector2D:
     @staticmethod
     def top() -> "Vector2D":
         """
-        Retourne le vecteur unitaire pointant vers le haut (0, -1).
-
-        Returns
-        -------
-        Vector2D
-            Vecteur unitaire (0, -1).
-        """
-        return Vector2D(0.0, -1.0)
-
-    @staticmethod
-    def bottom() -> "Vector2D":
-        """
-        Retourne le vecteur unitaire pointant vers le bas (0, 1).
+        Retourne le vecteur unitaire pointant vers le haut (0, 1).
 
         Returns
         -------
@@ -367,6 +355,18 @@ class Vector2D:
             Vecteur unitaire (0, 1).
         """
         return Vector2D(0.0, 1.0)
+
+    @staticmethod
+    def bottom() -> "Vector2D":
+        """
+        Retourne le vecteur unitaire pointant vers le bas (0, -1).
+
+        Returns
+        -------
+        Vector2D
+            Vecteur unitaire (0, -1).
+        """
+        return Vector2D(0.0, -1.0)
 
     @staticmethod
     def left() -> "Vector2D":

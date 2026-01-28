@@ -15644,3 +15644,759 @@
 2026-01-26 18:11:39 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.079000 | frame_time=0.063000
 2026-01-26 18:11:39 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.078000 | frame_time=0.078000
 2026-01-26 18:11:39 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.067000 | frame_time=0.057000
+2026-01-26 18:21:29 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.068333 | frame_time=0.059000
+2026-01-26 18:21:29 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.068000 | frame_time=0.068000
+2026-01-26 18:21:30 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.071000 | frame_time=0.061000
+2026-01-26 18:21:30 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.084000 | frame_time=0.084000
+2026-01-26 18:21:30 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.071000 | frame_time=0.071000
+2026-01-26 18:21:30 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.069000 | frame_time=0.069000
+2026-01-26 18:21:30 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.072000 | frame_time=0.072000
+2026-01-26 18:21:30 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.078000 | frame_time=0.078000
+2026-01-26 18:21:30 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.067000 | frame_time=0.067000
+2026-01-26 18:21:30 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.084000 | frame_time=0.084000
+2026-01-26 18:21:30 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.077000 | frame_time=0.077000
+2026-01-26 18:21:30 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.079000 | frame_time=0.079000
+2026-01-26 18:21:30 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.072000 | frame_time=0.072000
+2026-01-26 18:21:31 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.072000 | frame_time=0.063000
+2026-01-26 18:21:31 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.072000 | frame_time=0.072000
+2026-01-26 18:21:31 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.072000 | frame_time=0.072000
+2026-01-26 18:21:31 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.069000 | frame_time=0.069000
+2026-01-26 18:21:31 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.067000 | frame_time=0.067000
+2026-01-26 18:21:31 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.068000 | frame_time=0.068000
+2026-01-26 18:21:31 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.076000 | frame_time=0.076000
+2026-01-26 18:21:31 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.070000 | frame_time=0.070000
+2026-01-26 18:33:39 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.081333 | frame_time=0.070000
+2026-01-26 18:33:39 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.087000 | frame_time=0.087000
+2026-01-26 18:33:39 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.084000 | frame_time=0.084000
+2026-01-26 18:33:39 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.089000 | frame_time=0.089000
+2026-01-26 18:33:39 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.084000 | frame_time=0.084000
+2026-01-26 18:33:39 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.085000 | frame_time=0.085000
+2026-01-26 18:33:39 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.089000 | frame_time=0.089000
+2026-01-26 18:33:39 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.084000 | frame_time=0.084000
+2026-01-26 18:33:39 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.087000 | frame_time=0.087000
+2026-01-26 18:33:40 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.085000 | frame_time=0.085000
+2026-01-26 18:33:40 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.086000 | frame_time=0.086000
+2026-01-26 18:33:40 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.088000 | frame_time=0.088000
+2026-01-26 18:33:40 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.089000 | frame_time=0.089000
+2026-01-26 18:33:40 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.089000 | frame_time=0.089000
+2026-01-26 18:33:40 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.087000 | frame_time=0.087000
+2026-01-26 18:33:40 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.091000 | frame_time=0.091000
+2026-01-26 18:33:40 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.084000 | frame_time=0.084000
+2026-01-26 18:33:40 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.111000 | frame_time=0.111000
+2026-01-26 18:33:40 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.129000 | frame_time=0.129000
+2026-01-26 18:33:41 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.137000 | frame_time=0.137000
+2026-01-26 18:33:41 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.123000 | frame_time=0.123000
+2026-01-26 18:33:41 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.118000 | frame_time=0.118000
+2026-01-26 18:33:41 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.119000 | frame_time=0.119000
+2026-01-26 18:33:41 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.120000 | frame_time=0.120000
+2026-01-26 18:33:41 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.123000 | frame_time=0.123000
+2026-01-26 18:33:41 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.119000 | frame_time=0.119000
+2026-01-26 18:33:41 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.119000 | frame_time=0.119000
+2026-01-26 18:33:41 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.121000 | frame_time=0.121000
+2026-01-26 18:33:42 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.120000 | frame_time=0.120000
+2026-01-26 18:33:42 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.122000 | frame_time=0.122000
+2026-01-26 18:33:42 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.120000 | frame_time=0.120000
+2026-01-26 18:33:42 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.121000 | frame_time=0.121000
+2026-01-26 18:34:01 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.072667 | frame_time=0.057000
+2026-01-26 18:34:01 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.070000 | frame_time=0.070000
+2026-01-26 18:34:01 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.070000 | frame_time=0.070000
+2026-01-26 18:34:01 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.067000 | frame_time=0.055000
+2026-01-26 18:34:01 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.080000 | frame_time=0.080000
+2026-01-26 18:34:02 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.079000 | frame_time=0.079000
+2026-01-26 18:34:02 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.068000 | frame_time=0.053000
+2026-01-26 18:34:21 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.068333 | frame_time=0.054000
+2026-01-26 18:34:21 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.093000 | frame_time=0.093000
+2026-01-26 18:34:21 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.099000 | frame_time=0.099000
+2026-01-26 18:34:22 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.099000 | frame_time=0.099000
+2026-01-26 18:34:22 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.088000 | frame_time=0.088000
+2026-01-26 18:34:22 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.085000 | frame_time=0.085000
+2026-01-26 18:34:22 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.088000 | frame_time=0.088000
+2026-01-26 18:34:22 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.090000 | frame_time=0.090000
+2026-01-26 18:34:22 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.104000 | frame_time=0.104000
+2026-01-26 18:34:22 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.088000 | frame_time=0.088000
+2026-01-26 18:34:22 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.087000 | frame_time=0.087000
+2026-01-26 18:38:09 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.068667 | frame_time=0.052000
+2026-01-26 18:38:09 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.088000 | frame_time=0.088000
+2026-01-26 18:38:09 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.085000 | frame_time=0.085000
+2026-01-26 18:38:09 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.089000 | frame_time=0.089000
+2026-01-26 18:38:09 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.083000 | frame_time=0.083000
+2026-01-26 18:38:09 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.084000 | frame_time=0.084000
+2026-01-26 18:38:09 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.089000 | frame_time=0.089000
+2026-01-26 18:38:09 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.085000 | frame_time=0.085000
+2026-01-26 18:38:09 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.087000 | frame_time=0.087000
+2026-01-26 18:38:09 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.107000 | frame_time=0.107000
+2026-01-26 18:38:10 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.100000 | frame_time=0.100000
+2026-01-26 21:37:35 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.082667 | frame_time=0.067000
+2026-01-26 21:37:35 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.085000 | frame_time=0.085000
+2026-01-26 21:37:35 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.087000 | frame_time=0.087000
+2026-01-26 21:37:35 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.090000 | frame_time=0.090000
+2026-01-26 21:37:35 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.083000 | frame_time=0.083000
+2026-01-26 21:37:35 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.088000 | frame_time=0.088000
+2026-01-26 21:37:35 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.085000 | frame_time=0.085000
+2026-01-26 21:37:35 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.085000 | frame_time=0.085000
+2026-01-26 21:37:35 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.085000 | frame_time=0.085000
+2026-01-26 21:37:36 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.085000 | frame_time=0.085000
+2026-01-26 21:37:36 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.107000 | frame_time=0.107000
+2026-01-26 21:37:36 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.088000 | frame_time=0.088000
+2026-01-26 21:37:36 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.089000 | frame_time=0.089000
+2026-01-26 21:37:36 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.086000 | frame_time=0.086000
+2026-01-26 21:37:36 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.095000 | frame_time=0.095000
+2026-01-26 21:37:36 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.096000 | frame_time=0.096000
+2026-01-26 21:37:36 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.094000 | frame_time=0.094000
+2026-01-26 21:37:36 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.123000 | frame_time=0.123000
+2026-01-26 21:37:36 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.135000 | frame_time=0.135000
+2026-01-26 21:37:37 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.139000 | frame_time=0.139000
+2026-01-26 21:37:37 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.131000 | frame_time=0.131000
+2026-01-26 21:37:37 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.126000 | frame_time=0.126000
+2026-01-26 21:37:37 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.125000 | frame_time=0.125000
+2026-01-26 21:37:37 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.125000 | frame_time=0.125000
+2026-01-26 21:37:37 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.129000 | frame_time=0.129000
+2026-01-26 21:37:37 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.124000 | frame_time=0.124000
+2026-01-26 21:37:37 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.126000 | frame_time=0.126000
+2026-01-26 21:37:38 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.127000 | frame_time=0.127000
+2026-01-26 21:37:38 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.119000 | frame_time=0.119000
+2026-01-26 21:37:38 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.120000 | frame_time=0.120000
+2026-01-26 21:37:38 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.118000 | frame_time=0.118000
+2026-01-26 21:37:38 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.117000 | frame_time=0.117000
+2026-01-26 21:37:38 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.117000 | frame_time=0.117000
+2026-01-26 21:37:38 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.121000 | frame_time=0.121000
+2026-01-26 21:37:38 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.121000 | frame_time=0.121000
+2026-01-26 21:37:39 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.123000 | frame_time=0.123000
+2026-01-26 21:37:39 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.124000 | frame_time=0.124000
+2026-01-26 21:37:39 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.123000 | frame_time=0.123000
+2026-01-26 21:37:39 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.121000 | frame_time=0.121000
+2026-01-26 21:37:39 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.120000 | frame_time=0.120000
+2026-01-26 21:37:39 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.122000 | frame_time=0.122000
+2026-01-26 21:37:39 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.121000 | frame_time=0.121000
+2026-01-26 21:37:39 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.122000 | frame_time=0.122000
+2026-01-26 21:37:39 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.121000 | frame_time=0.121000
+2026-01-26 21:37:40 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.122000 | frame_time=0.122000
+2026-01-26 21:37:40 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.120000 | frame_time=0.120000
+2026-01-26 21:37:40 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.122000 | frame_time=0.122000
+2026-01-26 21:37:40 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.123000 | frame_time=0.123000
+2026-01-26 21:37:40 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.123000 | frame_time=0.123000
+2026-01-26 21:37:40 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.122000 | frame_time=0.122000
+2026-01-26 21:37:40 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.122000 | frame_time=0.122000
+2026-01-26 21:37:40 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.122000 | frame_time=0.122000
+2026-01-26 21:37:41 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.122000 | frame_time=0.122000
+2026-01-26 21:37:41 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.127000 | frame_time=0.127000
+2026-01-26 21:37:41 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.134000 | frame_time=0.134000
+2026-01-26 21:37:41 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.133000 | frame_time=0.133000
+2026-01-26 21:37:41 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.128000 | frame_time=0.128000
+2026-01-26 21:37:41 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.131000 | frame_time=0.131000
+2026-01-26 21:37:41 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.119000 | frame_time=0.119000
+2026-01-26 21:37:41 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.111000 | frame_time=0.111000
+2026-01-26 21:37:42 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.111000 | frame_time=0.111000
+2026-01-26 21:37:42 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.112000 | frame_time=0.112000
+2026-01-26 21:37:42 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.113000 | frame_time=0.113000
+2026-01-26 21:37:42 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.114000 | frame_time=0.114000
+2026-01-26 21:37:42 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.114000 | frame_time=0.114000
+2026-01-26 21:37:42 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.114000 | frame_time=0.114000
+2026-01-26 21:37:42 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.114000 | frame_time=0.114000
+2026-01-26 21:37:42 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.115000 | frame_time=0.115000
+2026-01-26 21:37:42 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.114000 | frame_time=0.114000
+2026-01-26 21:37:43 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.120000 | frame_time=0.120000
+2026-01-26 21:37:43 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.115000 | frame_time=0.115000
+2026-01-26 21:37:43 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.115000 | frame_time=0.115000
+2026-01-26 21:37:43 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.115000 | frame_time=0.115000
+2026-01-26 21:37:43 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.114000 | frame_time=0.114000
+2026-01-26 21:37:43 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.114000 | frame_time=0.114000
+2026-01-26 21:37:43 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.114000 | frame_time=0.114000
+2026-01-26 21:37:43 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.116000 | frame_time=0.116000
+2026-01-26 21:37:44 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.115000 | frame_time=0.115000
+2026-01-26 21:38:00 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.067667 | frame_time=0.067000
+2026-01-26 21:38:01 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.075000 | frame_time=0.075000
+2026-01-26 21:38:01 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.071000 | frame_time=0.071000
+2026-01-26 21:38:01 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.081000 | frame_time=0.081000
+2026-01-26 21:38:01 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.084000 | frame_time=0.084000
+2026-01-26 21:38:01 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.083000 | frame_time=0.083000
+2026-01-26 21:38:01 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.081000 | frame_time=0.081000
+2026-01-26 21:38:01 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.082000 | frame_time=0.082000
+2026-01-26 21:38:01 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.081000 | frame_time=0.081000
+2026-01-26 21:38:01 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.082000 | frame_time=0.082000
+2026-01-26 21:38:01 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.083000 | frame_time=0.083000
+2026-01-26 21:38:01 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.082000 | frame_time=0.082000
+2026-01-26 21:38:01 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.080000 | frame_time=0.080000
+2026-01-26 21:38:02 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.093000 | frame_time=0.093000
+2026-01-26 21:38:02 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.085000 | frame_time=0.085000
+2026-01-26 21:38:02 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.082000 | frame_time=0.082000
+2026-01-26 21:38:02 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.080000 | frame_time=0.080000
+2026-01-26 21:38:02 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.077000 | frame_time=0.077000
+2026-01-26 21:38:02 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.084000 | frame_time=0.084000
+2026-01-26 21:38:02 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.084000 | frame_time=0.084000
+2026-01-26 21:38:02 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.087000 | frame_time=0.087000
+2026-01-26 21:38:02 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.104000 | frame_time=0.104000
+2026-01-26 21:38:02 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.080000 | frame_time=0.080000
+2026-01-26 21:38:02 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.078000 | frame_time=0.078000
+2026-01-26 21:41:59 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.074667 | frame_time=0.062000
+2026-01-26 21:41:59 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.074000 | frame_time=0.062000
+2026-01-26 21:42:00 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.067333 | frame_time=0.057000
+2026-01-26 21:42:00 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.074000 | frame_time=0.074000
+2026-01-26 21:42:01 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.082333 | frame_time=0.071000
+2026-01-26 21:42:01 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.115000 | frame_time=0.115000
+2026-01-26 21:42:01 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.090000 | frame_time=0.090000
+2026-01-26 21:42:01 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.098000 | frame_time=0.098000
+2026-01-26 21:42:01 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.105000 | frame_time=0.105000
+2026-01-26 21:42:02 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.109000 | frame_time=0.109000
+2026-01-26 21:42:02 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.108000 | frame_time=0.108000
+2026-01-26 21:42:02 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.107000 | frame_time=0.107000
+2026-01-26 21:42:02 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.099000 | frame_time=0.099000
+2026-01-26 21:42:02 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.077000 | frame_time=0.077000
+2026-01-26 21:42:02 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.073000 | frame_time=0.073000
+2026-01-26 21:42:02 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.067000 | frame_time=0.067000
+2026-01-26 21:42:02 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.077000 | frame_time=0.077000
+2026-01-26 21:42:02 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.085000 | frame_time=0.069000
+2026-01-26 21:42:03 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.100000 | frame_time=0.100000
+2026-01-26 21:42:03 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.101000 | frame_time=0.101000
+2026-01-26 21:42:03 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.085000 | frame_time=0.085000
+2026-01-26 21:42:03 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.094000 | frame_time=0.094000
+2026-01-26 21:42:03 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.080000 | frame_time=0.080000
+2026-01-26 21:42:03 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.088000 | frame_time=0.088000
+2026-01-26 21:42:03 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.095000 | frame_time=0.095000
+2026-01-26 21:42:03 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.092000 | frame_time=0.092000
+2026-01-26 21:42:03 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.106000 | frame_time=0.106000
+2026-01-26 21:45:18 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.069667 | frame_time=0.061000
+2026-01-26 21:45:18 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.083000 | frame_time=0.083000
+2026-01-26 21:45:19 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.067000 | frame_time=0.054000
+2026-01-26 21:45:19 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.078000 | frame_time=0.078000
+2026-01-26 21:45:19 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.071000 | frame_time=0.071000
+2026-01-26 21:45:19 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.085000 | frame_time=0.085000
+2026-01-26 21:45:19 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.078000 | frame_time=0.078000
+2026-01-26 21:45:19 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.078000 | frame_time=0.078000
+2026-01-26 21:45:19 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.082000 | frame_time=0.082000
+2026-01-26 21:45:19 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.068000 | frame_time=0.068000
+2026-01-26 21:45:19 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.068000 | frame_time=0.068000
+2026-01-26 21:45:19 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.084000 | frame_time=0.084000
+2026-01-26 21:45:20 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.075000 | frame_time=0.075000
+2026-01-26 21:45:20 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.079000 | frame_time=0.079000
+2026-01-26 21:45:20 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.085000 | frame_time=0.085000
+2026-01-26 21:45:20 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.094000 | frame_time=0.094000
+2026-01-26 21:45:20 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.077000 | frame_time=0.077000
+2026-01-26 21:45:20 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.074000 | frame_time=0.074000
+2026-01-26 21:45:20 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.080000 | frame_time=0.080000
+2026-01-26 21:45:20 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.074000 | frame_time=0.074000
+2026-01-26 21:45:20 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.074000 | frame_time=0.074000
+2026-01-26 21:45:20 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.077000 | frame_time=0.077000
+2026-01-26 21:45:20 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.072000 | frame_time=0.072000
+2026-01-26 21:45:20 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.075000 | frame_time=0.075000
+2026-01-26 21:45:20 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.068000 | frame_time=0.068000
+2026-01-26 21:45:21 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.084000 | frame_time=0.084000
+2026-01-26 21:45:21 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.077000 | frame_time=0.077000
+2026-01-26 21:45:21 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.091000 | frame_time=0.091000
+2026-01-26 21:45:21 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.079000 | frame_time=0.079000
+2026-01-26 21:45:21 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.088000 | frame_time=0.088000
+2026-01-26 21:45:21 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.084000 | frame_time=0.084000
+2026-01-26 21:45:21 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.082000 | frame_time=0.082000
+2026-01-26 21:45:21 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.082000 | frame_time=0.082000
+2026-01-26 21:45:21 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.083000 | frame_time=0.083000
+2026-01-26 21:45:21 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.076000 | frame_time=0.076000
+2026-01-26 21:45:21 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.085000 | frame_time=0.085000
+2026-01-26 21:45:21 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.082000 | frame_time=0.082000
+2026-01-26 21:45:22 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.081000 | frame_time=0.081000
+2026-01-26 21:45:22 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.087000 | frame_time=0.087000
+2026-01-26 21:45:22 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.085000 | frame_time=0.085000
+2026-01-26 21:45:22 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.081000 | frame_time=0.081000
+2026-01-26 21:45:22 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.085000 | frame_time=0.085000
+2026-01-26 21:45:22 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.073000 | frame_time=0.073000
+2026-01-26 21:45:22 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.091000 | frame_time=0.091000
+2026-01-26 21:45:22 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.075000 | frame_time=0.075000
+2026-01-26 21:45:22 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.075000 | frame_time=0.075000
+2026-01-26 21:45:22 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.076000 | frame_time=0.076000
+2026-01-26 21:45:22 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.089000 | frame_time=0.089000
+2026-01-26 21:45:22 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.078000 | frame_time=0.078000
+2026-01-26 21:45:22 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.087000 | frame_time=0.087000
+2026-01-26 21:45:23 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.087000 | frame_time=0.087000
+2026-01-26 21:45:23 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.075000 | frame_time=0.075000
+2026-01-26 21:45:23 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.085000 | frame_time=0.085000
+2026-01-26 21:45:23 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.073000 | frame_time=0.073000
+2026-01-26 21:45:23 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.092000 | frame_time=0.092000
+2026-01-26 21:45:23 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.075000 | frame_time=0.075000
+2026-01-26 21:45:23 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.115000 | frame_time=0.115000
+2026-01-26 21:45:23 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.082000 | frame_time=0.082000
+2026-01-27 02:55:29 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=4.784667 | frame_time=4.769000
+2026-01-27 02:59:26 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.9268384322136853 normal=Vector2D(x=0.0, y=-1.0) points=1
+2026-01-27 02:59:26 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.9268384322136853 normal=Vector2D(x=0.0, y=-1.0) points=1
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.870747078066325 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.870747078066325 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.870747078066325 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.870747078066325 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.870747078066325 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.870747078066325 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.870747078066325 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.870747078066325 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.870747078066325 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.870747078066325 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.870747078066325 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.870747078066325 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=2.232035072805684 normal=Vector2D(x=-0.0, y=1.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=2.232035072805684 normal=Vector2D(x=-0.0, y=1.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=2.232035072805684 normal=Vector2D(x=-0.0, y=1.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=2.232035072805684 normal=Vector2D(x=-0.0, y=1.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=2.232035072805684 normal=Vector2D(x=-0.0, y=1.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=2.232035072805684 normal=Vector2D(x=-0.0, y=1.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=42.04032270901908 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=42.04032270901908 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=42.04032270901908 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=42.04032270901908 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=42.77294608186298 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=42.77294608186298 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=42.77294608186298 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=42.77294608186298 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=50.227546057291505 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=50.227546057291505 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=50.227546057291505 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=50.227546057291505 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=50.227546057291505 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=50.227546057291505 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=50.227546057291505 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=50.227546057291505 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=1.5757122584676833 normal=Vector2D(x=-0.19662607860212514, y=-0.9804785490838395) points=1
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=1.5757122584676833 normal=Vector2D(x=-0.19662607860212514, y=-0.9804785490838395) points=1
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.3028448128916353 normal=Vector2D(x=-0.14562466442526445, y=-0.9893399097939136) points=1
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.3028448128916353 normal=Vector2D(x=-0.14562466442526445, y=-0.9893399097939136) points=1
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.872420807927028 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.872420807927028 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.872420807927028 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.872420807927028 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.872420807927028 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.872420807927028 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.872420807927028 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.872420807927028 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.872420807927028 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.872420807927028 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.872420807927028 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.872420807927028 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=1.5456164854335839 normal=Vector2D(x=3.6955096965262676e-16, y=-1.0) points=1
+2026-01-27 02:59:27 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=1.5456164854335839 normal=Vector2D(x=3.6955096965262676e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.664673422217561 normal=Vector2D(x=3.6127460864221336e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.664673422217561 normal=Vector2D(x=3.6127460864221336e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.17595469880734527 normal=Vector2D(x=0.0, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.17595469880734527 normal=Vector2D(x=0.0, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.1853200377331632 normal=Vector2D(x=0.0, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.1853200377331632 normal=Vector2D(x=0.0, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.13316617429438793 normal=Vector2D(x=3.564580718230759e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=21.66068336294957 normal=Vector2D(x=-0.09084965329813599, y=-0.9958646195621214) points=2
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=21.66068336294957 normal=Vector2D(x=-0.09084965329813599, y=-0.9958646195621214) points=2
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.13316617429438793 normal=Vector2D(x=3.564580718230759e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=21.66068336294957 normal=Vector2D(x=-0.09084965329813599, y=-0.9958646195621214) points=2
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=21.66068336294957 normal=Vector2D(x=-0.09084965329813599, y=-0.9958646195621214) points=2
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.13316617429438793 normal=Vector2D(x=3.564580718230759e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=21.66068336294957 normal=Vector2D(x=-0.09084965329813599, y=-0.9958646195621214) points=2
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=21.66068336294957 normal=Vector2D(x=-0.09084965329813599, y=-0.9958646195621214) points=2
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.13316617429438793 normal=Vector2D(x=3.564580718230759e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=21.66068336294957 normal=Vector2D(x=-0.09084965329813599, y=-0.9958646195621214) points=2
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=21.66068336294957 normal=Vector2D(x=-0.09084965329813599, y=-0.9958646195621214) points=2
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.13316617429438793 normal=Vector2D(x=3.564580718230759e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=21.66068336294957 normal=Vector2D(x=-0.09084965329813599, y=-0.9958646195621214) points=2
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=21.66068336294957 normal=Vector2D(x=-0.09084965329813599, y=-0.9958646195621214) points=2
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.13316617429438793 normal=Vector2D(x=3.564580718230759e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=21.66068336294957 normal=Vector2D(x=-0.09084965329813599, y=-0.9958646195621214) points=2
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=21.66068336294957 normal=Vector2D(x=-0.09084965329813599, y=-0.9958646195621214) points=2
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.10940619727443845 normal=Vector2D(x=3.5624575521437926e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.10940619727443845 normal=Vector2D(x=3.5624575521437926e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.10961446451983647 normal=Vector2D(x=3.562476151693816e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.10961446451983647 normal=Vector2D(x=3.562476151693816e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.10982392430616983 normal=Vector2D(x=3.5624948579409915e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.10982392430616983 normal=Vector2D(x=3.5624948579409915e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11003458143784428 normal=Vector2D(x=-7.125027342635505e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11003458143784428 normal=Vector2D(x=-7.125027342635505e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.1102464407848629 normal=Vector2D(x=-7.125065184524852e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.1102464407848629 normal=Vector2D(x=-7.125065184524852e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11045950724030718 normal=Vector2D(x=-3.562551621215442e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11045950724030718 normal=Vector2D(x=-3.562551621215442e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11067378572045072 normal=Vector2D(x=-3.5625707586193356e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11067378572045072 normal=Vector2D(x=-3.5625707586193356e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11088928116475927 normal=Vector2D(x=0.0, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11088928116475927 normal=Vector2D(x=0.0, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11110599853589065 normal=Vector2D(x=3.5626093605604605e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11110599853589065 normal=Vector2D(x=3.5626093605604605e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11132394281980851 normal=Vector2D(x=-3.562628825993328e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11132394281980851 normal=Vector2D(x=-3.562628825993328e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11154311902555492 normal=Vector2D(x=-3.5626484016683384e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11154311902555492 normal=Vector2D(x=-3.5626484016683384e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11176353218570512 normal=Vector2D(x=0.0, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11176353218570512 normal=Vector2D(x=0.0, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11198518735602647 normal=Vector2D(x=-3.5626878855593863e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11198518735602647 normal=Vector2D(x=-3.5626878855593863e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11220808961570583 normal=Vector2D(x=0.0, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11220808961570583 normal=Vector2D(x=0.0, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11243224406712216 normal=Vector2D(x=3.562727815884006e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11243224406712216 normal=Vector2D(x=3.562727815884006e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.1126576558360739 normal=Vector2D(x=-3.562747949608944e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.1126576558360739 normal=Vector2D(x=-3.562747949608944e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.112884330071779 normal=Vector2D(x=-7.12553639265317e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.112884330071779 normal=Vector2D(x=-7.12553639265317e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11311227194676121 normal=Vector2D(x=0.0, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11311227194676121 normal=Vector2D(x=0.0, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11334148665719113 normal=Vector2D(x=3.562809030605614e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11334148665719113 normal=Vector2D(x=3.562809030605614e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11357197942243147 normal=Vector2D(x=7.125659238210334e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11357197942243147 normal=Vector2D(x=7.125659238210334e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11380375548549182 normal=Vector2D(x=7.125700644947512e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11380375548549182 normal=Vector2D(x=7.125700644947512e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11403682011268756 normal=Vector2D(x=3.562871141185803e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11403682011268756 normal=Vector2D(x=3.562871141185803e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11427117859398095 normal=Vector2D(x=7.125784151435773e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11427117859398095 normal=Vector2D(x=7.125784151435773e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.1145068362428674 normal=Vector2D(x=3.562913126548733e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.1145068362428674 normal=Vector2D(x=3.562913126548733e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11474379839614812 normal=Vector2D(x=-7.125868588318388e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11474379839614812 normal=Vector2D(x=-7.125868588318388e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11498207041438491 normal=Vector2D(x=7.125911158064584e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11498207041438491 normal=Vector2D(x=7.125911158064584e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.1152216576816727 normal=Vector2D(x=-7.125953963306388e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.1152216576816727 normal=Vector2D(x=-7.125953963306388e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11546256560552592 normal=Vector2D(x=3.56299850250921e-16, y=-1.0) points=1
+2026-01-27 02:59:28 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11546256560552592 normal=Vector2D(x=3.56299850250921e-16, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11570479961721958 normal=Vector2D(x=-3.5630201420898163e-16, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11570479961721958 normal=Vector2D(x=-3.5630201420898163e-16, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11594836517156182 normal=Vector2D(x=7.126083801773281e-16, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11594836517156182 normal=Vector2D(x=7.126083801773281e-16, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11619326774700767 normal=Vector2D(x=3.5630637793934694e-16, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11619326774700767 normal=Vector2D(x=3.5630637793934694e-16, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11643951284554532 normal=Vector2D(x=7.126171556212481e-16, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11643951284554532 normal=Vector2D(x=7.126171556212481e-16, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11668710599292353 normal=Vector2D(x=3.5631078975230632e-16, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11668710599292353 normal=Vector2D(x=3.5631078975230632e-16, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11693605273853791 normal=Vector2D(x=-3.5631301381442086e-16, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11693605273853791 normal=Vector2D(x=-3.5631301381442086e-16, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11718635865543092 normal=Vector2D(x=3.563152500472109e-16, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11718635865543092 normal=Vector2D(x=3.563152500472109e-16, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.1174380293402919 normal=Vector2D(x=-3.56317498501136e-16, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.1174380293402919 normal=Vector2D(x=-3.56317498501136e-16, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11769107041357074 normal=Vector2D(x=3.56319759226873e-16, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11769107041357074 normal=Vector2D(x=3.56319759226873e-16, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11794548751936418 normal=Vector2D(x=3.563220322753152e-16, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11794548751936418 normal=Vector2D(x=3.563220322753152e-16, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11820128632552951 normal=Vector2D(x=0.0, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11820128632552951 normal=Vector2D(x=0.0, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11845847252357089 normal=Vector2D(x=-3.563266155449739e-16, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11845847252357089 normal=Vector2D(x=-3.563266155449739e-16, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11871705182875303 normal=Vector2D(x=-3.5632892586906214e-16, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11871705182875303 normal=Vector2D(x=-3.5632892586906214e-16, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=53.15704195109393 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=53.15704195109393 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11897702997998749 normal=Vector2D(x=-3.5633124872159907e-16, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=56.568542494923896 normal=Vector2D(x=1.0, y=-0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=56.568542494923896 normal=Vector2D(x=1.0, y=-0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=53.15704195109393 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=53.15704195109393 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11897702997998749 normal=Vector2D(x=-3.5633124872159907e-16, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=56.568542494923896 normal=Vector2D(x=1.0, y=-0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=56.568542494923896 normal=Vector2D(x=1.0, y=-0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=53.15704195109393 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=53.15704195109393 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11897702997998749 normal=Vector2D(x=-3.5633124872159907e-16, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=56.568542494923896 normal=Vector2D(x=1.0, y=-0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=56.568542494923896 normal=Vector2D(x=1.0, y=-0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=53.15704195109393 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=53.15704195109393 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11897702997998749 normal=Vector2D(x=-3.5633124872159907e-16, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=56.568542494923896 normal=Vector2D(x=1.0, y=-0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=56.568542494923896 normal=Vector2D(x=1.0, y=-0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=53.15704195109393 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=53.15704195109393 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11897702997998749 normal=Vector2D(x=-3.5633124872159907e-16, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=56.568542494923896 normal=Vector2D(x=1.0, y=-0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=56.568542494923896 normal=Vector2D(x=1.0, y=-0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=53.15704195109393 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=53.15704195109393 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11897702997998749 normal=Vector2D(x=-3.5633124872159907e-16, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=56.568542494923896 normal=Vector2D(x=1.0, y=-0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=56.568542494923896 normal=Vector2D(x=1.0, y=-0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=53.15704195109393 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=53.15704195109393 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11897702997998749 normal=Vector2D(x=-3.5633124872159907e-16, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=56.568542494923896 normal=Vector2D(x=1.0, y=-0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=56.568542494923896 normal=Vector2D(x=1.0, y=-0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=53.15704195109393 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=53.15704195109393 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11897702997998749 normal=Vector2D(x=-3.5633124872159907e-16, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=56.568542494923896 normal=Vector2D(x=1.0, y=-0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=56.568542494923896 normal=Vector2D(x=1.0, y=-0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=53.15704195109393 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=53.15704195109393 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11897702997998749 normal=Vector2D(x=-3.5633124872159907e-16, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=56.568542494923896 normal=Vector2D(x=1.0, y=-0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=56.568542494923896 normal=Vector2D(x=1.0, y=-0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=53.15704195109393 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=53.15704195109393 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11897702997998749 normal=Vector2D(x=-3.5633124872159907e-16, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=56.568542494923896 normal=Vector2D(x=1.0, y=-0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=56.568542494923896 normal=Vector2D(x=1.0, y=-0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=53.15704195109393 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=53.15704195109393 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11897702997998749 normal=Vector2D(x=-3.5633124872159907e-16, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=56.568542494923896 normal=Vector2D(x=1.0, y=-0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=56.568542494923896 normal=Vector2D(x=1.0, y=-0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=53.15704195109393 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=53.15704195109393 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11897702997998749 normal=Vector2D(x=-3.5633124872159907e-16, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=56.568542494923896 normal=Vector2D(x=1.0, y=-0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=56.568542494923896 normal=Vector2D(x=1.0, y=-0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=53.64791434550253 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=53.64791434550253 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11923841262967017 normal=Vector2D(x=0.0, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=53.64791434550253 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=53.64791434550253 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=0.11923841262967017 normal=Vector2D(x=0.0, y=-1.0) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=54.388046632755305 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=54.388046632755305 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=3.219362414109 normal=Vector2D(x=-0.16899577294195242, y=0.9856167757946048) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=19.9270547734142 normal=Vector2D(x=0.12317986515944436, y=-0.9923843614342688) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=7.23482913264852 normal=Vector2D(x=1.0, y=-0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=7.23482913264852 normal=Vector2D(x=1.0, y=-0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=54.388046632755305 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=54.388046632755305 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=3.219362414109 normal=Vector2D(x=-0.16899577294195242, y=0.9856167757946048) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=19.9270547734142 normal=Vector2D(x=0.12317986515944433, y=-0.9923843614342686) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=7.23482913264852 normal=Vector2D(x=1.0, y=-0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=7.23482913264852 normal=Vector2D(x=1.0, y=-0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=54.388046632755305 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=54.388046632755305 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=3.219362414109 normal=Vector2D(x=-0.16899577294195242, y=0.9856167757946048) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=19.9270547734142 normal=Vector2D(x=0.12317986515944436, y=-0.9923843614342688) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=7.23482913264852 normal=Vector2D(x=1.0, y=-0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=7.23482913264852 normal=Vector2D(x=1.0, y=-0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=54.388046632755305 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=54.388046632755305 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=3.219362414109 normal=Vector2D(x=-0.16899577294195242, y=0.9856167757946048) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=19.9270547734142 normal=Vector2D(x=0.12317986515944433, y=-0.9923843614342686) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=7.23482913264852 normal=Vector2D(x=1.0, y=-0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=7.23482913264852 normal=Vector2D(x=1.0, y=-0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=54.388046632755305 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=54.388046632755305 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=3.219362414109 normal=Vector2D(x=-0.16899577294195242, y=0.9856167757946048) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=19.9270547734142 normal=Vector2D(x=0.12317986515944436, y=-0.9923843614342688) points=1
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=7.23482913264852 normal=Vector2D(x=1.0, y=-0.0) points=2
+2026-01-27 02:59:29 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=7.23482913264852 normal=Vector2D(x=1.0, y=-0.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.870747078066325 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.870747078066325 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.870747078066325 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.870747078066325 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.870747078066325 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.870747078066325 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.870747078066325 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.870747078066325 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.870747078066325 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.870747078066325 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.870747078066325 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.870747078066325 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=2.232035072805684 normal=Vector2D(x=-0.0, y=1.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=2.232035072805684 normal=Vector2D(x=-0.0, y=1.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=2.232035072805684 normal=Vector2D(x=-0.0, y=1.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=2.232035072805684 normal=Vector2D(x=-0.0, y=1.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=2.232035072805684 normal=Vector2D(x=-0.0, y=1.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=2.232035072805684 normal=Vector2D(x=-0.0, y=1.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=42.04032270901908 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=42.04032270901908 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=42.04032270901908 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=42.04032270901908 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=42.77294608186298 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=42.77294608186298 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=42.77294608186298 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=42.77294608186298 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=19.548706638747543 normal=Vector2D(x=-0.3217661970300669, y=-0.9468191561479986) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=19.548706638747543 normal=Vector2D(x=-0.3217661970300669, y=-0.9468191561479986) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=19.548706638747543 normal=Vector2D(x=-0.3217661970300669, y=-0.9468191561479986) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=19.548706638747543 normal=Vector2D(x=-0.3217661970300669, y=-0.9468191561479986) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=19.548706638747543 normal=Vector2D(x=-0.3217661970300669, y=-0.9468191561479986) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=19.548706638747543 normal=Vector2D(x=-0.3217661970300669, y=-0.9468191561479986) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=19.548706638747543 normal=Vector2D(x=-0.3217661970300669, y=-0.9468191561479986) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=19.548706638747543 normal=Vector2D(x=-0.3217661970300669, y=-0.9468191561479986) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=19.548706638747543 normal=Vector2D(x=-0.3217661970300669, y=-0.9468191561479986) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=19.548706638747543 normal=Vector2D(x=-0.3217661970300669, y=-0.9468191561479986) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=19.548706638747543 normal=Vector2D(x=-0.3217661970300669, y=-0.9468191561479986) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=19.548706638747543 normal=Vector2D(x=-0.3217661970300669, y=-0.9468191561479986) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.872420807927028 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.872420807927028 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.872420807927028 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.872420807927028 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.872420807927028 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.872420807927028 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.872420807927028 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.872420807927028 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.872420807927028 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.872420807927028 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.872420807927028 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:00:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:423 | Huge depth=4.872420807927028 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=4.870747078066325 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=4.870747078066325 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=4.870747078066325 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=4.870747078066325 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=4.870747078066325 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=4.870747078066325 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=4.870747078066325 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=4.870747078066325 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=4.870747078066325 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=4.870747078066325 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=4.870747078066325 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=4.870747078066325 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=2.232035072805684 normal=Vector2D(x=-0.0, y=1.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=2.232035072805684 normal=Vector2D(x=-0.0, y=1.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=2.232035072805684 normal=Vector2D(x=-0.0, y=1.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=2.232035072805684 normal=Vector2D(x=-0.0, y=1.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=2.232035072805684 normal=Vector2D(x=-0.0, y=1.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=2.232035072805684 normal=Vector2D(x=-0.0, y=1.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=41.59316396981385 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=42.04032270901908 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=42.04032270901908 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=42.04032270901908 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=42.04032270901908 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=42.77294608186298 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=42.77294608186298 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=42.77294608186298 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=42.77294608186298 normal=Vector2D(x=-1.0, y=0.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=19.548706638747543 normal=Vector2D(x=-0.3217661970300669, y=-0.9468191561479986) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=19.548706638747543 normal=Vector2D(x=-0.3217661970300669, y=-0.9468191561479986) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=19.548706638747543 normal=Vector2D(x=-0.3217661970300669, y=-0.9468191561479986) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=19.548706638747543 normal=Vector2D(x=-0.3217661970300669, y=-0.9468191561479986) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=19.548706638747543 normal=Vector2D(x=-0.3217661970300669, y=-0.9468191561479986) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=19.548706638747543 normal=Vector2D(x=-0.3217661970300669, y=-0.9468191561479986) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=19.548706638747543 normal=Vector2D(x=-0.3217661970300669, y=-0.9468191561479986) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=19.548706638747543 normal=Vector2D(x=-0.3217661970300669, y=-0.9468191561479986) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=19.548706638747543 normal=Vector2D(x=-0.3217661970300669, y=-0.9468191561479986) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=19.548706638747543 normal=Vector2D(x=-0.3217661970300669, y=-0.9468191561479986) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=19.548706638747543 normal=Vector2D(x=-0.3217661970300669, y=-0.9468191561479986) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=19.548706638747543 normal=Vector2D(x=-0.3217661970300669, y=-0.9468191561479986) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=4.872420807927028 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=4.872420807927028 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=4.872420807927028 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=4.872420807927028 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=4.872420807927028 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=4.872420807927028 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=4.872420807927028 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=4.872420807927028 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=4.872420807927028 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=4.872420807927028 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=4.872420807927028 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 03:02:07 | WARNING  | vect_hunt.engine.physics.collision_resolution_system | collision_resolution_system.py:424 | Huge depth=4.872420807927028 normal=Vector2D(x=0.0, y=-1.0) points=2
+2026-01-27 15:11:38 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=74.607667 | frame_time=74.600000
+2026-01-27 15:12:28 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=49.514000 | frame_time=49.514000
+2026-01-27 15:13:16 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.085667 | frame_time=0.073000
+2026-01-27 15:13:16 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.067000 | frame_time=0.052000
+2026-01-27 15:13:16 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.071000 | frame_time=0.071000
+2026-01-27 15:13:16 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.068000 | frame_time=0.052000
+2026-01-27 15:14:05 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.068333 | frame_time=0.053000
+2026-01-27 15:14:05 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.068000 | frame_time=0.068000
+2026-01-27 15:25:49 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.075667 | frame_time=0.062000
+2026-01-27 15:25:49 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.075000 | frame_time=0.075000
+2026-01-27 15:29:41 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.073667 | frame_time=0.063000
+2026-01-27 15:29:41 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.079000 | frame_time=0.079000
+2026-01-27 15:29:41 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.080000 | frame_time=0.080000
+2026-01-27 15:29:41 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.080000 | frame_time=0.080000
+2026-01-27 15:29:42 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.084000 | frame_time=0.084000
+2026-01-27 15:29:42 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.082000 | frame_time=0.082000
+2026-01-27 15:29:42 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.079000 | frame_time=0.079000
+2026-01-27 15:29:42 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.081000 | frame_time=0.081000
+2026-01-27 15:29:42 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.078000 | frame_time=0.078000
+2026-01-27 15:29:42 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.079000 | frame_time=0.079000
+2026-01-27 15:29:42 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.078000 | frame_time=0.078000
+2026-01-27 15:29:42 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.079000 | frame_time=0.079000
+2026-01-27 15:29:42 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.077000 | frame_time=0.077000
+2026-01-27 15:29:42 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.078000 | frame_time=0.078000
+2026-01-27 15:29:42 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.078000 | frame_time=0.078000
+2026-01-27 15:29:42 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.079000 | frame_time=0.079000
+2026-01-27 15:29:43 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.087000 | frame_time=0.087000
+2026-01-27 15:29:43 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.086000 | frame_time=0.086000
+2026-01-27 15:29:43 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.090000 | frame_time=0.090000
+2026-01-27 15:29:43 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.095000 | frame_time=0.095000
+2026-01-27 15:29:43 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.088000 | frame_time=0.088000
+2026-01-27 15:29:43 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.090000 | frame_time=0.090000
+2026-01-27 15:29:43 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.089000 | frame_time=0.089000
+2026-01-27 15:29:43 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.089000 | frame_time=0.089000
+2026-01-27 15:29:43 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.091000 | frame_time=0.091000
+2026-01-27 15:29:43 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.094000 | frame_time=0.094000
+2026-01-27 15:29:43 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.118000 | frame_time=0.118000
+2026-01-27 15:29:44 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.116000 | frame_time=0.116000
+2026-01-27 15:29:44 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.102000 | frame_time=0.102000
+2026-01-27 15:29:44 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.105000 | frame_time=0.105000
+2026-01-27 15:29:44 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.109000 | frame_time=0.109000
+2026-01-27 15:29:44 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.097000 | frame_time=0.097000
+2026-01-27 15:29:44 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.097000 | frame_time=0.097000
+2026-01-27 15:29:44 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.099000 | frame_time=0.099000
+2026-01-27 15:29:44 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.096000 | frame_time=0.096000
+2026-01-27 15:29:44 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.099000 | frame_time=0.099000
+2026-01-27 15:29:44 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.096000 | frame_time=0.096000
+2026-01-27 15:29:45 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.097000 | frame_time=0.097000
+2026-01-27 15:29:45 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.097000 | frame_time=0.097000
+2026-01-27 15:29:45 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.099000 | frame_time=0.099000
+2026-01-27 15:29:45 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.097000 | frame_time=0.097000
+2026-01-27 15:29:45 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.097000 | frame_time=0.097000
+2026-01-27 15:29:45 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.098000 | frame_time=0.098000
+2026-01-27 15:29:45 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.097000 | frame_time=0.097000
+2026-01-27 15:29:45 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.097000 | frame_time=0.097000
+2026-01-27 15:29:45 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.097000 | frame_time=0.097000
+2026-01-27 15:29:45 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.098000 | frame_time=0.098000
+2026-01-27 15:29:46 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.097000 | frame_time=0.097000
+2026-01-27 15:29:46 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.097000 | frame_time=0.097000
+2026-01-27 15:29:46 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.098000 | frame_time=0.098000
+2026-01-27 15:29:46 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.098000 | frame_time=0.098000
+2026-01-27 15:29:46 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.097000 | frame_time=0.097000
+2026-01-27 15:29:46 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.097000 | frame_time=0.097000
+2026-01-27 15:29:46 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.103000 | frame_time=0.103000
+2026-01-27 15:29:46 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.122000 | frame_time=0.122000
+2026-01-27 15:29:46 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.097000 | frame_time=0.097000
+2026-01-27 15:29:46 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.096000 | frame_time=0.096000
+2026-01-27 15:29:47 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.096000 | frame_time=0.096000
+2026-01-27 15:29:47 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.097000 | frame_time=0.097000
+2026-01-27 15:29:47 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.097000 | frame_time=0.097000
+2026-01-27 15:29:47 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.097000 | frame_time=0.097000
+2026-01-27 15:29:47 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.097000 | frame_time=0.097000
+2026-01-27 15:29:47 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.097000 | frame_time=0.097000
+2026-01-27 15:29:47 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.098000 | frame_time=0.098000
+2026-01-27 15:29:47 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.097000 | frame_time=0.097000
+2026-01-27 15:29:47 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.096000 | frame_time=0.096000
+2026-01-27 15:29:47 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.096000 | frame_time=0.096000
+2026-01-27 15:29:47 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.097000 | frame_time=0.097000
+2026-01-27 15:29:48 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.096000 | frame_time=0.096000
+2026-01-27 15:29:48 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.097000 | frame_time=0.097000
+2026-01-27 15:29:48 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.098000 | frame_time=0.098000
+2026-01-27 15:29:48 | WARNING  | __main__ | game_loop.py:85 | Temps d'execution trop long, limitation de l'accumulateur | accumulator=0.098000 | frame_time=0.098000

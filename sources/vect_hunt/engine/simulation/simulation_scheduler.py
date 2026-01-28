@@ -2,6 +2,7 @@ from typing import Set, Tuple
 
 from vect_hunt.engine.components.collider.collider_component import ColliderComponent
 from vect_hunt.engine.components.physic_body_component import PhysicBodyComponent
+from vect_hunt.engine.core.collisions.collision_info import CollisionInfo
 from vect_hunt.engine.input.input_system import InputSystem
 from vect_hunt.engine.physics.collider_detection import ColliderDetection
 from vect_hunt.engine.physics.collision_resolution_system import (
@@ -16,6 +17,12 @@ class SimulationScheduler:
     Orchestrateur de la simulation.
 
     Centralise l'ordre d'update du monde (inputs, objets, forces, collisions).
+
+    Notes
+    -----
+    Cette version considère que le système de collision travaille en collider/collider.
+    Les callbacks gameplay (on_enter_collision, etc.) restent en game_object/game_object
+    et sont dérivés des paires de colliders avec déduplication.
     """
 
     def __init__(
@@ -23,7 +30,7 @@ class SimulationScheduler:
         scene,
         input_config: dict,
         tag_system,
-        max_collision_passes: int = 6,
+        max_collision_passes: int = 2,
     ) -> None:
         """
         Initialise le scheduler pour une scene.
@@ -36,12 +43,15 @@ class SimulationScheduler:
             Nombre max d'iterations de resolution des collisions.
         """
         self.scene = scene
-        self.max_collision_passes = 6  # max_collision_passes
-        self.impulse_iterations = 8
+        self.max_collision_passes = max_collision_passes
+        self.impulse_iterations = max_collision_passes * 2
 
         self.input_system = InputSystem(input_config)
         self.collider_detection = ColliderDetection(tag_system)
+
+        # TODO : On doit tracker des collider id maintenat, a faire
         self.collision_tracker = CollisionTracker()
+
         self.collision_resolution_system = CollisionResolutionSystem(scene)
         self.external_forces_system = ExternalForcesSystem()
 
@@ -89,10 +99,11 @@ class SimulationScheduler:
             Temps écoulé depuis la dernière frame (en secondes).
         """
         for game_object in self.scene.game_objects.values():
-            if game_object.active:
-                physic_bodies = game_object.get_components(PhysicBodyComponent)
-                for body in physic_bodies:
-                    body.integrate_velocity(delta_time)
+            if not game_object.active:
+                continue
+
+            for body in game_object.get_components(PhysicBodyComponent):
+                body.integrate_velocity(delta_time)
 
     def _update_game_objects_transforms(self, delta_time: float) -> None:
         """
@@ -104,10 +115,11 @@ class SimulationScheduler:
             Temps écoulé depuis la dernière frame (en secondes).
         """
         for game_object in self.scene.game_objects.values():
-            if game_object.active:
-                physic_bodies = game_object.get_components(PhysicBodyComponent)
-                for body in physic_bodies:
-                    body.integrate_transform(delta_time)
+            if not game_object.active:
+                continue
+
+            for body in game_object.get_components(PhysicBodyComponent):
+                body.integrate_transform(delta_time)
 
     def _update_game_objects(self, delta_time: float) -> None:
         """
@@ -122,6 +134,29 @@ class SimulationScheduler:
             if game_object.active:
                 game_object.update(delta_time)
 
+    def _collider_pairs_to_object_pairs(
+        self, pairs: Set[Tuple[int, int]]
+    ) -> Set[Tuple[int, int]]:
+        """
+        convertit des paires de collider ids en paires d'object ids.
+
+        Parameters
+        ----------
+        pairs : Set[Tuple[int, int]]
+            Paires de collider ids.
+
+        Returns
+        -------
+        Set[Tuple[int, int]]
+            Paires d'object ids.
+        """
+        out: Set[Tuple[int, int]] = set()
+        for col_a, col_b in pairs:
+            p = self._collider_pair_to_object_pair(col_a, col_b)
+            if p is not None:
+                out.add(p)
+        return out
+
     def update_collisions(self, delta_time: float) -> None:
         """
         Met a jour le systeme de collisions et triggers pour cette frame.
@@ -133,11 +168,17 @@ class SimulationScheduler:
         """
         collision_result = self.collider_detection.detect(self.scene)
 
-        self.collision_tracker.update(collision_result, delta_time)
+        # Convertit collider pairs -> object pairs pour le tracker actuel
+        collisions = self._collider_pairs_to_object_pairs(collision_result.collisions)
+        triggers = self._collider_pairs_to_object_pairs(collision_result.triggers)
+
+        # TODO : Le tracker doit travailler en collider pairs (pas object pairs)
+        self.collision_tracker.update(collisions, triggers, delta_time)
 
         self._handle_enters()
         self._handle_exits()
-        self._handle_stays(collision_result.collisions, collision_result.triggers)
+        self._handle_stays(collisions, triggers)
+
 
     def _resolve_collisions(self, delta_time: float) -> None:
         """
@@ -157,20 +198,29 @@ class SimulationScheduler:
         collision_result = self.collider_detection.detect(self.scene)
         if not collision_result.collisions:
             return
+        collision_info = self.collision_resolution_system.resolve_all_collision_info(
+            collision_result.collisions,
+            collision_result.collision_info,
+        )
 
         for i in range(self.impulse_iterations):
+            #print("Impulse pass:", i + 1)  # DEBUG
             # Sequential impulses: same contact set, update velocities only
             moved = self.collision_resolution_system.apply_impulse_response(
                 list(collision_result.collisions),
-                collision_result.collision_info,
+                collision_info,
                 delta_time=delta_time,
             )
             if not moved:
                 break
-
+        
         # 2) Small position correction passes (re-detect each pass)
         for j in range(self.max_collision_passes):
             collision_result = self.collider_detection.detect(self.scene)
+            collision_info = self.collision_resolution_system.resolve_all_collision_info(
+                collision_result.collisions,
+                collision_result.collision_info,
+            )
             if not collision_result.collisions:
                 break
 
@@ -186,6 +236,34 @@ class SimulationScheduler:
             j + 1,
             "position correction passes performed.",
         )
+
+    def _collider_pair_to_object_pair(
+        self, col_a: int, col_b: int
+    ) -> Tuple[int, int] | None:
+        """
+        Convertit une paire de collider ids en une paire d'object ids.
+
+        Parameters
+        ----------
+        col_a : int
+            Collider id A.
+        col_b : int
+            Collider id B.
+
+        Returns
+        -------
+        Tuple[int, int] | None
+            (obj_a_id, obj_b_id) ou None si conversion impossible ou même objet.
+        """
+        obj_a = self.scene.game_objects_by_component.get(col_a)
+        obj_b = self.scene.game_objects_by_component.get(col_b)
+
+        if obj_a is None or obj_b is None:
+            return None
+        if obj_a == obj_b:
+            return None
+
+        return (min(obj_a, obj_b), max(obj_a, obj_b))
 
     def _handle_enters(self) -> None:
         """

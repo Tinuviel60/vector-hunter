@@ -41,7 +41,7 @@ class RenderComponent(Component):
         raise NotImplementedError
 
     @abstractmethod
-    def render(self, surface) -> None:
+    def render(self, surface, viewport=None) -> None:
         """
         Dessine l'objet sur la surface donnée.
 
@@ -52,5 +52,7 @@ class RenderComponent(Component):
         ----------
         surface
             Surface de rendu (ex: pygame.Surface).
+        viewport
+            Viewport optionnel pour convertir monde (Y-up) -> écran (Y-down).
         """
         raise NotImplementedError

@@ -73,12 +73,12 @@ class BoxShape(Shape):
 
     def local_vertices(self) -> list[Vector2D]:
         """
-        Retourne les 4 sommets du box en espace local (sens horaire).
+        Retourne les 4 sommets du box en espace local (ordre cyclique).
 
         Returns
         -------
         list[Vector2D]
-            Les 4 sommets locaux dans l'ordre horaire.
+            Les 4 sommets locaux dans un ordre cyclique.
         """
         half_w = self.width * 0.5
         half_h = self.height * 0.5

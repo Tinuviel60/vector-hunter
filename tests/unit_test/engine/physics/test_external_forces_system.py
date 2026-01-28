@@ -9,7 +9,7 @@ from vect_hunt.engine.scenes.scene import Scene
 @pytest.mark.parametrize(
     "use_gravity, is_kinematic, expected_y",
     [
-        (True, False, 981.0),
+        (True, False, -981.0),
         (False, False, 0.0),
         (True, True, 0.0),
     ],
