@@ -1,5 +1,8 @@
 # Vector-Hunter Roadmap (mise à jour depuis `packages_vector-hunter_global.dot`)
 
+Réparer les tests unitaire
+Sortir le viewport du renderer
+
 Lecture “froide” du DOT :
 - Les maths de collision sont déjà dans `engine.core.math.geometry` (bon découplage “calculs purs”).
 - Le gameplay (`vect_hunt.game.*`) dépend de l’engine (normal), mais aussi de `engine.rendering.*` (couplage au rendu concret).

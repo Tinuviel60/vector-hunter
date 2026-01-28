@@ -1,0 +1,22 @@
+{
+  "_comment": "Level 01 - No gravity. Test impulses, friction, restitution without gravity.",
+  "scene": {
+    "units": {
+      "pixels_per_meter": 100.0,
+      "gravity_m_s2": 0.0
+    }
+  },
+  "game_objects": [
+    { "template_path": "player.json", "name": "Player", "transform": { "position": [200, 400], "rotation": 0.0 } },
+
+    { "template_path": "objects/standard.json", "name": "Wall_Standard", "transform": { "position": [600, 0], "rotation": 0.0 } },
+    { "template_path": "objects/standard.json", "name": "Wall_Standard", "transform": { "position": [600, 800], "rotation": 0.0 } },
+    { "template_path": "objects/standard.json", "name": "Wall_Standard", "transform": { "position": [50, 400], "rotation": 90.0 } },
+    { "template_path": "objects/standard.json", "name": "Wall_Standard", "transform": { "position": [1150, 400], "rotation": 90.0 } },
+
+    { "template_path": "objects/light_ball.json", "name": "LightBall_1", "transform": { "position": [850, 500], "rotation": 0.0 } },
+    { "template_path": "objects/ball.json", "name": "Ball_1", "transform": { "position": [850, 300], "rotation": 0.0 } },
+    { "template_path": "objects/crate.json", "name": "Crate_1", "transform": { "position": [500, 400], "rotation": 25.0 } },
+    { "template_path": "objects/crate.json", "name": "Crate_2", "transform": { "position": [650, 420], "rotation": -20.0 } }
+  ]
+}

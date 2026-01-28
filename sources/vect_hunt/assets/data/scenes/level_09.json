@@ -1,0 +1,33 @@
+{
+  "_comment": "Level 09 - Many objects stress test. Broadphase + solver stability.",
+  "scene": {
+    "units": {
+      "pixels_per_meter": 100.0,
+      "gravity_m_s2": 9.81
+    }
+  },
+  "game_objects": [
+    { "template_path": "player.json", "name": "Player", "transform": { "position": [160, 200], "rotation": 0.0 } },
+
+    { "template_path": "objects/standard.json", "name": "Wall_Standard", "transform": { "position": [600, 0], "rotation": 0.0 } },
+    { "template_path": "objects/standard.json", "name": "Wall_Standard", "transform": { "position": [600, 800], "rotation": 0.0 } },
+    { "template_path": "objects/standard.json", "name": "Wall_Standard", "transform": { "position": [50, 400], "rotation": 90.0 } },
+    { "template_path": "objects/standard.json", "name": "Wall_Standard", "transform": { "position": [1150, 400], "rotation": 90.0 } },
+
+    { "template_path": "objects/crate.json", "name": "Crate_01", "transform": { "position": [520, 740], "rotation": 0.0 } },
+    { "template_path": "objects/crate.json", "name": "Crate_02", "transform": { "position": [570, 740], "rotation": 3.0 } },
+    { "template_path": "objects/crate.json", "name": "Crate_03", "transform": { "position": [620, 740], "rotation": -3.0 } },
+    { "template_path": "objects/crate.json", "name": "Crate_04", "transform": { "position": [670, 740], "rotation": 1.0 } },
+    { "template_path": "objects/crate.json", "name": "Crate_05", "transform": { "position": [720, 740], "rotation": -1.0 } },
+
+    { "template_path": "objects/ball.json", "name": "Ball_01", "transform": { "position": [540, 600], "rotation": 0.0 } },
+    { "template_path": "objects/ball.json", "name": "Ball_02", "transform": { "position": [600, 560], "rotation": 0.0 } },
+    { "template_path": "objects/ball.json", "name": "Ball_03", "transform": { "position": [660, 600], "rotation": 0.0 } },
+
+    { "template_path": "objects/light_ball.json", "name": "LightBall_01", "transform": { "position": [760, 520], "rotation": 0.0 } },
+    { "template_path": "objects/light_ball.json", "name": "LightBall_02", "transform": { "position": [800, 480], "rotation": 0.0 } },
+
+    { "template_path": "objects/big_crate.json", "name": "BigCrate_01", "transform": { "position": [900, 740], "rotation": 0.0 } },
+    { "template_path": "objects/big_ball.json", "name": "BigBall_01", "transform": { "position": [950, 200], "rotation": 0.0 } }
+  ]
+}

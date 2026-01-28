@@ -13,7 +13,7 @@
         "speed": 0.0,
         "is_kinematic": false,
         "is_controlled": false,
-        "mass": 2.0,
+        "mass": 0.5,
         "use_gravity": true,
         "material": "default.json"
       }
@@ -21,7 +21,7 @@
     {
       "component": "circle_collider",
       "data": {
-        "radius": 20.0,
+        "radius": 10.0,
         "solid": true,
         "transform": {
           "position": [0, 0],
@@ -32,10 +32,10 @@
     {
       "component": "circle_collider",
       "data": {
-        "radius": 5.0,
+        "radius": 2.0,
         "solid": true,
         "transform": {
-          "position": [0, 10],
+          "position": [0, 2],
           "rotation": 0.0
         }
       }
@@ -45,9 +45,9 @@
       "data": {
         "type": "basic_shape",
         "shape": "circle",
-        "color": "#B2910C",
-        "radius": 20.0,
-        "outline_color": "#8B7314",
+        "color": "#09BA15",
+        "radius": 10.0,
+        "outline_color": "#09441E",
         "outline_width": 2
       }
     }
