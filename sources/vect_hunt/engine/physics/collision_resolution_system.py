@@ -1,5 +1,5 @@
 import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Optional, Tuple, cast
 
 from vect_hunt.engine.core.collisions import Collision
@@ -24,6 +24,8 @@ class _ContactImpulse:
 
     jn: float = 0.0
     jt: float = 0.0
+    tangent_axis: Optional["Vector2D"] = None
+    position: "Vector2D" = field(default_factory=lambda: Vector2D(0.0, 0.0))
 
 
 _ContactKey = tuple[int, int, int]
@@ -606,8 +608,8 @@ class CollisionResolutionSystem:
 
         Returns:
         --------
-        tuple[float, float]
-            La magnitude jn et jt de l'impulsion appliquée.
+        tuplefloat
+            La magnitude maximum appliqué.
         """
         # Cache key
         col_id_a, col_id_b = pair_col
@@ -615,12 +617,9 @@ class CollisionResolutionSystem:
 
         cached = self._contact_impulses.get(contact_key)
         if cached is None:
-            cached = _ContactImpulse(0.0, 0.0)
-
-        # Nouveau contact, pas de warm start sur des valeurs possiblement non cohérentes
-        if is_new_contact:
-            cached.jn = 0.0
-            cached.jt = 0.0
+            cached = _ContactImpulse(0.0, 0.0, position=contact_point)
+        else:
+            cached.position = contact_point
 
         # Cinématique au point
         kin = self._compute_contact_kinematics(
@@ -667,13 +666,13 @@ class CollisionResolutionSystem:
         vn = kin.normal_velocity
 
         # Terme "bounce" (restitution) uniquement en fermeture
-        bounce = 0.0
+        vn_target = 0.0
         if vn < 0.0:
-            bounce = -(1.0 + restitution) * vn
+            vn_target = -restitution * vn
 
         # Forme standard: Δjn = (bounce + bias - vn) / k_n
         # (intuition: on veut compenser vn, + ajouter separation via bias)
-        delta_jn = (bounce + bias_per_contact - vn) / k_n
+        delta_jn = (vn_target + bias_per_contact - vn) / k_n
 
         # Accumulation avec contrainte unilatérale jn >= 0
         old_jn = cached.jn
@@ -685,7 +684,7 @@ class CollisionResolutionSystem:
                 body_a, body_b, contact_point, normal * delta_jn
             )
 
-        # Recompute kinematics after normal impulse
+        # Recalcule des contacts cinématiques après impulsion de la normal
         kin = self._compute_contact_kinematics(
             body_a, body_b, com_a, com_b, contact_point, normal
         )
@@ -694,6 +693,8 @@ class CollisionResolutionSystem:
         if tangent is None:
             self._contact_impulses[contact_key] = cached
             return abs(delta_jn)
+
+        cached.tangent_axis = tangent
 
         vt = kin.relative_velocity.dot(tangent)
 
@@ -751,7 +752,8 @@ class CollisionResolutionSystem:
         contact_point: "Vector2D",
         normal: "Vector2D",
     ) -> _ContactKinematics:
-        """Compute relative velocity at the contact point.
+        """
+        Calcule la
 
         This includes both linear and angular contributions, so that impulses
         produce correct translation and rotation.
@@ -1025,32 +1027,62 @@ class CollisionResolutionSystem:
                 continue
 
             _, _, parent_a, parent_b, body_a, body_b = context
-
             normal = info.normal.normalized()
 
             # Centres de masse monde
             com_a = parent_a.transform.to_scene_point(body_a.mass_center)
             com_b = parent_b.transform.to_scene_point(body_b.mass_center)
+            
+            # Attribution des points corrects pour avoir un warms startings stables
+            assigned = self._assign_contact_points_to_cache_slots(
+                col_id_a=col_id_a,
+                col_id_b=col_id_b,
+                points=list(info.points),
+                max_contacts=2,
+            )
 
-            for contact_index, point in enumerate(info.points):
+            print('parent_a:', parent_a.name, 'parent_b:', parent_b.name, "points asssigned:", assigned)
+
+            logger.debug(
+                "[WS] %s vs %s raw_points=%s assigned=%s",
+                parent_a.name,
+                parent_b.name,
+                info.points,
+                [(idx, p) for idx, p in assigned],
+            )
+
+            for contact_index, point in assigned:
+                contact_key: _ContactKey = (col_id_a, col_id_b, contact_index)
+                cached = self._contact_impulses.get(contact_key)
+                if cached is None:
+                    continue
+
                 contact_key: _ContactKey = (col_id_a, col_id_b, contact_index)
                 cached = self._contact_impulses.get(contact_key)
 
                 if cached is None:
                     continue
 
-                # Calcul de la tangente depuis l'état courant
-                kin = self._compute_contact_kinematics(
-                    body_a, body_b, com_a, com_b, point, normal
-                )
+                # Recalcule la tangente comme dans le solveur
+                kin = self._compute_contact_kinematics(body_a, body_b, com_a, com_b, point, normal)
                 tangent = self._compute_tangent_axis(kin.relative_velocity, normal)
 
-                if tangent is None:
-                    impulse = normal * (cached.jn * warm_start_factor)
+                # Si on a une tangente, stabiliser son sens par rapport à la frame précédente
+                if tangent is not None and cached.tangent_axis is not None:
+                    if tangent.dot(cached.tangent_axis) < 0.0:
+                        tangent = -tangent
+                        cached.jt = -cached.jt
+
+                # Appliquer l'impulsion warm start
+                jn_ws = cached.jn * warm_start_factor
+                jt_ws = cached.jt * warm_start_factor
+
+                impulse = normal * jn_ws
+                if tangent is not None:
+                    impulse += tangent * jt_ws
+                    cached.tangent_axis = tangent
                 else:
-                    impulse = (
-                        normal * cached.jn + tangent * cached.jt
-                    ) * warm_start_factor
+                    cached.tangent_axis = None
 
                 # Appliquer l'impulsion totale mise en cache
                 self._apply_impulses_at_contact(body_a, body_b, point, impulse)
@@ -1106,3 +1138,110 @@ class CollisionResolutionSystem:
         self._contact_impulses = {
             k: v for k, v in self._contact_impulses.items() if k in active_keys
         }
+
+    def _assign_contact_points_to_cache_slots(
+        self,
+        col_id_a: int,
+        col_id_b: int,
+        points: list["Vector2D"],
+        max_contacts: int = 2,
+    ) -> list[tuple[int, "Vector2D"]]:
+        """Attribue les points de contact courants aux slots de cache (0/1).
+
+        Objectif
+        --------
+        Stabiliser l'identité des contacts d'une frame à l'autre pour le warm start,
+        en matchant les points courants sur les positions mises en cache.
+
+        Règles
+        ------
+        - Si 2 points et 2 caches (idx 0 et 1): choisir direct vs swap selon le coût
+          (somme des distances² aux positions cachées) minimal.
+        - Si 1 point: l'associer au slot le plus proche (si cache existant), sinon slot 0.
+        - Si 2 points et 1 cache: le point le plus proche récupère ce slot, l'autre va
+          sur l'autre slot disponible.
+        - Si aucun cache: conserver l'ordre courant (slots 0..n-1).
+
+        Notes
+        -----
+        - Cette attribution ne modifie pas `points` in-place.
+        - Retourne une liste de couples (slot_index, point) ordonnée par slot_index.
+
+        Parameters
+        ----------
+        col_id_a : int
+            ID du collider A.
+        col_id_b : int
+            ID du collider B.
+        points : list[Vector2D]
+            Points de contact courants (1..N).
+        max_contacts : int, optional
+            Nombre maximum de points gérés (par défaut 2).
+
+        Returns
+        -------
+        list[tuple[int, Vector2D]]
+            Liste des points associés à des slots (0/1).
+        """
+        if not points:
+            return []
+
+        # On ne gère que 2 contacts (ton moteur actuel).
+        pts = points[:max_contacts]
+        n = len(pts)
+
+        key0: _ContactKey = (col_id_a, col_id_b, 0)
+        key1: _ContactKey = (col_id_a, col_id_b, 1)
+        c0 = self._contact_impulses.get(key0)
+        c1 = self._contact_impulses.get(key1)
+
+        has0 = c0 is not None
+        has1 = c1 is not None
+
+        # Aucun cache: garder l'ordre courant
+        if not has0 and not has1:
+            return [(i, pts[i]) for i in range(n)]
+
+        # 1 point: choisir le slot le plus proche si possible
+        if n == 1:
+            p = pts[0]
+            if has0 and has1:
+                d0 = (p - c0.position).magnitude_squared()
+                d1 = (p - c1.position).magnitude_squared()
+                slot = 0 if d0 <= d1 else 1
+                return [(slot, p)]
+            if has0:
+                return [(0, p)]
+            # has1 uniquement
+            return [(1, p)]
+
+        # 2 points
+        p0, p1 = pts[0], pts[1]
+
+        # 2 caches -> choisir direct vs swap
+        if has0 and has1:
+            direct = (p0 - c0.position).magnitude_squared() + (p1 - c1.position).magnitude_squared()
+            swap = (p0 - c1.position).magnitude_squared() + (p1 - c0.position).magnitude_squared()
+
+            if swap < direct:
+                return [(0, p1), (1, p0)]
+            return [(0, p0), (1, p1)]
+
+        # 1 cache: associer le point le plus proche à ce slot
+        elif has0 and not has1:
+            d0 = (p0 - c0.position).magnitude_squared()
+            d1 = (p1 - c0.position).magnitude_squared()
+            if d0 <= d1:
+                return [(0, p0), (1, p1)]
+            return [(0, p1), (1, p0)]
+
+        elif not has0 and has1:
+            d0 = (p0 - c1.position).magnitude_squared()
+            d1 = (p1 - c1.position).magnitude_squared()
+            if d0 <= d1:
+                return [(1, p0), (0, p1)]
+            return [(1, p1), (0, p0)]
+        # Sécurité, ne devriat pas se déclencher
+        else:
+            logger.warning("Assignation des points mal gérée, cas inattendu.")
+            return []

@@ -14,7 +14,7 @@ class GameLoop:
         fps: int,
         sim_dt: float,
         logger,
-        max_accumulator_multiplier: int = 4,
+        max_accumulator_multiplier: int = 10,
     ) -> None:
         """
         Initialise la boucle de jeu.
@@ -93,5 +93,6 @@ class GameLoop:
         while self._accumulator >= self.sim_dt:
             self.game.update(self.sim_dt)
             self._accumulator -= self.sim_dt
+            self.game.render()
 
         self.game.render()

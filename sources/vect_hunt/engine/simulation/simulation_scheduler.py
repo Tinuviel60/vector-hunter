@@ -32,7 +32,7 @@ class SimulationScheduler:
         scene: "Scene",
         input_config: dict,
         tag_system: "TagSystem",
-        max_collision_passes: int = 4,
+        max_collision_passes: int = 2,
     ) -> None:
         """
         Initialise le scheduler pour une scene.
@@ -83,7 +83,7 @@ class SimulationScheduler:
         self._update_game_objects_velocities(delta_time)
 
         # Met à jour le tracker
-        self.update_collision_tracker(delta_time)
+        self._update_collision_tracker(delta_time)
 
         # Résolution des collisions
         self._resolve_collisions(delta_time)
@@ -162,7 +162,7 @@ class SimulationScheduler:
             if game_object.active:
                 game_object.update(delta_time)
 
-    def update_collision_tracker(self, delta_time: float) -> None:
+    def _update_collision_tracker(self, delta_time: float) -> None:
         """
         Met a jour le systeme de collisions et triggers pour cette frame.
 
@@ -196,51 +196,45 @@ class SimulationScheduler:
         """
 
         # 1) Detect contacts 
-        collision_result = self.collider_detection.detect(self.scene)
-        if not collision_result.collisions:
+        detected = self.collider_detection.detect(self.scene)
+        if not detected.collisions:
             return
         collision_info = self.collision_resolution_system.resolve_all_collision_info(
-            collision_result.collisions,
-            collision_result.collision_info,
+            detected.collisions,
+            detected.collision_info,
         )
 
         # 2) Warm starting + purge cache 
         active_keys = self.collision_resolution_system.build_active_contact_keys(
-            collisions=list(collision_result.collisions),
-            collision_info=collision_info,
+            list(detected.collisions), collision_info,
         )
         self.collision_resolution_system.prune_contact_cache(active_keys)
+        # warm_start_factor : valeur de départ (0.7..1.0)
         self.collision_resolution_system.warm_start_contacts(
-            collisions=list(collision_result.collisions),
-            collision_info=collision_info,
-            warm_start_factor=0.9,  # valeur de départ (0.7..1.0)
+            list(detected.collisions), collision_info, warm_start_factor=0.4,
         )
 
         # 3) ittération d'impulsion
         for i in range(self.impulse_iterations):
             moved = self.collision_resolution_system.apply_impulse_response(
-                list(collision_result.collisions),
-                collision_info,
-                self.collision_tracker.get_all_entered(),
-                delta_time=delta_time,
+                list(detected.collisions),collision_info,
+                self.collision_tracker.entered_collisions, delta_time,
             )
             if not moved:
                 break
 
         # 4) Detect contacts after impulsion
-        collision_result = self.collider_detection.detect(self.scene)
-        if not collision_result.collisions:
+        detected = self.collider_detection.detect(self.scene)
+        if not detected.collisions:
             return
         collision_info = self.collision_resolution_system.resolve_all_collision_info(
-            collision_result.collisions,
-            collision_result.collision_info,
+            detected.collisions, detected.collision_info,
         )
 
         # 5) Small position correction passes 
         for j in range(self.max_collision_passes):
             moved = self.collision_resolution_system.correct_collisions(
-                list(collision_result.collisions),
-                collision_info,
+                list(detected.collisions), collision_info,
             )
             if not moved:
                 break
@@ -290,8 +284,8 @@ class SimulationScheduler:
         - Exit  : compteur 1 -> 0
         - Stay  : compteur > 0
         """
-        entered_pairs = self.collision_tracker.get_all_entered()
-        exited_pairs = self.collision_tracker.get_all_exited_collisions()
+        entered_pairs = self.collision_tracker.entered_collisions
+        exited_pairs = self.collision_tracker.exited_collisions
 
         # ENTER (collider-level -> object-level)
         for col_a, col_b in entered_pairs:
@@ -381,8 +375,8 @@ class SimulationScheduler:
         """
         Envoie des événements trigger au niveau GameObject.
         """
-        entered_pairs = self.collision_tracker.get_all_entered()
-        exited_pairs = self.collision_tracker.get_all_exited_triggers()
+        entered_pairs = self.collision_tracker.entered_triggers
+        exited_pairs = self.collision_tracker.exited_triggers
 
         # ENTER
         for col_a, col_b in entered_pairs:
