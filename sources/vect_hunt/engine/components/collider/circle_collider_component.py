@@ -109,4 +109,4 @@ class CircleColliderComponent(ColliderComponent):
             Temps écoulé depuis la dernière frame (en secondes).
         """
 
-        pass#print("radius =", self.shape.radius, "x;", round(self.get_scene_transform().position.x, 2), "y;", round(self.get_scene_transform().position.y, 2))  # DEBUG
+        pass

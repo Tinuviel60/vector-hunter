@@ -2,14 +2,14 @@
 Composant de gestion des inputs pour les entités contrôlées par le joueur.
 """
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 from vect_hunt.engine.components.component import Component
-from vect_hunt.engine.components.physic_body_component import PhysicBodyComponent
-from vect_hunt.game.components.attributes_component import AttributesComponent
 
 if TYPE_CHECKING:
     from vect_hunt.engine.input.input_system import InputSystem
+    from vect_hunt.engine.components.physic_body_component import PhysicBodyComponent
+    from vect_hunt.game.components.attributes_component import AttributesComponent
 
 
 class InputComponent(Component):
@@ -80,12 +80,12 @@ class InputComponent(Component):
         move_vector = self.input_system.get_vector("move")
         # TODO : Sortir les components requis dans l'init ou via système de dépendances
         # Récupérer le PhysicBodyComponent
-        physic_body = self.parent.get_component(PhysicBodyComponent)
+        physic_body = cast("PhysicBodyComponent | None", self.parent.get_component("physic_body"))
         if not physic_body:
             return
 
         # Récupérer le PhysicBodyComponent
-        attributes = self.parent.get_component(AttributesComponent)
+        attributes = cast("AttributesComponent | None", self.parent.get_component("attributes"))
         if not attributes:
             return
 

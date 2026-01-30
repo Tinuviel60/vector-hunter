@@ -1,6 +1,7 @@
 {
   "_comment": "Materiau rigide",
-  "friction": 0.2,
+  "static_friction": 0.4,
+  "dynamic_friction": 0.5,
   "restitution": 0.2,
   "linear_damping": 0.05,
   "angular_damping": 0.1,

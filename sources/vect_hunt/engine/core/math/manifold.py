@@ -35,7 +35,8 @@ class Manifold:
         Returns
         -------
         List[Vector2D]
-            Liste de 0 à 2 points de contact en coordonnées scène.
+            Liste de 0 à 2 points de contact en coordonnées scène, 
+            triée selon l'axe x, puis l'axe y si égalité.
         """
         if len(corners_a) != 4 or len(corners_b) != 4:
             raise ValueError("build_contact_manifold attend 4 coins par rectangle.")
@@ -104,6 +105,7 @@ class Manifold:
             if not contacts or (c2 - contacts[0]).magnitude_squared() > 0.5 * 0.5:
                 contacts.append(c2)
 
+        contacts = sorted(contacts, key=lambda v: (v.x, v.y))
         return contacts
 
     @staticmethod

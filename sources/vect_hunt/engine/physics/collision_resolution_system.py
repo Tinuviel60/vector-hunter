@@ -1,57 +1,66 @@
 import logging
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Optional, Tuple
+from typing import TYPE_CHECKING, Optional, Tuple, cast
 
-from vect_hunt.engine.components.physic_body_component import PhysicBodyComponent
-from vect_hunt.engine.components.collider.collider_component import ColliderComponent
 from vect_hunt.engine.core.collisions import Collision
-from vect_hunt.engine.core.collisions.collision_info import CollisionInfo
 from vect_hunt.engine.core.math.numeric import Numeric
 from vect_hunt.engine.core.math.tolerance import Tolerence
 from vect_hunt.engine.core.math.vector import Vector2D
+from vect_hunt.engine.core.collisions.collision_info import CollisionInfo
 
 if TYPE_CHECKING:
     from vect_hunt.engine.objects.game_object import GameObject
     from vect_hunt.engine.physics.physic_material import PhysicMaterial
     from vect_hunt.engine.scenes.scene import Scene
+    from vect_hunt.engine.components.physic_body_component import PhysicBodyComponent
+    from vect_hunt.engine.components.collider.collider_component import ColliderComponent
 
 logger = logging.getLogger(__name__)
 
 
+@dataclass
+class _ContactImpulse:
+    """Conteneur pour les impulsions de contact normales et tangentielles."""
+
+    jn: float = 0.0
+    jt: float = 0.0
+
+
+_ContactKey = tuple[int, int, int]
+
+
 @dataclass(frozen=True)
 class _ContactKinematics:
-    """
-    Hold kinematic data for a single contact point.
+    """Conteneur d'information cinématique pour un point de contact unique.
 
-    This container stores world-space lever arms and the relative velocity
-    computed at the contact point. It exists to keep the impulse solver code
-    readable and explicit.
+    Ce conteneur stocke les bras de levier en espace monde et la vitesse relative
+    calculée au point de contact. Il existe pour garder le code du solveur
+    d'impulsions lisible et explicite.
 
     Attributes
     ----------
     lever_arm_a : Vector2D
-        Vector from body A center of mass (world) to the contact point (world).
+        Vecteur du centre de masse du corps A (monde) au point de contact (monde).
     lever_arm_b : Vector2D
-        Vector from body B center of mass (world) to the contact point (world).
+        Vecteur du centre de masse du corps B (monde) au point de contact (monde).
     relative_velocity : Vector2D
-        Relative velocity at contact point (vB_point - vA_point).
+        Vitesse relative au point de contact (vB_point - vA_point).
     normal_velocity : float
-        Relative velocity projected on the contact normal.
+        Vitesse relative projetée sur la normale du contact.
     """
 
-    lever_arm_a: "Vector2D"
-    lever_arm_b: "Vector2D"
-    relative_velocity: "Vector2D"
+    lever_arm_a: Vector2D
+    lever_arm_b: Vector2D
+    relative_velocity: Vector2D
     normal_velocity: float
 
 
 class CollisionResolutionSystem:
-    """
-    Système de correction des collisions. Applique des ajustements de position
-    pour résoudre les collisions détectées par le CollisionSystem.
+    """Système de correction des collisions.
 
-    Dépendant d'un physic body, d'un sytème de collision, et de la physique d'un
-    GameObject (masse, friction, rebond...).
+    Applique des ajustements de position pour résoudre les collisions détectées
+    par le CollisionSystem. Dépendant d'un physic body, d'un sytème de collision,
+    et de la physique d'un GameObject (masse, friction, rebond...).
 
     Attributes
     ----------
@@ -60,8 +69,7 @@ class CollisionResolutionSystem:
     """
 
     def __init__(self, scene: "Scene") -> None:
-        """
-        Initialise le système de résolution des collisions.
+        """Initialise le système de résolution des collisions.
 
         Parameters
         ----------
@@ -69,20 +77,21 @@ class CollisionResolutionSystem:
             La scène dans laquelle les objets existent.
         """
         self.scene = scene
+        # Permet de mettre en cache les impuslions pour le warm starting
+        self._contact_impulses: dict[_ContactKey, _ContactImpulse] = {}
 
     def correct_collisions(
         self,
         collisions: list[tuple[int, int]],
         collision_info: dict[tuple[int, int], CollisionInfo],
     ) -> bool:
-        """
-        Applique la résolution à partir d'un jeu de collisions déjà détectées.
+        """Applique la résolution à partir d'un jeu de collisions déjà détectées.
 
         Parameters
         ----------
         collisions : list[tuple[int, int]]
             Paires d'IDs de colliders en collision.
-        collision_info : dict[tuple[int, int], dict]
+        collision_info : dict[tuple[int, int], CollisionInfo]
             Informations de collision associées aux paires.
 
         Returns
@@ -92,13 +101,11 @@ class CollisionResolutionSystem:
         """
         correction_applied = False
 
-
         # Résoudre chaque collision
         for col_id_a, col_id_b in collisions:
             info = collision_info.get((col_id_a, col_id_b))
             if info is None:
                 continue
-
             if self._resolve_collision(col_id_a, col_id_b, info):
                 correction_applied = True
 
@@ -110,8 +117,7 @@ class CollisionResolutionSystem:
         col_id_b: int,
         collision_info: CollisionInfo,
     ) -> bool:
-        """
-        Résout une collision entre deux colliders avec correction de position,
+        """Résout une collision entre deux colliders avec correction de position,
         en utilisant les infos détaillées.
 
         Parameters
@@ -132,9 +138,8 @@ class CollisionResolutionSystem:
         context = self._get_collision_context(col_id_a, col_id_b)
         if context is None:
             return False
-    
-        col_a, col_b, parent_a, parent_b, body_a, body_b = context
 
+        col_a, col_b, parent_a, parent_b, body_a, body_b = context
 
         # Si pas de pénétration, ne rien faire
         if collision_info.depth <= 0:
@@ -156,10 +161,16 @@ class CollisionResolutionSystem:
         col_id_a: int,
         col_id_b: int,
     ) -> Optional[
-        Tuple[ColliderComponent, ColliderComponent, "GameObject", "GameObject", "PhysicBodyComponent", "PhysicBodyComponent"]
+        Tuple[
+            "ColliderComponent",
+            "ColliderComponent",
+            "GameObject",
+            "GameObject",
+            "PhysicBodyComponent",
+            "PhysicBodyComponent",
+        ]
     ]:
-        """
-        Récupère le contexte de collision (colliders et PhysicBody associés).
+        """Récupère le contexte de collision (colliders et PhysicBody associés).
 
         Parameters
         ----------
@@ -174,20 +185,22 @@ class CollisionResolutionSystem:
             (collider_a, collider_b, parent_a, parent_b, body_a, body_b) si disponible,
             sinon None si un PhysicBody manque.
         """
-        collider_a = self.scene.components.get(col_id_a)
-        collider_b = self.scene.components.get(col_id_b)
+        collider_a = cast("ColliderComponent", self.scene.components.get(col_id_a))
+        collider_b = cast("ColliderComponent", self.scene.components.get(col_id_b))
 
         if not collider_a or not collider_b:
             return None
-        else:
-            assert isinstance(collider_a, ColliderComponent)
-            assert isinstance(collider_b, ColliderComponent)
 
         parent_a = collider_a.parent
         parent_b = collider_b.parent
-        
-        body_a = parent_a.get_component(PhysicBodyComponent)
-        body_b = parent_b.get_component(PhysicBodyComponent)
+
+        body_a = cast(
+            "PhysicBodyComponent | None", parent_a.get_component("physic_body")
+        )
+        body_b = cast(
+            "PhysicBodyComponent | None", parent_b.get_component("physic_body")
+        )
+
         if not body_a or not body_b:
             return None
 
@@ -196,25 +209,23 @@ class CollisionResolutionSystem:
     def _resolve_collision_info(
         self,
         info_collision: CollisionInfo,
-        col_a: ColliderComponent,
-        col_b: ColliderComponent,
-        body_a: PhysicBodyComponent,
-        body_b: PhysicBodyComponent,
+        col_a: "ColliderComponent",
+        col_b: "ColliderComponent",
+        body_a: "PhysicBodyComponent",
+        body_b: "PhysicBodyComponent",
     ) -> CollisionInfo:
-        """
-        Oriente et nettoie la normale pour garantir une convention A -> B.
+        """Oriente et nettoie la normale pour garantir une convention A -> B.
 
         Stratégie
         ----------
         - On n'édite pas CollisionInfo in-place.
-        - On oriente la normale avec COM->COM (corps composé),
-        fallback sur centre collider si COM trop proche.
+        - On oriente la normale avec COM->COM (corps composé), fallback sur centre
+          collider si COM trop proche.
         """
-
         info = info_collision.copy()
+
         eps = Tolerence.COLLISION
         eps2 = eps * eps
-
         if info.normal.magnitude_squared() <= eps2:
             info.normal = Vector2D(1.0, 0.0)
             return info
@@ -235,7 +246,6 @@ class CollisionResolutionSystem:
             delta = pos_b - pos_a
 
         dot = info.normal.dot(delta)
-
         if dot < 0.0:
             info.normal = -info.normal
             if info.reference_from_a is not None:
@@ -243,19 +253,18 @@ class CollisionResolutionSystem:
 
         if info.points is None or len(info.points) == 0:
             info.points = Collision.generate_contact_points(col_a, col_b, info)
-        
+
         return info
 
     def _apply_position_correction(
         self,
-        body_a: PhysicBodyComponent,
-        body_b: PhysicBodyComponent,
+        body_a: "PhysicBodyComponent",
+        body_b: "PhysicBodyComponent",
         game_object_a: "GameObject",
         game_object_b: "GameObject",
         collision_info: CollisionInfo,
     ) -> bool:
-        """
-        Corrige la position des objets en fonction de la profondeur de collision.
+        """Corrige la position des objets en fonction de la profondeur de collision.
 
         Parameters
         ----------
@@ -275,13 +284,15 @@ class CollisionResolutionSystem:
         bool
             True si une correction a été appliquée, False sinon.
         """
-        slop = Tolerence.COLLISION / 1000
-        percent = 0.6
-        corrected_depth = max(0.0, collision_info.depth - slop) * percent
+        slop = 0.2
+        percent = 0.2
 
+        corrected_depth = max(0.0, collision_info.depth - slop) * percent
         collision_eps = Tolerence.COLLISION
+
         normal = collision_info.normal.normalized()
         correction = normal * corrected_depth
+
         if correction.magnitude_squared() <= collision_eps * collision_eps:
             return False
 
@@ -291,14 +302,15 @@ class CollisionResolutionSystem:
         # Corriger la position si un des deux est cinématique
         if body_a.is_kinematic:
             game_object_b.transform.move(correction)
-
             return True
+
         if body_b.is_kinematic:
             game_object_a.transform.move(-correction)
             return True
 
         # Corriger la position en fonction des masses pour les deux dynamiques
         general_eps = Tolerence.GENERAL
+
         inv_mass_a = body_a.invert_mass()
         inv_mass_b = body_b.invert_mass()
         inv_mass_sum = inv_mass_a + inv_mass_b
@@ -317,8 +329,7 @@ class CollisionResolutionSystem:
         collisions: set[tuple[int, int]],
         collision_info: dict[tuple[int, int], CollisionInfo],
     ) -> dict[tuple[int, int], CollisionInfo]:
-        """
-        Résout toutes les informations de collision pour un ensemble de collisions.
+        """Résout toutes les informations de collision pour un ensemble de collisions.
 
         Parameters
         ----------
@@ -326,17 +337,17 @@ class CollisionResolutionSystem:
             Paires d'IDs d'objets en collision.
         collision_info : dict[tuple[int, int], CollisionInfo]
             Informations de collision associées aux paires.
-        
+
         Returns
         -------
         dict[tuple[int, int], CollisionInfo]
             Informations de collision mises à jour associées aux paires.
         """
-        
         for col_id_a, col_id_b in collisions:
             info = collision_info.get((col_id_a, col_id_b))
             if info is None:
                 continue
+
             context = self._get_collision_context(col_id_a, col_id_b)
             if context is None:
                 continue
@@ -348,17 +359,18 @@ class CollisionResolutionSystem:
             collision_info[(col_id_a, col_id_b)] = info
 
         return collision_info
-    
+
     def apply_impulse_response(
         self,
         collisions: list[tuple[int, int]],
         collision_info: dict[tuple[int, int], CollisionInfo],
+        collider_is_new_contact: set[tuple[int, int]],
         delta_time: float,
     ) -> bool:
-        """
-        Applique la réponse d'impulsion pour un ensemble de collisions.
-        Utilise 1 à 2 points de contact.
-        Génère aussi de la rotation via l'impulsion appliquée au point.
+        """Applique la réponse d'impulsion pour un ensemble de collisions.
+
+        Utilise 1 à 2 points de contact. Génère aussi de la rotation via l'impulsion
+        appliquée au point.
 
         Parameters
         ----------
@@ -366,34 +378,43 @@ class CollisionResolutionSystem:
             Paires d'IDs d'objets en collision.
         collision_info : dict[tuple[int, int], CollisionInfo]
             Informations de collision associées aux paires.
+        collider_is_new_contact : set[tuple[int, int]]
+            Nouvelles collisions détectées cette frame.
         delta_time : float
             Pas de temps de la frame (secondes).
         reverse_point : bool
             Inverse l'ordre des points de contact pour la résolution.
         """
-
-
-
-
         impulsion_max = 0.0
 
         for col_id_a, col_id_b in collisions:
-            info = collision_info.get((col_id_a, col_id_b))
+            pair_col = (col_id_a, col_id_b)
+            info = collision_info.get(pair_col)
             if info is None:
                 continue
-            
+
             context = self._get_collision_context(col_id_a, col_id_b)
             if context is None:
                 continue
 
             col_a, col_b, parent_a, parent_b, body_a, body_b = context
-            
+
             if info.points is None or len(info.points) == 0 or info.depth <= 0:
                 continue
 
+            is_new_contact = pair_col in collider_is_new_contact
+
             impulsion = self._apply_velocity_response(
-                parent_a, parent_b, body_a, body_b, info, delta_time
+                pair_col,
+                parent_a,
+                parent_b,
+                body_a,
+                body_b,
+                info,
+                is_new_contact,
+                delta_time,
             )
+
             if impulsion > impulsion_max:
                 impulsion_max = impulsion
 
@@ -401,19 +422,22 @@ class CollisionResolutionSystem:
 
     def _apply_velocity_response(
         self,
+        pair_col: tuple[int, int],
         game_object_a: "GameObject",
         game_object_b: "GameObject",
-        body_a: PhysicBodyComponent,
-        body_b: PhysicBodyComponent,
+        body_a: "PhysicBodyComponent",
+        body_b: "PhysicBodyComponent",
         info_collision: CollisionInfo,
+        is_new_contact: bool,
         delta_time: float,
     ) -> float:
-        """
-        Applique restitution + friction d'une collision en utilisant
-        les points de contact.
+        """Applique restitution + friction d'une collision en utilisant les points
+        de contact.
 
         Parameters
         ----------
+        pair_col : tuple[int, int]
+            La paire d'IDs des colliders en collision.
         game_object_a : GameObject
             Le premier objet de jeu.
         game_object_b : GameObject
@@ -424,37 +448,40 @@ class CollisionResolutionSystem:
             PhysicBody du deuxième objet.
         info_collision : CollisionInfo
             Informations supplémentaires sur la collision (normal, depth, points).
+        is_new_contact: bool
+            Indique si la collision est nouvelle cette frame.
         delta_time : float
             Pas de temps de la frame (secondes).
-        reverse_point : bool
-            Inverse l'ordre des points de contact pour la résolution.
 
+        Returns
+        -------
+        float
+            La magnitude maximale de l'impulsion appliquée.
         """
         if info_collision.points is None or len(info_collision.points) == 0:
             return 0.0
-            
+
+        # Convention: la normale et les points doivent déjà être "résolus" (A->B)
         normal = info_collision.normal.normalized()
         contact_material = body_a.material.combine_with(body_b.material)
 
-        # Calcul des masses inverses (0 si cinématique)
-        # pour l'application des impulsions
-        inv_mass_a = body_a.invert_mass()
-        inv_mass_b = body_b.invert_mass()
-        inv_inertia_a = body_a.invert_inertia()
-        inv_inertia_b = body_b.invert_inertia()
-
         # Si les deux corps sont cinématiques, ne rien faire
-        if (inv_mass_a + inv_mass_b + inv_inertia_a + inv_inertia_b) <= Tolerence.GENERAL:
+        if (
+            body_a.invert_mass()
+            + body_b.invert_mass()
+            + body_a.invert_inertia()
+            + body_b.invert_inertia()
+        ) <= Tolerence.GENERAL:
             return 0.0
 
-        tr_a = game_object_a.transform
-        tr_b = game_object_b.transform
+        # COM monde
+        com_a = game_object_a.transform.to_scene_point(body_a.mass_center)
+        com_b = game_object_b.transform.to_scene_point(body_b.mass_center)
 
-        com_a = tr_a.to_scene_point(body_a.mass_center)
-        com_b = tr_b.to_scene_point(body_b.mass_center)
+        max_delta_impulse = 0.0
+        nb_contacts = len(info_collision.points)
 
-        impulsion_max = 0.0
-        for point in info_collision.points:
+        for contact_index, point in enumerate(info_collision.points):
             impulsion = self.solve_contact_point(
                 body_a=body_a,
                 body_b=body_b,
@@ -464,28 +491,32 @@ class CollisionResolutionSystem:
                 normal=normal,
                 depth=info_collision.depth,
                 delta_time=delta_time,
-                inv_mass_a=inv_mass_a,
-                inv_mass_b=inv_mass_b,
-                inv_inertia_a=inv_inertia_a,
-                inv_inertia_b=inv_inertia_b,
                 material=contact_material,
+                nb_contacts=nb_contacts,
+                pair_col=pair_col,
+                id_contact=contact_index,
+                is_new_contact=is_new_contact,
             )
-            if impulsion > impulsion_max:
-                impulsion_max = impulsion
 
-        return impulsion_max
+            if impulsion > max_delta_impulse:
+                max_delta_impulse = impulsion
+
+        return max_delta_impulse
 
     def _compute_penetration_bias(
-        self, depth: float, delta_time: float, slop: float, beta: float
+        self,
+        depth: float,
+        delta_time: float,
+        slop: float,
+        beta: float,
+        max_bias: float,
     ) -> float:
-        """
-        Calcule le bias de pénétration de Baumgarte utilisé
-        pour corriger la pénétration.
+        """Calcule le bias de pénétration de Baumgarte utilisé pour corriger la
+        pénétration.
 
-        Ce biais agit comme une vélocité de fermeture supplémentaire
-        le long de la normale de contact, pour forcer le solveur
-        à générer une impulsion de séparation lorsque les objets sont déjà
-        en pénétration.
+        Ce biais agit comme une vélocité de fermeture supplémentaire le long de la
+        normale de contact, pour forcer le solveur à générer une impulsion de
+        séparation lorsque les objets sont déjà en pénétration.
 
         Parameters
         ----------
@@ -494,16 +525,19 @@ class CollisionResolutionSystem:
         delta_time : float
             Pas de temps de la frame (secondes).
         slop : float
-            Tolérance de pénétration autorisée (pixels).
-            La profondeur en dessous de cette valeur est ignorée.
+            Tolérance de pénétration autorisée (pixels). La profondeur en dessous de
+            cette valeur est ignorée.
         beta : float
-            Facteur de biais (sans dimension).
-            Les valeurs typiques sont dans [0.1, 0.3].
+            Facteur de biais (sans dimension). Les valeurs typiques sont dans
+            [0.1, 0.3].
+        max_bias : float
+            Biais maximal autorisé (pixels/secondes).
 
         Returns
         -------
         float
-            Vélocité de correction à appliquer le long de la normale (pixels/secondes).
+            Vélocité de correction à appliquer le long de la normale
+            (pixels/secondes).
         """
         if delta_time <= Tolerence.GENERAL:
             return 0.0
@@ -512,7 +546,8 @@ class CollisionResolutionSystem:
         if allowed <= Tolerence.GENERAL:
             return 0.0
 
-        return (beta / delta_time) * allowed
+        bias = (beta / delta_time) * allowed
+        return min(bias, max_bias)
 
     def solve_contact_point(
         self,
@@ -524,20 +559,21 @@ class CollisionResolutionSystem:
         normal: "Vector2D",
         depth: float,
         delta_time: float,
-        inv_mass_a: float,
-        inv_mass_b: float,
-        inv_inertia_a: float,
-        inv_inertia_b: float,
         material: "PhysicMaterial",
+        nb_contacts: int,
+        pair_col: Tuple[int, int],
+        id_contact: int,
+        is_new_contact: bool,
     ) -> float:
-        """
-        Résoud l'impulsion (normale + friction) pour un seul point de contact.
+        """Résout un point de contact via impulsions séquentielles avec cache
+        (warm starting).
 
-        Cette fonction effectue :
-        - le calcul de la vélocité relative au contact (incluant la rotation)
-        - le calcul de l'impulsion normale et son application
-        - le recalcul de la vélocité relative
-        - le calcul de l'impulsion de friction et son application
+        Implémentation
+        --------------
+        - On lit (jn_accum, jt_accum) depuis le cache pour ce contact.
+        - On calcule des *deltas* (delta_jn, delta_jt) à appliquer à cette itération.
+        - On met à jour les accumulateurs et on applique les deltas aux corps.
+        - Le cache stocke les accumulateurs (solution courante).
 
         Parameters
         ----------
@@ -557,84 +593,154 @@ class CollisionResolutionSystem:
             Profondeur de pénétration (pixels).
         delta_time : float
             Pas de temps de la frame (secondes).
-        inv_mass_a : float
-            Masse inverse du corps A.
-        inv_mass_b : float
-            Masse inverse du corps B.
-        inv_inertia_a : float
-            Inertie inverse du corps A.
-        inv_inertia_b : float
-            Inertie inverse du corps B.
         material : PhysicMaterial
             Matériau physique combiné des deux corps.
+        nb_contacts : int
+            Nombre de points de contact dans cette collision.
+        pair_col : Tuple[int, int]
+            Identifiant unique de la paire de corps en collision.
+        contact_index: int
+            Index du point de contact dans la liste des contacts.
+        is_new_contact : bool
+            Défini si c'est une nouvelle collision.
+
+        Returns:
+        --------
+        tuple[float, float]
+            La magnitude jn et jt de l'impulsion appliquée.
         """
+        # Cache key
+        col_id_a, col_id_b = pair_col
+        contact_key: _ContactKey = (col_id_a, col_id_b, id_contact)
+
+        cached = self._contact_impulses.get(contact_key)
+        if cached is None:
+            cached = _ContactImpulse(0.0, 0.0)
+
+        # Nouveau contact, pas de warm start sur des valeurs possiblement non cohérentes
+        if is_new_contact:
+            cached.jn = 0.0
+            cached.jt = 0.0
+
+        # Cinématique au point
         kin = self._compute_contact_kinematics(
             body_a, body_b, com_a, com_b, contact_point, normal
         )
 
-        # Calcul du bias de pénétration, pour forcer la séparation
-        slop_px = 0.5  # commence à 0.5 px (à ajuster selon ton échelle)
-        beta = 0.2  # commence à 0.2
+        # Bias (Baumgarte) pour forcer la séparation
+        slop_px = 0.5  # TODO : ajuster avec l'echelle ?
+        beta = 0.1
+        max_bias = 3.0
+        bias = self._compute_penetration_bias(depth, delta_time, slop_px, beta, max_bias)
+        bias_per_contact = bias / max(1, nb_contacts)
 
-        bias = self._compute_penetration_bias(depth, delta_time, slop_px, beta)
-
-        # If separating, do nothing
-        if kin.normal_velocity > 0.0 and depth <= slop_px:
-            return 0.0
-
-        # Reduit la restitution si en dessous du seuil
+        # Restitution (sur nouveau contact et uniquement si fermeture)
         restitution = material.restitution
-        if kin.normal_velocity > -material.bounce_velocity_threshold:
+        if not is_new_contact:
             restitution = 0.0
+        else:
+            # Si séparation déjà en cours, ne pas appliquer de restitution
+            if kin.normal_velocity > 0.0:
+                restitution = 0.0
 
+            # Réduit la restitution si en dessous du seuil
+            if kin.normal_velocity > -material.bounce_velocity_threshold:
+                restitution = 0.0
+
+        # Masse effective normale
         k_n = self._compute_effective_mass(
-            inv_mass_a,
-            inv_mass_b,
-            inv_inertia_a,
-            inv_inertia_b,
+            body_a.invert_mass(),
+            body_b.invert_mass(),
+            body_a.invert_inertia(),
+            body_b.invert_inertia(),
             kin.lever_arm_a,
             kin.lever_arm_b,
             normal,
         )
+
         if k_n <= Tolerence.GENERAL:
             return 0.0
 
-        jn = self._compute_normal_impulse(kin.normal_velocity, restitution, k_n, bias)
+        # -------------------------
+        # 1) Impulsion normale (delta + accumulateur)
+        # -------------------------
+        vn = kin.normal_velocity
 
-        if jn > Tolerence.GENERAL:
-            impulse_n = normal * jn
-            self._apply_impulses_at_contact(body_a, body_b, contact_point, impulse_n)
+        # Terme "bounce" (restitution) uniquement en fermeture
+        bounce = 0.0
+        if vn < 0.0:
+            bounce = -(1.0 + restitution) * vn
 
-        # Recalcul de la cinématique après impulsion normale
+        # Forme standard: Δjn = (bounce + bias - vn) / k_n
+        # (intuition: on veut compenser vn, + ajouter separation via bias)
+        delta_jn = (bounce + bias_per_contact - vn) / k_n
+
+        # Accumulation avec contrainte unilatérale jn >= 0
+        old_jn = cached.jn
+        cached.jn = max(0.0, old_jn + delta_jn)
+        delta_jn = cached.jn - old_jn
+
+        if delta_jn > Tolerence.GENERAL:
+            self._apply_impulses_at_contact(
+                body_a, body_b, contact_point, normal * delta_jn
+            )
+
+        # Recompute kinematics after normal impulse
         kin = self._compute_contact_kinematics(
             body_a, body_b, com_a, com_b, contact_point, normal
         )
 
         tangent = self._compute_tangent_axis(kin.relative_velocity, normal)
         if tangent is None:
-            return jn
+            self._contact_impulses[contact_key] = cached
+            return abs(delta_jn)
 
         vt = kin.relative_velocity.dot(tangent)
 
+        # Masse effective tangentielle
         k_t = self._compute_effective_mass(
-            inv_mass_a,
-            inv_mass_b,
-            inv_inertia_a,
-            inv_inertia_b,
+            body_a.invert_mass(),
+            body_b.invert_mass(),
+            body_a.invert_inertia(),
+            body_b.invert_inertia(),
             kin.lever_arm_a,
             kin.lever_arm_b,
             tangent,
         )
+
         if k_t <= Tolerence.GENERAL:
-            return jn
+            self._contact_impulses[contact_key] = cached
+            return abs(delta_jn)
 
-        jt = self._compute_friction_impulse(vt, k_t, material.friction, jn)
+        # -------------------------
+        # 2) Impulsion de friction (accumulateur + clamp Coulomb)
+        # -------------------------
 
-        if abs(jt) > Tolerence.GENERAL:
-            impulse_t = tangent * jt
-            self._apply_impulses_at_contact(body_a, body_b, contact_point, impulse_t)
+        # Candidat accumulateur: jt' = jt_old - vt / k_t
+        old_jt = cached.jt
+        jt_candidate = old_jt - (vt / k_t)
 
-        return max(abs(jn), abs(jt))
+        # Choix statique vs dynamique via le seuil Coulomb
+        mu_s = material.static_friction
+        mu_d = material.dynamic_friction
+        max_static = mu_s * cached.jn
+
+        if abs(jt_candidate) <= max_static:
+            jt_new = jt_candidate
+        else:
+            max_dynamic = mu_d * cached.jn
+            jt_new = Numeric.clamp(jt_candidate, -max_dynamic, max_dynamic)
+
+        cached.jt = jt_new
+        delta_jt = jt_new - old_jt
+
+        if abs(delta_jt) > Tolerence.GENERAL:
+            self._apply_impulses_at_contact(
+                body_a, body_b, contact_point, tangent * delta_jt
+            )
+
+        self._contact_impulses[contact_key] = cached
+        return max(abs(delta_jn), abs(delta_jt))
 
     def _compute_contact_kinematics(
         self,
@@ -645,8 +751,7 @@ class CollisionResolutionSystem:
         contact_point: "Vector2D",
         normal: "Vector2D",
     ) -> _ContactKinematics:
-        """
-        Compute relative velocity at the contact point.
+        """Compute relative velocity at the contact point.
 
         This includes both linear and angular contributions, so that impulses
         produce correct translation and rotation.
@@ -674,8 +779,13 @@ class CollisionResolutionSystem:
         lever_arm_a = contact_point - com_a
         lever_arm_b = contact_point - com_b
 
-        v_a_point = body_a.velocity + (lever_arm_a.normal() * body_a.angular_velocity)
-        v_b_point = body_b.velocity + (lever_arm_b.normal() * body_b.angular_velocity)
+        v_a_point = body_a.velocity + (
+            lever_arm_a.normal() * body_a.angular_velocity
+        )
+        v_b_point = body_b.velocity + (
+            lever_arm_b.normal() * body_b.angular_velocity
+        )
+
         relative_velocity = v_b_point - v_a_point
         normal_velocity = relative_velocity.dot(normal)
 
@@ -693,11 +803,9 @@ class CollisionResolutionSystem:
         k_normal: float,
         bias: float = 0.0,
     ) -> float:
-        """
-        calcule l'impulsion normale pour annuler la vélocité normale.
+        """calcule l'impulsion normale pour annuler la vélocité normale.
 
-        Cette impulsion peut inclure un facteur de restitution pour simuler
-        le rebond.
+        Cette impulsion peut inclure un facteur de restitution pour simuler le rebond.
 
         Parameters
         ----------
@@ -715,23 +823,24 @@ class CollisionResolutionSystem:
         float
             Magnitude de l'impulsion normale jn (>= 0).
         """
-        if k_normal <= 0.0:
+        if k_normal <= Tolerence.GENERAL:
             return 0.0
 
-        # Appliquer restitution uniquement sur la vitesse relative,
-        # puis soustraire le biais de pénétration pour forcer la séparation.
-        desired = (1.0 + restitution) * rel_normal_velocity - bias
-        jn = -desired / k_normal
+        # Rebond uniquement si fermeture
+        bounce = 0.0
+        if rel_normal_velocity < 0.0:
+            bounce = -(1.0 + restitution) * rel_normal_velocity
 
-        if jn < Tolerence.GENERAL:
-            jn = 0.0
-        return jn
+        # puis soustraire le biais de pénétration pour forcer la séparation.
+        target = bounce + bias
+        jn = target / k_normal
+
+        return max(0.0, jn)
 
     def _compute_tangent_axis(
         self, rel_velocity: "Vector2D", normal: "Vector2D"
     ) -> Optional["Vector2D"]:
-        """
-        Calcule l'axe tangent normalisé à partir de la vélocité relative.
+        """Calcule l'axe tangent normalisé à partir de la vélocité relative.
 
         La tangente est la composante de la vélocité relative orthogonale à la normale.
         Si la vitesse tangentielle est trop faible, retourne None.
@@ -759,24 +868,30 @@ class CollisionResolutionSystem:
         self,
         rel_tangent_velocity: float,
         k_tangent: float,
-        friction: float,
-        normal_impulse: float,
+        static_friction: float,
+        dynamic_friction: float,
+        normal_impulse_cached: float,
     ) -> float:
-        """
-        Calcule la magnitude de l'impulsion de friction le long de l'axe tangent.
+        """Calcule la magnitude de l'impulsion de friction le long de l'axe tangent.
 
-        Utilise un modèle simple de friction de Coulomb : |jt| <= mu * jn.
+        Modèle
+        ------
+        - Impulsion "idéale" : jt_ideal = -vt / k_t
+        - Si |jt_ideal| <= mu_static * jn : adhérence (friction statique)
+        - Sinon : glissement, clamp avec mu_dynamic * jn
 
         Parameters
         ----------
         rel_tangent_velocity : float
-            Vélocité tangentielle relative au contact.
+            Vélocité tangentielle relative au contact (vt).
         k_tangent : float
             Dénominateur de la masse effective le long de l'axe tangent.
-        friction : float
-            Coefficient de friction mu (>= 0).
-        normal_impulse : float
-            Magnitude de l'impulsion normale déjà calculée jn.
+        static_friction : float
+            Coefficient de friction statique (mu_s).
+        dynamic_friction : float
+            Coefficient de friction dynamique (mu_d).
+        normal_impulse_cached : float
+            Magnitude de l'impulsion normale déjà calculée (jn).
 
         Returns
         -------
@@ -786,11 +901,14 @@ class CollisionResolutionSystem:
         if k_tangent <= Tolerence.GENERAL:
             return 0.0
 
-        jt = -rel_tangent_velocity / k_tangent
+        jt_ideal = -rel_tangent_velocity / k_tangent
+        max_friction = static_friction * normal_impulse_cached
 
-        max_friction = friction * normal_impulse
-        jt = Numeric.clamp(jt, -max_friction, max_friction)
-        return jt
+        if abs(jt_ideal) <= max_friction:
+            return jt_ideal
+
+        max_friction = dynamic_friction * normal_impulse_cached
+        return Numeric.clamp(jt_ideal, -max_friction, max_friction)
 
     def _apply_impulses_at_contact(
         self,
@@ -799,8 +917,7 @@ class CollisionResolutionSystem:
         contact_point: "Vector2D",
         impulse: "Vector2D",
     ) -> None:
-        """
-        Applique une impulsion aux deux corps au point de contact.
+        """Applique une impulsion aux deux corps au point de contact.
 
         Parameters
         ----------
@@ -826,13 +943,12 @@ class CollisionResolutionSystem:
         lever_arm_b: Vector2D,
         axis: Vector2D,
     ) -> float:
-        """
-        Calcule le dénominateur de la masse effective pour l'impulsion.
-        Cette valeur est utilisée pour déterminer l'effet de la masse
-        et de l'inertie sur la réponse à une impulsion appliquée à un point.
+        """Calcule le dénominateur de la masse effective pour l'impulsion.
 
-        Cela représente la contribution combinée de la masse linéaire
-        et de l'inertie rotative des deux corps impliqués dans la collision.
+        Cette valeur est utilisée pour déterminer l'effet de la masse et de
+        l'inertie sur la réponse à une impulsion appliquée à un point. Cela
+        représente la contribution combinée de la masse linéaire et de l'inertie
+        rotative des deux corps impliqués dans la collision.
 
         Parameters
         ----------
@@ -845,11 +961,11 @@ class CollisionResolutionSystem:
         inv_inertia_b : float
             Inertie inverse du corps B.
         lever_arm_a : Vector2D
-            Vecteur de position du point d'application par rapport
-            au centre de masse du corps A.
+            Vecteur de position du point d'application par rapport au centre de masse
+            du corps A.
         lever_arm_b : Vector2D
-            Vecteur de position du point d'application par rapport
-            au centre de masse du corps B.
+            Vecteur de position du point d'application par rapport au centre de masse
+            du corps B.
         axis : Vector2D
             Axe le long duquel l'impulsion est appliquée (normalisé).
 
@@ -870,4 +986,123 @@ class CollisionResolutionSystem:
         # Tolerence générale (1e-9) ou de collision (1e-3) ?
         if effective_mass <= Tolerence.GENERAL:
             return 0.0
+
         return effective_mass
+
+    def warm_start_contacts(
+        self,
+        collisions: list[tuple[int, int]],
+        collision_info: dict[tuple[int, int], CollisionInfo],
+        warm_start_factor: float = 1.0,
+    ) -> None:
+        """Applique le warm starting à partir du cache d'impulsions.
+
+        Cette méthode doit être appelée AVANT les itérations d'impulsions.
+        Elle applique l'impulsion totale (jn, jt) stockée de la frame précédente,
+        afin d'accélérer la convergence et stabiliser les piles.
+
+        Parameters
+        ----------
+        collisions : list[tuple[int, int]]
+            Paires de colliders en collision pour cette frame.
+        collision_info : dict[tuple[int, int], CollisionInfo]
+            Informations de collision résolues (normale orientée, points existants).
+        warm_start_factor : float, optional
+            Facteur multiplicatif appliqué aux impulsions cachées (0..1).
+            Valeurs typiques : 0.7 à 1.0.
+        """
+        warm_start_factor = Numeric.clamp(warm_start_factor, 0.0, 1.0)
+
+        for col_id_a, col_id_b in collisions:
+            pair_col = (col_id_a, col_id_b)
+            info = collision_info.get(pair_col)
+
+            if info is None or info.depth <= 0.0 or not info.points:
+                continue
+
+            context = self._get_collision_context(col_id_a, col_id_b)
+            if context is None:
+                continue
+
+            _, _, parent_a, parent_b, body_a, body_b = context
+
+            normal = info.normal.normalized()
+
+            # Centres de masse monde
+            com_a = parent_a.transform.to_scene_point(body_a.mass_center)
+            com_b = parent_b.transform.to_scene_point(body_b.mass_center)
+
+            for contact_index, point in enumerate(info.points):
+                contact_key: _ContactKey = (col_id_a, col_id_b, contact_index)
+                cached = self._contact_impulses.get(contact_key)
+
+                if cached is None:
+                    continue
+
+                # Calcul de la tangente depuis l'état courant
+                kin = self._compute_contact_kinematics(
+                    body_a, body_b, com_a, com_b, point, normal
+                )
+                tangent = self._compute_tangent_axis(kin.relative_velocity, normal)
+
+                if tangent is None:
+                    impulse = normal * (cached.jn * warm_start_factor)
+                else:
+                    impulse = (
+                        normal * cached.jn + tangent * cached.jt
+                    ) * warm_start_factor
+
+                # Appliquer l'impulsion totale mise en cache
+                self._apply_impulses_at_contact(body_a, body_b, point, impulse)
+
+    def build_active_contact_keys(
+        self,
+        collisions: list[tuple[int, int]],
+        collision_info: dict[tuple[int, int], CollisionInfo],
+    ) -> set[_ContactKey]:
+        """Construit l'ensemble des clés de contact actives pour cette frame.
+
+        Notes
+        -----
+        - Utilise la convention actuelle : 1 à 2 points de contact par collision.
+        - Les clés sont (col_id_a, col_id_b, contact_index).
+
+        Parameters
+        ----------
+        collisions : list[tuple[int, int]]
+            Paires de colliders en collision.
+        collision_info : dict[tuple[int, int], CollisionInfo]
+            Infos de collision contenant les points.
+
+        Returns
+        -------
+        set[_ContactKey]
+            Ensemble des clés actives.
+        """
+        active_keys: set[_ContactKey] = set()
+
+        for col_id_a, col_id_b in collisions:
+            info = collision_info.get((col_id_a, col_id_b))
+
+            if info is None or not info.points or info.depth <= 0.0:
+                continue
+
+            for contact_index in range(len(info.points)):
+                active_keys.add((col_id_a, col_id_b, contact_index))
+
+        return active_keys
+
+    def prune_contact_cache(self, active_keys: set[_ContactKey]) -> None:
+        """Purge le cache d'impulsions pour ne garder que les contacts actifs.
+
+        Parameters
+        ----------
+        active_keys : set[_ContactKey]
+            Ensemble des clés de contact encore actives pour cette frame.
+        """
+        if not self._contact_impulses:
+            return
+
+        self._contact_impulses = {
+            k: v for k, v in self._contact_impulses.items() if k in active_keys
+        }

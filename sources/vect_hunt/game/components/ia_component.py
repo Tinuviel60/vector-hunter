@@ -2,12 +2,14 @@
 Composant d'intelligence artificielle pour les ennemis.
 """
 
-from typing import Any
+from typing import Any, TYPE_CHECKING, cast
 
 from vect_hunt.engine.components.component import Component
-from vect_hunt.engine.components.physic_body_component import PhysicBodyComponent
 from vect_hunt.engine.core.math.vector import Vector2D
-from vect_hunt.game.components.attributes_component import AttributesComponent
+
+if TYPE_CHECKING:
+    from vect_hunt.engine.components.physic_body_component import PhysicBodyComponent
+    from vect_hunt.game.components.attributes_component import AttributesComponent
 
 
 class IaComponent(Component):
@@ -109,12 +111,12 @@ class IaComponent(Component):
         """
         # TODO : Sortir les components requis dans l'init ou via système de dépendances
         # Récupérer le PhysicBodyComponent
-        physic_body = self.parent.get_component(PhysicBodyComponent)
+        physic_body = cast("PhysicBodyComponent | None", self.parent.get_component("physic_body"))
         if not physic_body:
             return
 
         # Récupérer le PhysicBodyComponent
-        attributes = self.parent.get_component(AttributesComponent)
+        attributes = cast("AttributesComponent | None", self.parent.get_component("attributes"))
         if not attributes:
             return
 

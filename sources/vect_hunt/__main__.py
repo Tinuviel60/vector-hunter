@@ -151,7 +151,7 @@ def main(app_config: dict[str, Any], resources: ResourceRegistry) -> None:
         # Créer le jeu déjà "assemblé" (scene + scheduler, etc.)
         game = Game.from_resources(
             resources=resources,
-            level_name="level_10.json",
+            level_name="level_06.json",
         )
 
         # Le rendu dépend de Pygame : initialisation après set_mode()

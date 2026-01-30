@@ -1,6 +1,7 @@
 {
   "_comment": "Materiau par defaut",
-  "friction": 0.5,
+  "static_friction": 0.5,
+  "dynamic_friction": 0.65,
   "restitution": 0.2,
   "linear_damping": 0.05,
   "angular_damping": 0.1,

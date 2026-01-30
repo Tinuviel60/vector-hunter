@@ -2,9 +2,8 @@
 Composant de corps physique pour gérer les déplacements et forces.
 """
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast, List
 
-from vect_hunt.engine.components.collider.collider_component import ColliderComponent
 from vect_hunt.engine.components.component import Component
 from vect_hunt.engine.core.math.tolerance import Tolerence
 from vect_hunt.engine.core.math.vector import Vector2D
@@ -12,6 +11,7 @@ from vect_hunt.engine.physics.physic_material import CombineMode, PhysicMaterial
 
 if TYPE_CHECKING:
     from vect_hunt.engine.objects.game_object import GameObject
+    from vect_hunt.engine.components.collider.collider_component import ColliderComponent
 
 import logging
 
@@ -65,6 +65,10 @@ class PhysicBodyComponent(Component):
     material : PhysicMaterial
         Matériau physique associé.
     """
+    # TODO : A Mettre dans une config globale ou par scène
+    SLEEP_LINEAR_VEL = 0.5      # px/s
+    SLEEP_ANGULAR_VEL = 0.05   # rad/s
+    SLEEP_TIME = 0.5           # secondes
 
     component_name = "physic_body"
 
@@ -112,6 +116,9 @@ class PhysicBodyComponent(Component):
         self.is_kinematic = is_kinematic
         self.use_gravity = use_gravity
         self.is_controlled = is_controlled
+
+        self.is_sleeping: bool = False
+        self.sleep_timer: float = 0.0
 
         self.material = material if material is not None else PhysicMaterial()
 
@@ -218,7 +225,8 @@ class PhysicBodyComponent(Component):
         PhysicMaterial
             Matériau physique créé.
         """
-        friction = material_data.get("friction", 0.5)
+        static_friction = material_data.get("static_friction", 0.5)
+        dynamic_friction = material_data.get("dynamic_friction", 0.65)
         restitution = material_data.get("restitution", 0.5)
         linear_damping = material_data.get("linear_damping", 0.0)
         bounce_velocity_threshold = material_data.get("bounce_velocity_threshold", 0.0)
@@ -231,7 +239,8 @@ class PhysicBodyComponent(Component):
         )
 
         return PhysicMaterial(
-            friction=friction,
+            static_friction=static_friction,
+            dynamic_friction=dynamic_friction,
             restitution=restitution,
             friction_mode=friction_mode,
             angular_damping=angular_damping,
@@ -342,6 +351,42 @@ class PhysicBodyComponent(Component):
         self.acceleration = Vector2D(0, 0)
         self.angular_acceleration = 0.0
 
+    def sleep_check(self, delta_time: float) -> None:
+        """
+        Vérifie si le corps physique peut être mis en veille (sleep).
+
+        Si il est en dessous des seuils de vélocité linéaire et angulaire
+        pendant une certaine durée, il est mis en veille.
+
+        Parameters
+        ----------
+        delta_time : float
+            Temps écoulé depuis la dernière frame (en secondes).
+        """
+        if self.is_kinematic:
+            self.is_sleeping = False
+            self.sleep_timer = 0.0
+            return
+
+        # print("is_sleeping:", self.is_sleeping,
+        #       "object:", self.parent.name)
+
+        linear_speed_sq = self.velocity.magnitude_squared()
+        angular_speed = abs(self.angular_velocity)
+
+        if (
+            linear_speed_sq < self.SLEEP_LINEAR_VEL * self.SLEEP_LINEAR_VEL
+            and angular_speed < self.SLEEP_ANGULAR_VEL
+        ):
+            self.sleep_timer += delta_time
+            if self.sleep_timer >= self.SLEEP_TIME:
+                self.is_sleeping = True
+                self.velocity = Vector2D(0, 0)
+                self.angular_velocity = 0.0
+        else:
+            self.is_sleeping = False
+            self.sleep_timer = 0.0
+
     def integrate_transform(self, delta_time: float) -> None:
         """
         Intégrer les transformations à partir des vélocités.
@@ -359,10 +404,33 @@ class PhysicBodyComponent(Component):
             return
 
         if self.velocity.magnitude_squared() > Tolerence.GENERAL * Tolerence.GENERAL:
+            old_pos = self.parent.transform.position
             self.parent.transform.move(self.velocity * delta_time)
+            new_pos = self.parent.transform.position
+            
+            # Log position changes for collider 3
+            import sys
+            for comp in self.parent.get_all_components():
+                if hasattr(comp, 'id') and comp.__class__.__name__ == 'ColliderComponent':
+                    if comp.id in [3, 8]:
+                        displacement = new_pos - old_pos
+                        if displacement.magnitude_squared() > Tolerence.GENERAL * Tolerence.GENERAL:
+                            print(f"[POS_UPDATE] col_id={comp.id} pos=({new_pos.x:.1f},{new_pos.y:.1f}) displacement=({displacement.x:.3f},{displacement.y:.3f})", file=sys.stderr)
+                    break
 
         if abs(self.angular_velocity) > Tolerence.GENERAL:
+            old_angle = self.parent.transform.rotation.angle
             self.parent.transform.rotate(self.angular_velocity * delta_time)
+            new_angle = self.parent.transform.rotation.angle
+            
+            # Log rotation for collider 3
+            import sys
+            for comp in self.parent.get_all_components():
+                if hasattr(comp, 'id') and comp.__class__.__name__ == 'ColliderComponent':
+                    if comp.id in [3, 8]:
+                        angle_delta = new_angle - old_angle
+                        print(f"[ROT_UPDATE] col_id={comp.id} angle={new_angle:.4f} delta_angle={angle_delta:.6f} ang_vel={self.angular_velocity:.6f} dt={delta_time:.4f}", file=sys.stderr)
+                    break
 
     def set_velocity(self, velocity: Vector2D) -> None:
         """
@@ -429,6 +497,10 @@ class PhysicBodyComponent(Component):
         """
         if self.is_kinematic:
             return
+        
+        if self.is_sleeping:
+            self.is_sleeping = False
+            self.sleep_timer = 0.0
 
         eps = Tolerence.GENERAL
         inv_mass = self.invert_mass()
@@ -449,7 +521,6 @@ class PhysicBodyComponent(Component):
             # Produit vectoriel 2D -> scalaire (r x J)
             torque_impulse = (lever_arm.x * impulse.y) - (lever_arm.y * impulse.x)
             self.angular_velocity += torque_impulse * inv_inertia
- 
 
     def add_torque(self, torque: float) -> None:
         """
@@ -484,7 +555,7 @@ class PhysicBodyComponent(Component):
 
         total_area = 0.0
         weighted_position_sum = Vector2D(0, 0)
-        for collider in self.parent.get_components(ColliderComponent):
+        for collider in cast(List["ColliderComponent"], self.parent.get_components("collider")):
             if collider.solid is False:
                 continue
 
@@ -514,7 +585,7 @@ class PhysicBodyComponent(Component):
         float
             Moment d'inertie total du corps physique.
         """
-        colliders = self.parent.get_components(ColliderComponent)
+        colliders = cast(List["ColliderComponent"], self.parent.get_components("collider"))
         if not colliders:
             logger.warning(
                 "Aucun collider attaché au corps physique. "

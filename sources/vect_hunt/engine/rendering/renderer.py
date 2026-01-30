@@ -1,11 +1,9 @@
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any, Optional, cast
 
 import pygame
 from vect_hunt.engine.components.collider.box_collider_component import (
     BoxColliderComponent,
 )
-from vect_hunt.engine.components.collider.collider_component import ColliderComponent
-from vect_hunt.engine.components.render_component import RenderComponent
 from vect_hunt.engine.core.geometries.box_shape import BoxShape
 from vect_hunt.engine.core.geometries.circle_shape import CircleShape
 from vect_hunt.engine.core.math.vector import Vector2D
@@ -15,6 +13,10 @@ from vect_hunt.engine.rendering.font.font_system import FontSystem
 if TYPE_CHECKING:
     from vect_hunt.engine.objects.game_object import GameObject
     from vect_hunt.engine.scenes.scene import Scene
+    from vect_hunt.engine.components.render_component import RenderComponent
+    from vect_hunt.engine.components.collider.collider_component import (
+        ColliderComponent
+    )
 
 """
 Module de rendu pour le jeu Vector Hunter.
@@ -187,7 +189,7 @@ class Renderer:
                 self.draw_name(game_object)
             # Dessine les colliders
             if self.draw_colliders:
-                colliders = game_object.get_components(ColliderComponent)
+                colliders = cast(list["ColliderComponent"], game_object.get_components("collider"))
                 for collider in colliders:
                     self.draw_collider(
                         collider,
@@ -287,7 +289,7 @@ class Renderer:
             ),
         )
 
-    def draw_collider(self, collider: ColliderComponent, is_colliding: bool = False):
+    def draw_collider(self, collider: "ColliderComponent", is_colliding: bool = False):
         """
         Dessine un collider pour le debug.
 
@@ -341,7 +343,7 @@ class Renderer:
             L'objet de jeu à dessiner.
         """
 
-        render_component = game_object.get_component(RenderComponent)
+        render_component = cast("RenderComponent | None", game_object.get_component("render"))
         if not render_component:
             return
 

@@ -1,6 +1,8 @@
 import pytest
 from vect_hunt.engine.components.physic_body_component import PhysicBodyComponent
 from vect_hunt.engine.core.math import Vector2D
+from vect_hunt.engine.core.transform.transform import Transform
+from vect_hunt.engine.core.collisions.collision_info import CollisionInfo
 from vect_hunt.engine.objects import GameObject
 from vect_hunt.engine.physics.collision_resolution_system import (
     CollisionResolutionSystem,
@@ -19,8 +21,8 @@ from vect_hunt.engine.scenes.scene import Scene
 def test_position_correction(kin_a, kin_b, expected_a, expected_b):
     scene = Scene(units={"pixels_per_meter": 100.0, "gravity_m_s2": 9.81})
 
-    obj_a = GameObject("A")
-    obj_b = GameObject("B")
+    obj_a = GameObject("A", transform=Transform())
+    obj_b = GameObject("B", transform=Transform())
     body_a = PhysicBodyComponent(is_kinematic=kin_a)
     body_b = PhysicBodyComponent(is_kinematic=kin_b)
     obj_a.add_component(body_a)
@@ -29,10 +31,11 @@ def test_position_correction(kin_a, kin_b, expected_a, expected_b):
     scene.add_game_object(obj_b)
 
     resolver = CollisionResolutionSystem(scene)
-    info = {"normal": Vector2D(1, 0), "depth": 2.0}
+    info = CollisionInfo(normal=Vector2D(1, 0), depth=2.0)
+    collision_info = {(obj_a.id, obj_b.id): info}
 
-    applied = resolver.update_from_collisions(
-        [(obj_a.id, obj_b.id)], {(obj_a.id, obj_b.id): info}
+    applied = resolver.correct_collisions(
+        [(obj_a.id, obj_b.id)], collision_info
     )
 
     assert applied is True
@@ -42,18 +45,19 @@ def test_position_correction(kin_a, kin_b, expected_a, expected_b):
 
 def test_no_correction_when_no_depth():
     scene = Scene(units={"pixels_per_meter": 100.0, "gravity_m_s2": 9.81})
-    obj_a = GameObject("A")
-    obj_b = GameObject("B")
+    obj_a = GameObject("A", transform=Transform())
+    obj_b = GameObject("B", transform=Transform())
     obj_a.add_component(PhysicBodyComponent())
     obj_b.add_component(PhysicBodyComponent())
     scene.add_game_object(obj_a)
     scene.add_game_object(obj_b)
 
     resolver = CollisionResolutionSystem(scene)
-    info = {"normal": Vector2D(1, 0), "depth": 0.0}
+    info = CollisionInfo(normal=Vector2D(1, 0), depth=0.0)
+    collision_info = {(obj_a.id, obj_b.id): info}
 
-    applied = resolver.update_from_collisions(
-        [(obj_a.id, obj_b.id)], {(obj_a.id, obj_b.id): info}
+    applied = resolver.correct_collisions(
+        [(obj_a.id, obj_b.id)], collision_info
     )
 
     assert applied is False

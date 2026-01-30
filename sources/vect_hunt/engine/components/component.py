@@ -1,10 +1,12 @@
 import inspect
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, ClassVar
+import logging
 
 if TYPE_CHECKING:
     from vect_hunt.engine.objects.game_object import GameObject
 
+logger = logging.getLogger(__name__)
 
 class Component(ABC):
     """
@@ -27,6 +29,7 @@ class Component(ABC):
     """
 
     component_name: ClassVar[str] = "Component"
+    component_families: ClassVar[set[str]] = set()
     _name_registry: ClassVar[dict[str, type["Component"]]] = {}
     _next_id: int = 1  # Compteur de classe pour générer des IDs uniques
 
@@ -70,6 +73,24 @@ class Component(ABC):
             )
 
         Component._name_registry[component_name] = cls
+
+        # --- Construction des familles ---
+        families: set[str] = set()
+
+        # 1) Hériter des familles des parents
+        for base in cls.__mro__[1:]:
+            if issubclass(base, Component):
+                families.update(getattr(base, "component_families", set()))
+                families.add(getattr(base, "component_name", ""))
+
+        # 2) Ajouter son propre nom
+        families.add(component_name)
+
+        # Nettoyage (None possible pour Component)
+        families.discard("")
+
+        cls.component_families = families
+        logger.info(f"Registered Component: {cls.__name__} as '{component_name}' with families {families}")
 
     @property
     def parent(self) -> "GameObject":

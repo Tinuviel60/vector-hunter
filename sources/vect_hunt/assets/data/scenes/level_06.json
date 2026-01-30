@@ -9,7 +9,7 @@
   "game_objects": [
     { "template_path": "player.json", "name": "Player", "transform": { "position": [200, 650], "rotation": 0.0 } },
 
-    { "template_path": "objects/standard.json", "name": "Wall_Standard", "transform": { "position": [600, 0], "rotation": 0.0 } },
+    { "template_path": "objects/standard.json", "name": "Wall_Standard", "transform": { "position": [600, 600], "rotation": 0.0 } },
     { "template_path": "objects/standard.json", "name": "Wall_Standard", "transform": { "position": [600, 800], "rotation": 0.0 } },
     { "template_path": "objects/standard.json", "name": "Wall_Standard", "transform": { "position": [50, 400], "rotation": 90.0 } },
     { "template_path": "objects/standard.json", "name": "Wall_Standard", "transform": { "position": [1150, 400], "rotation": 90.0 } },
