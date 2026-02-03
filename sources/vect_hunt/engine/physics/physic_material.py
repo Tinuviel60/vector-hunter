@@ -96,12 +96,14 @@ class PhysicMaterial:
         """
         if not (0.0 <= self.static_friction <= 1.0):
             logger.warning(
-                f"Friction {self.static_friction} hors limites, " f"clamp entre 0.0 et 1.0."
+                f"Friction {self.static_friction} hors limites, "
+                f"clamp entre 0.0 et 1.0."
             )
             self.static_friction = Numeric.clamp(self.static_friction, 0.0, 1.0)
         if not (0.0 <= self.dynamic_friction <= 1.0):
             logger.warning(
-                f"Dynamic Friction {self.dynamic_friction} hors limites, " f"clamp entre 0.0 et 1.0."
+                f"Dynamic Friction {self.dynamic_friction} hors limites, "
+                f"clamp entre 0.0 et 1.0."
             )
             self.dynamic_friction = Numeric.clamp(self.dynamic_friction, 0.0, 1.0)
         if not (0.0 <= self.restitution <= 1.0):

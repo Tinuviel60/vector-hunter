@@ -1,18 +1,21 @@
-from typing import List, Tuple, cast, TYPE_CHECKING, Dict
+from typing import TYPE_CHECKING, Dict, List, Tuple, cast
 
 from vect_hunt.engine.input.input_system import InputSystem
 from vect_hunt.engine.physics.collider_detection import ColliderDetection
 from vect_hunt.engine.physics.collision_resolution_system import (
-    CollisionResolutionSystem
+    CollisionResolutionSystem,
 )
 from vect_hunt.engine.physics.collision_tracker import CollisionTracker
 from vect_hunt.engine.physics.external_forces_system import ExternalForcesSystem
 
 if TYPE_CHECKING:
+    from vect_hunt.engine.components.collider.collider_component import (
+        ColliderComponent,
+    )
     from vect_hunt.engine.components.physic_body_component import PhysicBodyComponent
     from vect_hunt.engine.core.tag_system import TagSystem
     from vect_hunt.engine.scenes.scene import Scene
-    from vect_hunt.engine.components.collider.collider_component import ColliderComponent
+
 
 class SimulationScheduler:
     """
@@ -32,7 +35,7 @@ class SimulationScheduler:
         scene: "Scene",
         input_config: dict,
         tag_system: "TagSystem",
-        max_collision_passes: int = 2,
+        max_collision_passes: int = 4,
     ) -> None:
         """
         Initialise le scheduler pour une scene.
@@ -46,7 +49,9 @@ class SimulationScheduler:
         """
         self.scene = scene
         self.max_collision_passes = max_collision_passes
-        self.impulse_iterations = max_collision_passes * 2
+        # Itérations d'impulsions: 20 pour piles stables
+        # (8-15 typique pour scènes simples, plus = meilleure convergence)
+        self.impulse_iterations = 20
 
         self.input_system = InputSystem(input_config)
         self.collider_detection = ColliderDetection(tag_system)
@@ -114,7 +119,9 @@ class SimulationScheduler:
             if not game_object.active:
                 continue
 
-            for body in cast(List["PhysicBodyComponent"], game_object.get_components("physic_body")):
+            for body in cast(
+                List["PhysicBodyComponent"], game_object.get_components("physic_body")
+            ):
                 body.integrate_velocity(delta_time)
 
     def _update_game_objects_sleep(self, delta_time: float) -> None:
@@ -130,7 +137,9 @@ class SimulationScheduler:
             if not game_object.active:
                 continue
 
-            for body in cast(List["PhysicBodyComponent"], game_object.get_components("physic_body")):
+            for body in cast(
+                List["PhysicBodyComponent"], game_object.get_components("physic_body")
+            ):
                 body.sleep_check(delta_time)
 
     def _update_game_objects_transforms(self, delta_time: float) -> None:
@@ -146,7 +155,9 @@ class SimulationScheduler:
             if not game_object.active:
                 continue
 
-            for body in cast(List["PhysicBodyComponent"], game_object.get_components("physic_body")):
+            for body in cast(
+                List["PhysicBodyComponent"], game_object.get_components("physic_body")
+            ):
                 body.integrate_transform(delta_time)
 
     def _update_game_objects(self, delta_time: float) -> None:
@@ -174,12 +185,13 @@ class SimulationScheduler:
         collision_result = self.collider_detection.detect(self.scene)
 
         # Le tracker travaille en collider pairs
-        self.collision_tracker.update(collision_result.collisions, collision_result.triggers, delta_time)
+        self.collision_tracker.update(
+            collision_result.collisions, collision_result.triggers, delta_time
+        )
 
         # Dispatch gameplay au niveau GameObject via agrégation
         self._dispatch_collision_events()
         self._dispatch_trigger_events()
-
 
     def _resolve_collisions(self, delta_time: float) -> None:
         """
@@ -195,7 +207,7 @@ class SimulationScheduler:
             Temps écoulé depuis la dernière frame (en secondes).
         """
 
-        # 1) Detect contacts 
+        # 1) Detect contacts
         detected = self.collider_detection.detect(self.scene)
         if not detected.collisions:
             return
@@ -204,21 +216,30 @@ class SimulationScheduler:
             detected.collision_info,
         )
 
-        # 2) Warm starting + purge cache 
+        # 2) Warm starting + purge cache
         active_keys = self.collision_resolution_system.build_active_contact_keys(
-            list(detected.collisions), collision_info,
+            list(detected.collisions),
+            collision_info,
         )
         self.collision_resolution_system.prune_contact_cache(active_keys)
-        # warm_start_factor : valeur de départ (0.7..1.0)
+        # warm_start_factor : désactivé car provoque des instabilités sur certaines
+        # configurations de contacts. Le warm starting accumule des impulsions de la
+        # frame précédente, ce qui peut causer des explosions quand les contacts
+        # changent rapidement ou sont mal positionnés.
+        # TODO: investiguer le problème du warm starting et réactiver si résolu
         self.collision_resolution_system.warm_start_contacts(
-            list(detected.collisions), collision_info, warm_start_factor=0.4,
+            list(detected.collisions),
+            collision_info,
+            warm_start_factor=0.0,
         )
 
         # 3) ittération d'impulsion
         for i in range(self.impulse_iterations):
             moved = self.collision_resolution_system.apply_impulse_response(
-                list(detected.collisions),collision_info,
-                self.collision_tracker.entered_collisions, delta_time,
+                list(detected.collisions),
+                collision_info,
+                self.collision_tracker.entered_collisions,
+                delta_time,
             )
             if not moved:
                 break
@@ -228,17 +249,19 @@ class SimulationScheduler:
         if not detected.collisions:
             return
         collision_info = self.collision_resolution_system.resolve_all_collision_info(
-            detected.collisions, detected.collision_info,
+            detected.collisions,
+            detected.collision_info,
         )
 
-        # 5) Small position correction passes 
+        # 5) Small position correction passes
         for j in range(self.max_collision_passes):
             moved = self.collision_resolution_system.correct_collisions(
-                list(detected.collisions), collision_info,
+                list(detected.collisions),
+                collision_info,
             )
             if not moved:
                 break
-            
+
         # 6) Debug
         # print(
         #     i + 1,
@@ -274,6 +297,7 @@ class SimulationScheduler:
             return None
 
         return (min(obj_a, obj_b), max(obj_a, obj_b))
+
     def _dispatch_collision_events(self) -> None:
         """
         Envoie des événements collision au niveau GameObject.
@@ -333,7 +357,7 @@ class SimulationScheduler:
         obj_b = self.scene.game_objects.get(obj_b_id)
         if obj_a is None or obj_b is None:
             return
-        
+
         obj_a.on_enter_collision(obj_b)
         obj_b.on_enter_collision(obj_a)
 
@@ -410,7 +434,9 @@ class SimulationScheduler:
         for obj_pair in list(self._object_trigger_counts.keys()):
             self._emit_stay_trigger(obj_pair)
 
-    def _emit_enter_trigger(self, obj_pair: Tuple[int, int], col_a: int, col_b: int) -> None:
+    def _emit_enter_trigger(
+        self, obj_pair: Tuple[int, int], col_a: int, col_b: int
+    ) -> None:
         """
         Emet un trigger d'entrée.
 
@@ -425,7 +451,9 @@ class SimulationScheduler:
         """
         self._emit_trigger_event("enter", obj_pair, col_a, col_b)
 
-    def _emit_exit_trigger(self, obj_pair: Tuple[int, int], col_a: int, col_b: int) -> None:
+    def _emit_exit_trigger(
+        self, obj_pair: Tuple[int, int], col_a: int, col_b: int
+    ) -> None:
         """
         Emet un trigger de sortie.
 
@@ -449,9 +477,10 @@ class SimulationScheduler:
         obj_pair : Tuple[int, int]
             Paire d'IDs d'objets en trigger.
         """
-        # Pour stay, on n'a pas les col ids spécifiques. Si tu veux une sémantique exacte,
-        # il faut aussi conserver "quels collider-pairs actifs" -> object-pair.
-        # Version simple: appeler sur les deux objets qui ont au moins un trigger collider.
+        # Pour stay, on n'a pas les col ids spécifiques. Si tu veux une
+        # sémantique exacte, il faut aussi conserver "quels collider-pairs
+        # actifs" -> object-pair. Version simple: appeler sur les deux objets
+        # qui ont au moins un trigger collider.
         obj_a_id, obj_b_id = obj_pair
         obj_a = self.scene.game_objects.get(obj_a_id)
         obj_b = self.scene.game_objects.get(obj_b_id)
@@ -463,7 +492,9 @@ class SimulationScheduler:
         if self._object_has_trigger(obj_b_id):
             obj_b.on_trigger(obj_a)
 
-    def _emit_trigger_event(self, kind: str, obj_pair: Tuple[int, int], col_a: int, col_b: int) -> None:
+    def _emit_trigger_event(
+        self, kind: str, obj_pair: Tuple[int, int], col_a: int, col_b: int
+    ) -> None:
         """
         Emet un événement de trigger.
 
