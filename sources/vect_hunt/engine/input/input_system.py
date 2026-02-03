@@ -1,19 +1,16 @@
-import pygame
-from typing import Dict, Set, Optional, List, Any
+from typing import Any, Dict, List, Optional, Set
 
-from vect_hunt.engine.core.math import Vector2D
-from vect_hunt.engine.resources.loaders.data_loader import DataLoader
-from .input_tracker import InputTracker
+import pygame
+from vect_hunt.engine.core.math.vector import Vector2D
 from vect_hunt.engine.input.input_action import (
-    InputAction,
     ActionState,
     ActionType,
+    InputAction,
     action_from_config,
 )
-from .context_manager import (
-    ContextManager,
-    GameContext,
-)
+
+from .context_manager import ContextManager, GameContext
+from .input_tracker import InputTracker
 
 """Système de gestion des entrées utilisateur."""
 
@@ -37,14 +34,14 @@ class InputSystem:
     None
     """
 
-    def __init__(self, config_path: str = "configs/inputs.json"):
+    def __init__(self, config: dict[str, Any]):
         """
         Initialise le système d'inputs.
 
         Parameters
         ----------
-        config_path : str
-            Chemin relatif vers le fichier de configuration JSON.
+        config : dict[str, Any]
+            Configuration chargee depuis inputs.json.
         """
         self._actions: Dict[str, InputAction] = {}
         self._contexts: Dict[GameContext, List[str]] = {}
@@ -58,6 +55,7 @@ class InputSystem:
         self._mouse_position = Vector2D(0.0, 0.0)
         self._mouse_wheel_delta = 0.0
         self._previous_mouse_position = Vector2D(0.0, 0.0)
+        self._mouse_origin_y: float | None = None
 
         # Mapping pygame → noms de touches
         self._pygame_key_mapping = self._build_key_mapping()
@@ -70,7 +68,7 @@ class InputSystem:
         }
 
         # Charger la configuration
-        self._load_config(config_path)
+        self._load_config(config)
 
     def _build_key_mapping(self) -> Dict[int, str]:
         """
@@ -131,22 +129,20 @@ class InputSystem:
         mapping.update(special_keys)
         return mapping
 
-    def _load_config(self, config_path: str) -> None:
+    def _load_config(self, config: dict[str, Any]) -> None:
         """
         Charge la configuration depuis le fichier JSON.
 
         Parameters
         ----------
-        config_path : str
-            Chemin relatif vers le fichier de configuration.
+        config : dict[str, Any]
+            Configuration chargee depuis inputs.json.
         """
-        data = DataLoader.load_json(config_path)
-
         # Charger les settings
-        self._settings = data.get("settings", {})
+        self._settings = config.get("settings", {})
 
         # Charger les contextes et actions
-        contexts_data = data.get("contexts", {})
+        contexts_data = config.get("contexts", {})
         for context_name, actions_data in contexts_data.items():
             # Créer l'enum de contexte
             try:
@@ -187,7 +183,14 @@ class InputSystem:
         mouse_pos = pygame.mouse.get_pos()
 
         # Calculer le delta de la souris
-        current_mouse_position = Vector2D(float(mouse_pos[0]), float(mouse_pos[1]))
+        raw_mouse_position = Vector2D(float(mouse_pos[0]), float(mouse_pos[1]))
+        origin_y = self._resolve_mouse_origin_y()
+        if origin_y is None:
+            current_mouse_position = raw_mouse_position
+        else:
+            current_mouse_position = Vector2D(
+                raw_mouse_position.x, origin_y - raw_mouse_position.y
+            )
         self._mouse_delta = current_mouse_position - self._previous_mouse_position
         self._previous_mouse_position = current_mouse_position
         self._mouse_position = current_mouse_position
@@ -420,12 +423,12 @@ class InputSystem:
             for key_name in action.keys.get("down", []):
                 pygame_key = self._get_pygame_key(key_name)
                 if pygame_key is not None and keys_pressed[pygame_key]:
-                    y_input += 1.0
+                    y_input -= 1.0
 
             for key_name in action.keys.get("up", []):
                 pygame_key = self._get_pygame_key(key_name)
                 if pygame_key is not None and keys_pressed[pygame_key]:
-                    y_input -= 1.0
+                    y_input += 1.0
 
             vector = Vector2D(x_input, y_input)
 
@@ -673,7 +676,7 @@ class InputSystem:
         Returns
         -------
         Vector2D
-            Position en pixels.
+            Position en pixels (repère Y-up).
         """
         return self._mouse_position
 
@@ -684,7 +687,7 @@ class InputSystem:
         Returns
         -------
         Vector2D
-            Delta en pixels.
+            Delta en pixels (repère Y-up).
         """
         return self._mouse_delta
 
@@ -746,3 +749,17 @@ class InputSystem:
             state.reset()
         self._mouse_delta = Vector2D(0.0, 0.0)
         self._mouse_wheel_delta = 0.0
+
+    def set_mouse_origin_y(self, origin_y: float | None) -> None:
+        """
+        Définit l'origine Y écran utilisée pour convertir la souris en Y-up.
+        """
+        self._mouse_origin_y = origin_y
+
+    def _resolve_mouse_origin_y(self) -> float | None:
+        if self._mouse_origin_y is not None:
+            return self._mouse_origin_y
+        surface = pygame.display.get_surface()
+        if surface is None:
+            return None
+        return float(surface.get_height())

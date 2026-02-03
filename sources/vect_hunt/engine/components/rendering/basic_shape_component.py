@@ -1,9 +1,9 @@
 from typing import Any, Tuple
 
 import pygame
-
 from vect_hunt.engine.components.render_component import RenderComponent
-from vect_hunt.engine.core.math import Vector2D, hex_to_rgb
+from vect_hunt.engine.core.math.vector import Vector2D
+from vect_hunt.engine.core.render_ops import RenderOps
 
 
 class BasicShapeComponent(RenderComponent):
@@ -68,20 +68,27 @@ class BasicShapeComponent(RenderComponent):
 
         return cls(shape_type, size, color, outline_color, outline_width)
 
-    def render(self, surface) -> None:
-        assert self.game_object is not None, "Component must be attached to GameObject"
-        transform = self.game_object.transform
+    def render(self, surface, viewport=None) -> None:
+        transform = self.parent.transform
         pos = transform.position
-        x, y = int(pos.x), int(pos.y)
+        if viewport is not None:
+            screen_pos = viewport.world_to_screen(pos)
+            x, y = int(screen_pos.x), int(screen_pos.y)
+            scale = viewport.scale
+        else:
+            x, y = int(pos.x), int(pos.y)
+            scale = 1.0
 
         if self.shape_type == "circle":
-            assert isinstance(self.size, int), "Size must be an int for circle shape"
-            radius = int(self.size)
-            pygame.draw.circle(surface, hex_to_rgb(self.color), (x, y), radius)
+            assert isinstance(self.size, float), "Size must be a float for circle shape"
+            radius = int(self.size * scale)
+            pygame.draw.circle(
+                surface, RenderOps.hex_to_rgb(self.color), (x, y), radius
+            )
             if self.outline_color:
                 pygame.draw.circle(
                     surface,
-                    hex_to_rgb(self.outline_color),
+                    RenderOps.hex_to_rgb(self.outline_color),
                     (x, y),
                     radius,
                     self.outline_width,
@@ -105,13 +112,24 @@ class BasicShapeComponent(RenderComponent):
                 scene_corner = transform.position + corner_rotated
                 scene_corners.append(scene_corner)
 
-            points = [(int(corner.x), int(corner.y)) for corner in scene_corners]
+            if viewport is not None:
+                points = [
+                    (
+                        int(screen_corner.x),
+                        int(screen_corner.y),
+                    )
+                    for screen_corner in (
+                        viewport.world_to_screen(corner) for corner in scene_corners
+                    )
+                ]
+            else:
+                points = [(int(corner.x), int(corner.y)) for corner in scene_corners]
 
-            pygame.draw.polygon(surface, hex_to_rgb(self.color), points)
+            pygame.draw.polygon(surface, RenderOps.hex_to_rgb(self.color), points)
             if self.outline_color:
                 pygame.draw.polygon(
                     surface,
-                    hex_to_rgb(self.outline_color),
+                    RenderOps.hex_to_rgb(self.outline_color),
                     points,
                     self.outline_width,
                 )

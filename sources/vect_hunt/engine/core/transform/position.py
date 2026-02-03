@@ -1,4 +1,5 @@
 import math
+
 from vect_hunt.engine.core.math.vector import Vector2D
 
 

@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from collections import OrderedDict
 from pathlib import Path
 from typing import Any
@@ -66,6 +64,7 @@ class BaseLoader:
         relative_path: str,
         allowed_extensions: set[str] | None = None,
         max_bytes: int = 1 * 1024 * 1024,
+        must_be_file: bool = True,
     ) -> Path:
         """
         Resolve et valide un chemin relatif dans un dossier racine.
@@ -123,10 +122,10 @@ class BaseLoader:
         if not candidate.exists():
             raise FileNotFoundError(f"Ressource introuvable: {candidate}")
 
-        if not candidate.is_file():
+        if must_be_file and not candidate.is_file():
             raise FileNotFoundError(f"Ressource invalide (pas un fichier): {candidate}")
 
-        if max_bytes is not None:
+        if max_bytes is not None and must_be_file:
             cls._raise_if_too_large(candidate, max_bytes)
 
         current = root

@@ -1,7 +1,6 @@
 import pytest
-
-from vect_hunt.engine.core import Vector2D
 from vect_hunt.engine.components.physic_body_component import PhysicBodyComponent
+from vect_hunt.engine.core import Vector2D
 from vect_hunt.engine.objects import GameObject
 
 

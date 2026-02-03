@@ -1,4 +1,5 @@
 import math
+
 import pytest
 from vect_hunt.engine.core import Vector2D
 from vect_hunt.engine.core.transform.rotation import Rotation
@@ -126,11 +127,11 @@ def test_rotation_to_angle(angle):
 @pytest.mark.parametrize(
     "angle, normal_x, normal_y, expected_x, expected_y",
     [
-        (0, 0, -1, 0, 1),  # perpendiculaire vers bas → haut
-        (math.pi / 4, 0, -1, math.sqrt(2) / 2, math.sqrt(2) / 2),
-        (-math.pi / 4, 0, -1, -math.sqrt(2) / 2, math.sqrt(2) / 2),
-        (math.pi / 2, -1, 0, -1, 0),  # droite → gauche après réflexion
-        (math.pi / 4, -1, 0, -math.sqrt(2) / 2, -math.sqrt(2) / 2),
+        (0, 0, -1, 0, -1),  # vers haut → reflet vers bas
+        (math.pi / 4, 0, -1, -math.sqrt(2) / 2, -math.sqrt(2) / 2),
+        (-math.pi / 4, 0, -1, math.sqrt(2) / 2, -math.sqrt(2) / 2),
+        (math.pi / 2, -1, 0, 1, 0),  # gauche → droite après réflexion
+        (math.pi / 4, -1, 0, math.sqrt(2) / 2, math.sqrt(2) / 2),
     ],
 )
 def test_rotation_reflect(angle, normal_x, normal_y, expected_x, expected_y):
@@ -141,14 +142,14 @@ def test_rotation_reflect(angle, normal_x, normal_y, expected_x, expected_y):
     et frappe une surface (définie par sa normale), la nouvelle direction
     est calculée comme si l'objet rebondissait sur cette surface.
 
-    Le test applique la rotation initiale au vecteur de référence (0, -1)
-    qui pointe vers le bas, puis vérifie que la direction réfléchie
+    Le test applique la rotation initiale au vecteur de référence (0, 1)
+    qui pointe vers le haut, puis vérifie que la direction réfléchie
     correspond aux valeurs attendues.
     """
     rot = Rotation(angle)
     normal = Vector2D(normal_x, normal_y)
     reflected = rot.reflect(normal)
-    reflected_dir = reflected.apply(Vector2D(0, -1))
+    reflected_dir = reflected.apply(Vector2D(0, 1))
 
     tol = 1e-6
     assert math.isclose(reflected_dir.x, expected_x, abs_tol=tol)

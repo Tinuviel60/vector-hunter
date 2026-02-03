@@ -1,10 +1,12 @@
+import inspect
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, ClassVar
-import inspect
+import logging
 
 if TYPE_CHECKING:
     from vect_hunt.engine.objects.game_object import GameObject
 
+logger = logging.getLogger(__name__)
 
 class Component(ABC):
     """
@@ -27,7 +29,9 @@ class Component(ABC):
     """
 
     component_name: ClassVar[str] = "Component"
+    component_families: ClassVar[set[str]] = set()
     _name_registry: ClassVar[dict[str, type["Component"]]] = {}
+    _next_id: int = 1  # Compteur de classe pour générer des IDs uniques
 
     def __init_subclass__(cls, **kwargs: Any) -> None:
         """
@@ -70,6 +74,40 @@ class Component(ABC):
 
         Component._name_registry[component_name] = cls
 
+        # --- Construction des familles ---
+        families: set[str] = set()
+
+        # 1) Hériter des familles des parents
+        for base in cls.__mro__[1:]:
+            if issubclass(base, Component):
+                families.update(getattr(base, "component_families", set()))
+                families.add(getattr(base, "component_name", ""))
+
+        # 2) Ajouter son propre nom
+        families.add(component_name)
+
+        # Nettoyage (None possible pour Component)
+        families.discard("")
+
+        cls.component_families = families
+        logger.info(f"Registered Component: {cls.__name__} as '{component_name}' with families {families}")
+
+    @property
+    def parent(self) -> "GameObject":
+        """
+        Retourne le GameObject parent.
+
+        Ce composant doit être attaché avant utilisation.
+
+        Returns
+        -------
+        GameObject
+            Le GameObject auquel ce composant est attaché.
+        """
+        if self.game_object is None:
+            raise RuntimeError("Component not attached to any GameObject")
+        return self.game_object
+
     @classmethod
     def get_registered_components(cls) -> dict[str, type["Component"]]:
         """
@@ -90,6 +128,9 @@ class Component(ABC):
         """
         self.game_object: "GameObject | None" = None
         self.active: bool = True
+
+        self.id = Component._next_id
+        Component._next_id += 1
 
     def on_attach(self, game_object: "GameObject") -> None:
         """
@@ -183,3 +224,20 @@ class Component(ABC):
         raise NotImplementedError(
             "Cette methode doit etre implementee dans les sous-classes."
         )
+
+    def awake(self) -> None:
+        """
+        Appelé une fois après que tous les composants du GameObject
+        ont été attachés.
+
+        Permet des initialisations dépendant d'autres composants.
+        """
+        pass
+
+    def start(self) -> None:
+        """
+        Appelé une fois avant la première mise à jour (update).
+
+        Permet des initialisations finales avant le début du cycle de vie.
+        """
+        pass

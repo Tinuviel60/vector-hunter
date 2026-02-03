@@ -15,13 +15,13 @@
         "is_controlled": false,
         "mass": 1.0,
         "use_gravity": false,
-        "material": "materials/stone.json"
+        "material": "default.json"
       }
     },
     {
       "component": "box_collider",
       "data": {
-        "width": 1000.0,
+        "width": 1100.0,
         "height": 20.0,
         "solid": true,
         "transform": {
@@ -36,7 +36,7 @@
         "type": "basic_shape",
         "shape": "rectangle",
         "color": "#888888",
-        "width": 1000,
+        "width": 1100,
         "height": 20,
         "outline_color": "#444444",
         "outline_width": 2

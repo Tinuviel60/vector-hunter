@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from enum import Enum, auto
-from typing import Optional, List, Dict, Any, Union
+from typing import Any, Dict, List, Optional, Union
 
-from vect_hunt.engine.core.math import Vector2D
+from vect_hunt.engine.core.math.vector import Vector2D
 
 """Définition des types d'actions d'input."""
 

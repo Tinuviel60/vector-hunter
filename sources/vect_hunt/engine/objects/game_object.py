@@ -1,6 +1,7 @@
-from typing import List, Optional, TypeVar, TYPE_CHECKING
-from vect_hunt.engine.core import Tag
-from vect_hunt.engine.core.transform import Transform
+from typing import TYPE_CHECKING, List, Optional, TypeVar
+
+from vect_hunt.engine.core.tag import Tag
+from vect_hunt.engine.core.transform.transform import Transform
 
 if TYPE_CHECKING:
     from vect_hunt.engine.components.component import Component
@@ -36,9 +37,7 @@ class GameObject:
 
     _next_id: int = 1  # Compteur de classe pour générer des IDs uniques
 
-    def __init__(
-        self, name: str, transform: Optional[Transform] = None, tags: Tag = Tag.NONE
-    ):
+    def __init__(self, name: str, transform: Optional[Transform], tags: Tag = Tag.NONE):
         """
         Initialise un GameObject.
 
@@ -57,7 +56,7 @@ class GameObject:
 
         # Implementation des attributs
         self.name = name
-        self.transform = transform if transform is not None else Transform()
+        self.transform: Transform = transform if transform is not None else Transform()
         self.active = True
         self.tags = tags
 
@@ -103,7 +102,7 @@ class GameObject:
             component.on_detach()
             self.components.remove(component)
 
-    def get_component(self, component_type: type[T]) -> Optional[T]:
+    def get_component(self, name: str) -> "Component | None":
         """
         Récupère le premier composant d'un type donné attaché à ce GameObject.
 
@@ -112,39 +111,62 @@ class GameObject:
 
         Parameters
         ----------
-        component_type : type[T]
-            Le type de composant recherché.
+        name : str
+            Le nom du composant recherché.
 
         Returns
         -------
-        T or None
+        Component | None
             Le premier composant du type spécifié, ou None si aucun
             composant de ce type n'est trouvé.
         """
         for comp in self.components:
-            if isinstance(comp, component_type):
+            if name in comp.component_families:
                 return comp
         return None
 
-    def get_components(self, component_type: type[T]) -> List[T]:
+    def get_components(self, name: str) -> List["Component"]:
         """
         Récupère tous les composants d'un type donné attachés à ce GameObject.
 
         Cette méthode est utile lorsque plusieurs composants du même type
-        peuvent être attachés (par exemple, plusieurs Collider).
+        peuvent être attachés (par exemple, plusieurs "Collider").
 
         Parameters
         ----------
-        component_type : type[T]
-            Le type de composant recherché.
+        name : str
+            Le nom du composant recherché.
 
         Returns
         -------
-        List[T]
+        List["Component"]
             Liste de tous les composants du type spécifié. La liste est
             vide si aucun composant de ce type n'est trouvé.
         """
-        return [comp for comp in self.components if isinstance(comp, component_type)]
+        components = [c for c in self.components if name in c.component_families]
+        return components
+
+    # def get_all_components_id(self) -> List[int]:
+    #     """
+    #     Récupère les IDs de tous les composants attachés à ce GameObject.
+
+    #     Returns
+    #     -------
+    #     List[int]
+    #         Liste des IDs des composants.
+    #     """
+    #     return [comp.id for comp in self.components]
+    
+    def get_all_components(self) -> List["Component"]:
+        """
+        Récupère tous les composants attachés à ce GameObject.
+
+        Returns
+        -------
+        List["Component"]
+            Liste des composants.
+        """
+        return self.components
 
     def add_tag(self, tag: Tag) -> None:
         """

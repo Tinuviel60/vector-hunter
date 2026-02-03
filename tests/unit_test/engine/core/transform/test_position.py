@@ -1,7 +1,5 @@
 import pytest
-
-from vect_hunt.engine.core import Position2D
-from vect_hunt.engine.core import Vector2D
+from vect_hunt.engine.core import Position2D, Vector2D
 
 
 # --------------------

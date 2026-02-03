@@ -1,30 +1,23 @@
-"""
-Factory pour creer des GameObjects depuis des templates JSON.
-"""
-
-from __future__ import annotations
-
 import logging
 import math
-from typing import Any, Optional, TYPE_CHECKING
-
-from vect_hunt.engine.core import Tag
-from vect_hunt.engine.core.math import Vector2D
-from vect_hunt.engine.core.transform import Transform
-from vect_hunt.engine.resources.loaders.data_loader import DataLoader
+from typing import TYPE_CHECKING, Any, Optional
 
 from vect_hunt.engine.components.component import Component
+from vect_hunt.engine.core.math.vector import Vector2D
+from vect_hunt.engine.core.tag import Tag
+from vect_hunt.engine.core.transform.transform import Transform
+
 from .game_object import GameObject
 
 if TYPE_CHECKING:
-    from vect_hunt.engine.input import InputSystem
+    from vect_hunt.engine.input.input_system import InputSystem
 
 logger = logging.getLogger(__name__)
 
 
 class GameObjectFactory:
     """
-    Factory responsable de la creation de GameObjects depuis des templates.
+    Factory responsable de la creation de GameObjects depuis des templates JSON.
 
     Format attendu :
     {
@@ -39,7 +32,13 @@ class GameObjectFactory:
     }
     """
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        templates: dict[str, dict[str, Any]] | None = None,
+        materials: dict[str, dict[str, Any]] | None = None,
+    ) -> None:
+        self._templates = templates or {}
+        self._materials = materials or {}
         self._registry = Component.get_registered_components()
         for key in self._registry:
             logger.debug(f"Component registered in GameObjectFactory: {key}")
@@ -51,14 +50,32 @@ class GameObjectFactory:
         rotation: Optional[float] = None,
         input_system: Optional["InputSystem"] = None,
     ) -> GameObject:
-        template = DataLoader.load_json(f"templates/{template_path}")
+        template = self._templates.get(template_path)
+        if template is None:
+            raise FileNotFoundError(
+                f"Template introuvable dans le registre: {template_path}"
+            )
 
         game_object = self._create_base_object(template, position, rotation)
 
-        context = {"input_system": input_system}
+        context = {"input_system": input_system, "materials": self._materials}
         self._add_components(game_object, template, context)
 
+        self._awake_game_object(game_object)
+
         return game_object
+
+    def _awake_game_object(self, game_object: GameObject) -> None:
+        """
+        Appelle la méthode awake de tous les composants du GameObject.
+
+        Parameters
+        ----------
+        game_object : GameObject
+            Le GameObject dont les composants doivent être réveillés.
+        """
+        for component in game_object.components:
+            component.awake()
 
     def _create_base_object(
         self,

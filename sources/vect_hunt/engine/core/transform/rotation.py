@@ -67,6 +67,68 @@ class Rotation:
             vector.x * self.m10 + vector.y * self.m11,
         )
 
+    def apply_inverse(self, vector: Vector2D) -> Vector2D:
+        """
+        Applique la rotation inverse à un vecteur 2D.
+
+        Parameters
+        ----------
+        vector : Vector2D
+            Le vecteur à faire tourner inversement.
+
+        Returns
+        -------
+        Vector2D
+            Le vecteur résultant après application de la rotation inverse.
+        """
+        return Vector2D(
+            vector.x * self.m00 + vector.y * self.m10,
+            vector.x * self.m01 + vector.y * self.m11,
+        )
+
+    def apply_xy(self, x: float, y: float) -> tuple[float, float]:
+        """
+        Applique la rotation à des composantes x/y sans créer de Vector2D intermédiaire.
+
+        Parameters
+        ----------
+        x : float
+            Composante x.
+        y : float
+            Composante y.
+
+        Returns
+        -------
+        tuple[float, float]
+            Les composantes (x', y') après rotation.
+        """
+        return (
+            x * self.m00 + y * self.m01,
+            x * self.m10 + y * self.m11,
+        )
+
+    def apply_inverse_xy(self, x: float, y: float) -> tuple[float, float]:
+        """
+        Applique la rotation inverse à des composantes x/y sans créer de
+        Vector2D intermédiaire.
+
+        Parameters
+        ----------
+        x : float
+            Composante x.
+        y : float
+            Composante y.
+
+        Returns
+        -------
+        tuple[float, float]
+            Les composantes (x', y') après rotation inverse.
+        """
+        return (
+            x * self.m00 + y * self.m10,
+            x * self.m01 + y * self.m11,
+        )
+
     def inverse(self) -> "Rotation":
         """
         Retourne la rotation inverse.
@@ -104,7 +166,7 @@ class Rotation:
 
         Returns
         -------
-        Rotation
+        RotationA
             La rotation résultante de la composition.
         """
         result = Rotation.__new__(Rotation)
@@ -113,7 +175,9 @@ class Rotation:
         result.m01 = self.m00 * other.m01 + self.m01 * other.m11
         result.m10 = self.m10 * other.m00 + self.m11 * other.m10
         result.m11 = self.m10 * other.m01 + self.m11 * other.m11
-        result._angle = self._angle + other._angle
+
+        # Recalcul exact de l’angle depuis la matrice
+        result._angle = math.atan2(result.m10, result.m00)
 
         return result
 
@@ -128,6 +192,18 @@ class Rotation:
             Angle de rotation en radians.
         """
         return self._angle
+
+    @property
+    def angle_degrees(self) -> float:
+        """
+        Retourne l'angle équivalent de la rotation.
+
+        Returns
+        -------
+        float
+            Angle de rotation en degrés.
+        """
+        return math.degrees(self._angle)
 
     def reflect(self, normal: Vector2D) -> "Rotation":
         """
@@ -161,9 +237,9 @@ class Rotation:
         reflected = Vector2D(reflected_x, reflected_y)
 
         # Calculer l'angle de la nouvelle direction
-        new_angle = (
-            math.atan2(reflected.y, reflected.x) + math.pi / 2
-        )  # +π/2 car forward est (0, -1)
+        # Convertit l'angle "direction" (repère X) vers un angle de rotation
+        # dont l'axe forward est Vector2D.top() (repère Y-up).
+        new_angle = math.atan2(reflected.y, reflected.x) - math.pi / 2
 
         reflected_rotation = Rotation(new_angle)
         return reflected_rotation

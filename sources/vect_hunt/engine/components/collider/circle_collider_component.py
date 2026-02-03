@@ -1,30 +1,36 @@
-import math
 from typing import Any, Optional
 
-from vect_hunt.engine.core.math import Vector2D
-from vect_hunt.engine.core.transform import Transform
+from vect_hunt.engine.core.geometries.circle_shape import CircleShape
+from vect_hunt.engine.core.math.vector import Vector2D
+from vect_hunt.engine.core.transform.transform import Transform
 
 from .collider_component import ColliderComponent
 
 
 class CircleColliderComponent(ColliderComponent):
     """
-    Classe de collider circulaire.
-    Utilisee dans les systemes de collision pour definir des zones circulaires.
+    Collider circulaire.
+    Utilisée dans les systèmes de collision pour définir des zones circulaires.
+
+    Wrapper pratique autour d'une CircleShape pour :
+    - sérialisation JSON
+    - component_name explicite
+    - validations spécifiques
 
     Attributes
     ----------
     game_object : GameObject | None
         GameObject parent du collider.
-    radius : float
-        Rayon du cercle.
-    center : Vector2D
-        Centre du cercle par rapport au GameObject parent.
+    shape : CircleShape
+        Forme cercle locale associée au collider.
+    transform : Transform
+        Transform local du collider.
     solid : bool
-        Indique si le collider est solide.
+        True = collision solide, False = trigger.
     """
 
     component_name = "circle_collider"
+    shape: CircleShape
 
     def __init__(
         self,
@@ -34,10 +40,10 @@ class CircleColliderComponent(ColliderComponent):
     ):
         if center is None:
             center = Vector2D(0, 0)
-        transform = Transform(center)
-        self.radius = radius
 
-        super().__init__(transform, solid)
+        transform = Transform(center)
+        shape = CircleShape(radius=radius)
+        super().__init__(shape=shape, transform=transform, solid=solid)
 
     @classmethod
     def from_data(
@@ -61,34 +67,46 @@ class CircleColliderComponent(ColliderComponent):
         transform_data = data.get("transform", {})
         position_data = transform_data.get("position", [0, 0])
         center = Vector2D(position_data[0], position_data[1])
+
         return cls(
             center=center,
             radius=data.get("radius", 5.0),
             solid=data.get("solid", True),
         )
 
-    def get_area(self):
+    def get_scene_aabb(self) -> tuple[Vector2D, Vector2D]:
         """
-        Calcule et retourne l'aire du cercle.
+        Obtient l'AABB du cercle dans le système de coordonnées de la scène.
 
         Returns
         -------
-        float
-            Aire du cercle.
+        tuple[Vector2D, Vector2D]
+            Coin inférieur gauche et coin supérieur droit de l'AABB mondiale.
         """
-        return math.pi * (self.radius**2)
+        if self._aabb_version == self.parent.transform._version:
+            return self._cached_world_aabb
 
-    def get_geometry(self) -> dict:
-        """
-        Retourne la géométrie du collider sous forme de dictionnaire.
+        scene_center = self.get_scene_transform().position
+        radius = self.shape.radius
 
-        Returns
-        -------
-        dict
-            Dictionnaire représentant la géométrie du cercle.
+        min_x = scene_center.x - radius
+        min_y = scene_center.y - radius
+        max_x = scene_center.x + radius
+        max_y = scene_center.y + radius
+
+        self._cached_world_aabb = (Vector2D(min_x, min_y), Vector2D(max_x, max_y))
+        self._aabb_version = self.parent.transform._version
+
+        return self._cached_world_aabb
+
+    def update(self, delta_time: float) -> None:
         """
-        return {
-            "type": "circle",
-            "center": self.transform.position,
-            "radius": self.radius,
-        }
+        Met a jour le collider si necessaire.
+
+        Parameters
+        ----------
+        delta_time : float
+            Temps écoulé depuis la dernière frame (en secondes).
+        """
+
+        pass

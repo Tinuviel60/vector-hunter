@@ -4,8 +4,11 @@
   "debug": {
     "draw_colliders": true,
     "print_names": true,
+    "draw_grid": true,
+    "grid_spacing_pixels": 100.0,
     "print_fps": false,
-    "collider_color": "#00FF00",
+    "color_for_valid": "#00FF00",
+    "color_for_invalid": "#FF0000",
     "collider_thickness": 2
   }
 }

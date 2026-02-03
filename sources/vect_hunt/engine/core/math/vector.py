@@ -1,8 +1,9 @@
+import logging
 import math
-from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from vect_hunt.engine.core.transform.rotation import Rotation
+from .tolerance import Tolerence
+
+logger = logging.getLogger(__name__)
 
 
 class Vector2D:
@@ -80,22 +81,29 @@ class Vector2D:
         Vector2D
             Le vecteur normalisé.
         """
-        mag = self.magnitude()
-        if mag == 0:
-            return Vector2D(0, 0)
-        return Vector2D(self._x / mag, self._y / mag)
+        mag2 = self.magnitude_squared()
+        if mag2 <= Tolerence.GENERAL * Tolerence.GENERAL:
+            return Vector2D(1, 0)
+
+        # Manipulation pour éviter une racine carrée inutile et des divisions
+        inv_mag = 1.0 / math.sqrt(mag2)
+        return Vector2D(self._x * inv_mag, self._y * inv_mag)
 
     def normalize(self) -> None:
         """
         Normalise le vecteur (le rend de longueur 1).
         """
-        mag = self.magnitude()
-        if mag == 0:
-            self._x = 0.0
+        mag2 = self.magnitude_squared()
+        if mag2 <= Tolerence.GENERAL * Tolerence.GENERAL:
+            logger.warning("Normalisation d'un vecteur de magnitude nulle.")
+            self._x = 1.0
             self._y = 0.0
             return
-        self._x /= mag
-        self._y /= mag
+
+        # Manipulation pour éviter une racine carrée inutile et des divisions
+        inv_mag = 1.0 / math.sqrt(mag2)
+        self._x *= inv_mag
+        self._y *= inv_mag
 
     def normal(self) -> "Vector2D":
         """
@@ -123,6 +131,22 @@ class Vector2D:
             Le produit scalaire des deux vecteurs.
         """
         return self._x * other._x + self._y * other._y
+
+    def cross(self, other: "Vector2D") -> float:
+        """
+        Calcule le produit vectoriel (croisé) entre ce vecteur et un autre.
+
+        Parameters
+        ----------
+        other : Vector2D
+            Le vecteur avec lequel calculer le produit vectoriel.
+
+        Returns
+        -------
+        float
+            Le produit vectoriel des deux vecteurs.
+        """
+        return self._x * other._y - self._y * other._x
 
     @property
     def x(self) -> float:
@@ -197,28 +221,6 @@ class Vector2D:
         """
         return (self._x, self._y)
 
-    @staticmethod
-    def from_direction(direction: "Rotation") -> "Vector2D":
-        """
-        Crée un vecteur unitaire à partir d'une direction (rotation).
-
-        Utilise la première colonne de la matrice de rotation, qui correspond
-        à l'axe X transformé (direction de la rotation).
-
-        Parameters
-        ----------
-        direction : Rotation
-            La rotation à partir de laquelle créer le vecteur unitaire.
-
-        Returns
-        -------
-        Vector2D
-            Vecteur unitaire correspondant à la direction de rotation.
-        """
-        # Applique la rotation au vecteur unitaire (1,0)
-        v = Vector2D(1.0, 0.0)
-        return direction.apply(v)
-
     def __add__(self, other: "Vector2D") -> "Vector2D":
         """
         Additionne deux vecteurs.
@@ -250,6 +252,17 @@ class Vector2D:
             Le vecteur résultant de la soustraction.
         """
         return Vector2D(self._x - other._x, self._y - other._y)
+
+    def __neg__(self) -> "Vector2D":
+        """
+        Renvoie l'opposé du vecteur.
+
+        Returns
+        -------
+        Vector2D
+            Le vecteur inversé (-x, -y).
+        """
+        return Vector2D(-self._x, -self._y)
 
     def __mul__(self, scalar: float) -> "Vector2D":
         """
@@ -327,24 +340,14 @@ class Vector2D:
             True si les vecteurs sont égaux, False sinon.
         """
 
-        return math.isclose(self._x, other._x) and math.isclose(self._y, other._y)
+        return math.isclose(
+            self._x, other._x, rel_tol=Tolerence.GENERAL
+        ) and math.isclose(self._y, other._y, rel_tol=Tolerence.GENERAL)
 
     @staticmethod
     def top() -> "Vector2D":
         """
-        Retourne le vecteur unitaire pointant vers le haut (0, -1).
-
-        Returns
-        -------
-        Vector2D
-            Vecteur unitaire (0, -1).
-        """
-        return Vector2D(0.0, -1.0)
-
-    @staticmethod
-    def bottom() -> "Vector2D":
-        """
-        Retourne le vecteur unitaire pointant vers le bas (0, 1).
+        Retourne le vecteur unitaire pointant vers le haut (0, 1).
 
         Returns
         -------
@@ -352,6 +355,18 @@ class Vector2D:
             Vecteur unitaire (0, 1).
         """
         return Vector2D(0.0, 1.0)
+
+    @staticmethod
+    def bottom() -> "Vector2D":
+        """
+        Retourne le vecteur unitaire pointant vers le bas (0, -1).
+
+        Returns
+        -------
+        Vector2D
+            Vecteur unitaire (0, -1).
+        """
+        return Vector2D(0.0, -1.0)
 
     @staticmethod
     def left() -> "Vector2D":
@@ -376,3 +391,49 @@ class Vector2D:
             Vecteur unitaire (1, 0).
         """
         return Vector2D(1.0, 0.0)
+
+    def __iadd__(self, other: "Vector2D") -> "Vector2D":
+        """
+        Addition en place de deux vecteurs.
+
+        Modifie ce vecteur sans créer de nouvel objet.
+
+        Parameters
+        ----------
+        other : Vector2D
+            Vecteur à ajouter.
+
+        Returns
+        -------
+        Vector2D
+            Référence sur ce vecteur modifié.
+        """
+        self._x += other._x
+        self._y += other._y
+        return self
+
+    def __isub__(self, other: "Vector2D") -> "Vector2D":
+        """
+        Soustraction en place de deux vecteurs.
+        """
+        self._x -= other._x
+        self._y -= other._y
+        return self
+
+    def __imul__(self, scalar: float) -> "Vector2D":
+        """
+        Multiplication scalaire en place.
+        """
+        self._x *= scalar
+        self._y *= scalar
+        return self
+
+    def __itruediv__(self, scalar: float) -> "Vector2D":
+        """
+        Division scalaire en place.
+        """
+        if scalar == 0:
+            raise ValueError("Division par zéro dans Vector2D.__itruediv__")
+        self._x /= scalar
+        self._y /= scalar
+        return self

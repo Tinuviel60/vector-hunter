@@ -1,86 +1,191 @@
-from vect_hunt.engine.scenes import Scene, SceneFactory
-from vect_hunt.engine.rendering import Renderer
-from vect_hunt.engine.objects import GameObject
-from vect_hunt.engine.resources.loaders.data_loader import DataLoader
-from vect_hunt.engine.simulation import SimulationScheduler
+# vect_hunt/game/game_main.py
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Any
 
 import pygame
+from vect_hunt.engine.core.tag_system import TagSystem
+from vect_hunt.engine.objects.game_object_factory import GameObjectFactory
+from vect_hunt.engine.rendering.font.font_system import FontSystem
+from vect_hunt.engine.rendering.renderer import Renderer
+from vect_hunt.engine.scenes.scene import Scene
+from vect_hunt.engine.scenes.scene_factory import SceneFactory
+from vect_hunt.engine.simulation.simulation_scheduler import SimulationScheduler
+
+if TYPE_CHECKING:
+    from vect_hunt.engine.objects.game_object import GameObject
+    from vect_hunt.engine.resources.resource_registry import ResourceRegistry
+
+
+@dataclass(frozen=True)
+class GameWiring:
+    """
+    Objet de composition contenant les dépendances "moteur" déjà assemblées.
+
+    Cet objet évite d'avoir un gros dict global diffusé partout, et rend
+    explicite ce qui est injecté dans Game.
+
+    Attributes
+    ----------
+    scene : Scene
+        Scène active.
+    tag_system : TagSystem
+        Système de tags/collisions (mapping chargé depuis config).
+    simulation_scheduler : SimulationScheduler
+        Orchestrateur de la simulation (inputs + systèmes physiques).
+    """
+
+    scene: Scene
+    tag_system: TagSystem
+    simulation_scheduler: SimulationScheduler
 
 
 class Game:
     """
     Classe principale du jeu.
 
-    Gère l'initialisation, la boucle d'update, et le rendu.
+    Cette classe ne fait pas de lecture de fichiers ni d'accès à l'infrastructure.
+    Elle reçoit des objets déjà construits (scene, scheduler, etc.) et orchestre
+    update/render.
 
     Attributes
     ----------
     start_render : bool
         Indique si le rendu a été initialisé.
     gameObjects : dict[str, GameObject]
-        Dictionnaire des objets de jeu du gameplay.
+        Dictionnaire d'objets de gameplay (optionnel / futur usage).
     scene : Scene
-        Scène de jeu contenant les objets.
+        Scène active.
     simulation_scheduler : SimulationScheduler
         Orchestrateur de la simulation.
     renderer : Renderer | None
-        Renderer associé, défini après initiate_rendering.
+        Renderer (initialisé via initiate_rendering).
     """
 
-    def __init__(self):
+    def __init__(self, wiring: GameWiring, configs: dict[str, dict[str, Any]]) -> None:
         """
-        Initialize le jeu pour la partie.
+        Initialise le jeu avec ses dépendances déjà assemblées.
 
+        Parameters
+        ----------
+        wiring : GameWiring
+            Dépendances moteur prêtes (scene, tag_system, scheduler).
+        configs : dict[str, dict[str, Any]]
+            Configurations JSON déjà chargées (renderer/fonts/inputs/etc.).
         """
         self.start_render: bool = False
         self.renderer: Renderer | None = None
 
         self.gameObjects: dict[str, GameObject] = {}
-        self.initialize()
 
-    def initialize(self) -> None:
-        """
-        Initialise les composants du jeu.
-        """
-        self.scene = Scene.from_data(
-            {"units": DataLoader.load_json("configs/units.json")}
-        )
-        self.simulation_scheduler = SimulationScheduler(self.scene)
+        self.scene: Scene = wiring.scene
+        self.tag_system: TagSystem = wiring.tag_system
+        self.simulation_scheduler: SimulationScheduler = wiring.simulation_scheduler
 
-        factory = SceneFactory()
-        self.scene = factory.from_template(
-            "level_00.json",
-            input_system=self.simulation_scheduler.input_system,
+        self._configs = configs
+
+    @classmethod
+    def from_resources(cls, resources: "ResourceRegistry", level_name: str) -> "Game":
+        """
+        Construit un Game à partir d'un ResourceRegistry (données en mémoire).
+
+        Cette méthode centralise l'assemblage (factories/systèmes) et évite
+        de disperser la logique d'initialisation dans __init__ ou update/render.
+
+        Parameters
+        ----------
+        resources : ResourceRegistry
+            Registre des ressources JSON déjà chargées.
+        level_name : str
+            Nom du fichier de niveau (ex: "level_00.json").
+
+        Returns
+        -------
+        Game
+            Instance du jeu prête à être utilisée (hors rendu Pygame).
+        """
+        # 1) Construire TagSystem depuis la config collision (mapping tags/collisions)
+        collision_config = resources.configs["collision.json"]
+        tag_system = TagSystem(collision_config)
+
+        # 2) Charger la scène via SceneFactory (pas de "pré-scène" temporaire)
+        #    On crée d'abord un scheduler avec une scène temporaire minimale,
+        #    puis on réinjecte la scène finale dans le scheduler. (Voir note plus bas)
+        #
+        # TODO : Revenir voir plus tard pour améliorer cette étape.
+        # NOTE: Si ton SimulationScheduler peut être instancié sans Scene, ou accepter
+        # un setter unique "set_scene(scene)" qui propage proprement, c'est mieux.
+        # Ici on reste compatible avec ton moteur actuel.
+
+        # Scène minimale (pour init scheduler/input_system)
+        base_units = resources.scenes[level_name]["scene"]["units"]
+        bootstrap_scene = Scene.from_data({"units": base_units})
+
+        simulation_scheduler = SimulationScheduler(
+            bootstrap_scene,
+            input_config=resources.configs["inputs.json"],
+            tag_system=tag_system,
         )
-        self.simulation_scheduler.scene = self.scene
-        self.simulation_scheduler.collision_resolution_system.scene = self.scene
+
+        # Factories (utilisent des dicts JSON déjà en mémoire)
+        game_object_factory = GameObjectFactory(
+            templates=resources.templates,
+            materials=resources.materials,
+        )
+        scene_factory = SceneFactory(
+            game_object_factory=game_object_factory,
+            scenes=resources.scenes,
+        )
+
+        # Scène finale (les GameObjects peuvent recevoir input_system via context)
+        final_scene = scene_factory.from_template(
+            level_name,
+            input_system=simulation_scheduler.input_system,
+        )
+
+        # Réinjection propre (garde la compatibilité avec ton code actuel)
+        simulation_scheduler.scene = final_scene
+        simulation_scheduler.collision_resolution_system.scene = final_scene
+
+        wiring = GameWiring(
+            scene=final_scene,
+            tag_system=tag_system,
+            simulation_scheduler=simulation_scheduler,
+        )
+        return cls(wiring=wiring, configs=resources.configs)
 
     def initiate_rendering(self, screen: pygame.Surface) -> None:
         """
-        Démarre le rendu graphique du jeu.
+        Initialise le rendu graphique du jeu.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         screen : pygame.Surface
-            La surface Pygame où le jeu sera rendu.
+            Surface Pygame sur laquelle dessiner.
         """
-        self.renderer = Renderer(screen)
+        font_system = FontSystem(self._configs["fonts.json"])
+        self.renderer = Renderer(screen, self._configs["renderer.json"], font_system)
+        self.simulation_scheduler.input_system.set_mouse_origin_y(
+            self.renderer.viewport.origin.y
+        )
         self.start_render = True
 
     def update(self, delta_time: float) -> None:
         """
         Met à jour la logique du jeu.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         delta_time : float
-            Le temps écoulé depuis la dernière mise à jour (en secondes).
+            Temps écoulé depuis la dernière mise à jour (secondes).
         """
         self.simulation_scheduler.update(delta_time)
 
     def render(self) -> None:
         """
-        Rendu graphique du jeu.
+        Dessine l'état courant du jeu.
         """
         if self.renderer is None:
             return

@@ -1,10 +1,10 @@
-from vect_hunt.engine.core.math import Vector2D
-from vect_hunt.engine.components.physic_body_component import PhysicBodyComponent
+from typing import TYPE_CHECKING, cast
 
-from typing import TYPE_CHECKING
+from vect_hunt.engine.core.math.vector import Vector2D
 
 if TYPE_CHECKING:
     from vect_hunt.engine.scenes.scene import Scene
+    from vect_hunt.engine.components.physic_body_component import PhysicBodyComponent
 
 
 class ExternalForcesSystem:
@@ -36,8 +36,10 @@ class ExternalForcesSystem:
             if not game_object.active:
                 continue
 
-            body = game_object.get_component(PhysicBodyComponent)
+            body = cast("PhysicBodyComponent | None", game_object.get_component("physic_body"))
             if body is None:
+                continue
+            if body.is_sleeping:
                 continue
 
             if body.use_gravity and not body.is_kinematic:
@@ -45,5 +47,5 @@ class ExternalForcesSystem:
                 units = scene.units
                 gravity_m_s2 = units.get("gravity_m_s2", 9.81)
                 pixels_per_meter = units.get("pixels_per_meter", 100.0)
-                gravity_accel = Vector2D(0, gravity_m_s2 * pixels_per_meter)
+                gravity_accel = Vector2D(0, -gravity_m_s2 * pixels_per_meter)
                 body.add_acceleration(gravity_accel)

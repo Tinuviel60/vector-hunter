@@ -1,14 +1,23 @@
 {
-    "python.defaultInterpreterPath": "venv/bin/python",
+    "python.defaultInterpreterPath": "/venv/bin/python",
     "python.languageServer": "Pylance",
     "python.analysis.typeCheckingMode": "basic",
     "python.analysis.autoSearchPaths": true,
     "python.analysis.useLibraryCodeForTypes": true,
-    "python.analysis.exclude": [
-        "**/tests/**"
-    ],
+    "editor.codeLens": true,
+    
+    "python.analysis.diagnosticMode": "openFilesOnly",
+    "python.analysis.userFileIndexingLimit": 2000,
 
-    "python.testing.pytestArgs": ["tests"],
+    "python.analysis.exclude": [
+        "**/venv/**",
+        "**/.venv/**"
+    ],
+    
+
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
 
@@ -19,8 +28,11 @@
         "**/.pytest_cache": true,
         "**/.mypy_cache": true,
         "**/.ruff_cache": true,
-        "**/logs": true,
-        "**/docs/_build": true
+        "**/docs/_build": true,
+        "**/.venv": true,
+        "**/.venv/**": true,
+        "**/venv": true,
+        "**/venv/**": true
     },
 
     "search.exclude": {
@@ -29,10 +41,20 @@
         "**/.mypy_cache": true,
         "**/.ruff_cache": true,
         "**/logs": true,
-        "**/docs/_build": true
+        "**/docs/_build": true,
+        "**/venv": true,
+        "**/venv/**": true,
+        "**/.venv": true,
+        "**/.venv/**": true
+    },
+
+    "files.watcherExclude": {
+        "**/venv/**": true,
+        "**/.venv/**": true
     },
 
     "editor.rulers": [88],
+    
 
     "VsCodeTaskButtons.showCounter": true,
     "VsCodeTaskButtons.tasks": [

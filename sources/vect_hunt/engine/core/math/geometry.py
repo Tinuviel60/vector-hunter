@@ -1,5 +1,7 @@
 from typing import List, Tuple
-from .vector import Vector2D
+
+from vect_hunt.engine.core.math.vector import Vector2D
+from vect_hunt.engine.core.transform.transform import Transform
 
 
 class Geometry:
@@ -46,8 +48,8 @@ class Geometry:
             normal = edge.normal()
 
             # Normalise le vecteur normal
-            normalized_normal = normal.normalized()
-            normals.append(normalized_normal)
+            normal.normalize()
+            normals.append(normal)
 
         return normals
 
@@ -87,33 +89,46 @@ class Geometry:
 
         return (min_proj, max_proj)
 
-    # TODO : intervals_overlap --> Move inside numeric.py?
     @staticmethod
-    def intervals_overlap(min1: float, max1: float, min2: float, max2: float) -> bool:
+    def get_scene_corners(
+        local_corners: List[Vector2D], scene_tr: Transform
+    ) -> List[Vector2D]:
         """
-        Vérifie si deux intervalles [min1, max1] et [min2, max2] se chevauchent.
+        Transforme des coins locaux vers des coins monde.
 
         Parameters
         ----------
-        min1 : float
-            Borne inférieure du premier intervalle.
-        max1 : float
-            Borne supérieure du premier intervalle.
-        min2 : float
-            Borne inférieure du deuxième intervalle.
-        max2 : float
-            Borne supérieure du deuxième intervalle.
+        local_corners : List[Vector2D]
+            Coins en repere local.
+        scene_tr : Transform
+            Transform du repere monde.
 
         Returns
         -------
-        bool
-            True si les intervalles se chevauchent, False sinon.
-
-        Examples
-        --------
-        >>> intervals_overlap(0, 2, 1, 3)
-        True
-        >>> intervals_overlap(0, 1, 2, 3)
-        False
+        List[Vector2D]
+            Coins en repere monde.
         """
-        return max1 >= min2 and max2 >= min1
+        return [
+            scene_tr.rotation.apply(corner) + scene_tr.position
+            for corner in local_corners
+        ]
+
+    @staticmethod
+    def get_polygon_center(corners: List[Vector2D]) -> Vector2D:
+        """
+        Calcule le centre (centroïde) d'un polygone.
+
+        Parameters
+        ----------
+        corners : List[Vector2D]
+            Coins du polygone.
+
+        Returns
+        -------
+        Vector2D
+            Centre du polygone.
+        """
+        sum_x = sum(corner.x for corner in corners)
+        sum_y = sum(corner.y for corner in corners)
+        num_corners = len(corners)
+        return Vector2D(sum_x / num_corners, sum_y / num_corners)

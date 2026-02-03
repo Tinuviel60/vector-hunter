@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from enum import Enum
-from vect_hunt.engine.core.math.numeric import clamp
-
 from logging import getLogger
+
+from vect_hunt.engine.core.math.numeric import Numeric
 
 logger = getLogger(__name__)
 
@@ -43,10 +43,14 @@ class PhysicMaterial:
 
     Parameters
     ----------
-    friction : float, optional
-        Coefficient de friction (0.0 à 1.0).
+    static_friction : float, optional
+        Coefficient de friction statique (0.0 à 1.0).
         Correspond à la résistance au glissement entre surfaces.
-        Par défaut 0.6.
+        Par défaut 0.5.
+    dynamic_friction : float, optional
+        Coefficient de friction dynamique (0.0 à 1.0).
+        En général 1.25 fois la friction statique.
+        Par défaut 0.65.
     restitution : float, optional
         Coefficient de restitution (0.0 à 1.0).
         Correspond à la restitution d'énergie lors des collisions.
@@ -61,40 +65,24 @@ class PhysicMaterial:
         Amortissement linéaire (0.0 à 1.0).
         Correspond à la perte de vélocité au fil du temps.
         Par défaut 0.0.
-    bounciness_threshold : float, optional
+    angular_damping : float, optional
+        Amortissement angulaire (0.0 à 1.0).
+        Correspond à la perte de vitesse angulaire au fil du temps.
+        Par défaut 0.0.
+    bounce_velocity_threshold : float, optional
         Vitesse minimale (valeur absolue) pour autoriser un rebond.
         En dessous, la restitution est ignorée.
         Par défaut 10.0.
-
-    Attributes
-    ----------
-    friction : float
-        Coefficient de friction (0.0 à 1.0).
-    restitution : float
-        Coefficient de restitution (0.0 à 1.0).
-    friction_mode : CombineMode
-        Mode de combinaison de la friction.
-    restitution_mode : CombineMode
-        Mode de combinaison de la restitution.
-    linear_damping : float
-        Amortissement linéaire (0.0 à 1.0).
-    bounciness_threshold : float
-        Seuil de vitesse pour autoriser un rebond.
     """
 
-    friction: float = 0.6
+    static_friction: float = 0.5
+    dynamic_friction: float = 0.65
     restitution: float = 0.0
     friction_mode: CombineMode = CombineMode.MAX
     restitution_mode: CombineMode = CombineMode.MIN
     linear_damping: float = 0.0
-    bounciness_threshold: float = 10.0
-
-    # TODO : Nouveau paramètre pour plus tard très probable
-    # self.static_friction:
-    #   Pour gérer la friction dans le cas où un objet est immobile
-    # self.dynamic_friction:
-    #   Pour gérer la friction dans le cas où un objet est en mouvement
-    # self.angular_damping:
+    angular_damping: float = 0.0
+    bounce_velocity_threshold: float = 10.0
 
     # TODO : Nouveau paramètre pour plus tard probable
     # self.surface_type:
@@ -106,29 +94,42 @@ class PhysicMaterial:
         """
         Valide et clamp les valeurs des propriétés physiques après l'initialisation.
         """
-        if not (0.0 <= self.friction <= 1.0):
+        if not (0.0 <= self.static_friction <= 1.0):
             logger.warning(
-                f"Friction {self.friction} hors limites, " f"clamp entre 0.0 et 1.0."
+                f"Friction {self.static_friction} hors limites, "
+                f"clamp entre 0.0 et 1.0."
             )
-            self.friction = clamp(self.friction, 0.0, 1.0)
+            self.static_friction = Numeric.clamp(self.static_friction, 0.0, 1.0)
+        if not (0.0 <= self.dynamic_friction <= 1.0):
+            logger.warning(
+                f"Dynamic Friction {self.dynamic_friction} hors limites, "
+                f"clamp entre 0.0 et 1.0."
+            )
+            self.dynamic_friction = Numeric.clamp(self.dynamic_friction, 0.0, 1.0)
         if not (0.0 <= self.restitution <= 1.0):
             logger.warning(
                 f"Restitution {self.restitution} hors limites, "
                 f"clamp entre 0.0 et 1.0."
             )
-            self.restitution = clamp(self.restitution, 0.0, 1.0)
+            self.restitution = Numeric.clamp(self.restitution, 0.0, 1.0)
         if not (0.0 <= self.linear_damping <= 1.0):
             logger.warning(
                 f"Linear Damping {self.linear_damping} hors limites, "
                 f"clamp entre 0.0 et 1.0."
             )
-            self.linear_damping = clamp(self.linear_damping, 0.0, 1.0)
-        if self.bounciness_threshold < 0.0:
+            self.linear_damping = Numeric.clamp(self.linear_damping, 0.0, 1.0)
+        if self.bounce_velocity_threshold < 0.0:
             logger.warning(
-                f"Bounciness Threshold {self.bounciness_threshold} hors limites, "
+                f"Bounciness Threshold {self.bounce_velocity_threshold} hors limites, "
                 "clamp à 0.0."
             )
-            self.bounciness_threshold = 0.0
+            self.bounce_velocity_threshold = 0.0
+        if not (0.0 <= self.angular_damping <= 1.0):
+            logger.warning(
+                f"Angular Damping {self.angular_damping} hors limites, "
+                f"clamp entre 0.0 et 1.0."
+            )
+            self.angular_damping = Numeric.clamp(self.angular_damping, 0.0, 1.0)
 
     @staticmethod
     def resolve_combine_mode(mode_a: CombineMode, mode_b: CombineMode) -> CombineMode:
@@ -208,24 +209,28 @@ class PhysicMaterial:
             self.restitution_mode, other.restitution_mode
         )
 
-        combined_friction = self.combine_values(
-            self.friction, other.friction, combined_friction_mode
+        combined_static_friction = self.combine_values(
+            self.static_friction, other.static_friction, combined_friction_mode
+        )
+        combined_dynamic_friction = self.combine_values(
+            self.dynamic_friction, other.dynamic_friction, combined_friction_mode
         )
         combined_restitution = self.combine_values(
             self.restitution, other.restitution, combined_restitution_mode
         )
 
         combined_linear_damping = max(self.linear_damping, other.linear_damping)
-        combined_bounciness_threshold = max(
-            self.bounciness_threshold,
-            other.bounciness_threshold,
+        combined_bounce_velocity_threshold = max(
+            self.bounce_velocity_threshold,
+            other.bounce_velocity_threshold,
         )
 
         return PhysicMaterial(
-            friction=combined_friction,
+            static_friction=combined_static_friction,
+            dynamic_friction=combined_dynamic_friction,
             restitution=combined_restitution,
             friction_mode=combined_friction_mode,
             restitution_mode=combined_restitution_mode,
             linear_damping=combined_linear_damping,
-            bounciness_threshold=combined_bounciness_threshold,
+            bounce_velocity_threshold=combined_bounce_velocity_threshold,
         )

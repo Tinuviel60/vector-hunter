@@ -1,35 +1,9 @@
 import importlib
-import importlib.util
+import logging
 import os
 import sys
-from types import ModuleType
-import logging
 
 logger = logging.getLogger(__name__)
-
-
-def _import_module_from_path(module_name: str, file_path: str) -> ModuleType:
-    """Importe dynamiquement un module Python à partir de son chemin absolu.
-
-    Parameters
-    ----------
-    module_name : str
-        Nom du module à importer.
-    file_path : str
-        Chemin absolu vers le fichier .py du module.
-
-    Returns
-    -------
-    ModuleType
-        Le module importé.
-    """
-    spec = importlib.util.spec_from_file_location(module_name, file_path)
-    if spec and spec.loader:
-        module = importlib.util.module_from_spec(spec)
-        sys.modules[module_name] = module
-        spec.loader.exec_module(module)
-        return module
-    raise ImportError(f"Cannot import module {module_name} from {file_path}")
 
 
 def _find_py_files_recursively(root_dir: str) -> list[tuple[str, str]]:
@@ -54,12 +28,26 @@ def _find_py_files_recursively(root_dir: str) -> list[tuple[str, str]]:
                 file_path = os.path.join(dirpath, filename)
                 # module_name: chemin relatif en notation package
                 # (ex: vect_hunt.game.montruc.monmodule)
-                rel_path = os.path.relpath(
-                    file_path, os.path.dirname(os.path.dirname(__file__))
-                )
-                module_name = rel_path[:-3].replace(os.sep, ".")
+                rel_path = os.path.relpath(file_path, _package_root())
+                module_name = f"vect_hunt.{rel_path[:-3].replace(os.sep, '.')}"
                 py_files.append((module_name, file_path))
     return py_files
+
+
+def _package_root() -> str:
+    """
+    Retourne le chemin absolu du package racine (sources/vect_hunt).
+    """
+    return os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+
+
+def _ensure_package_on_sys_path() -> None:
+    """
+    S'assure que le parent de sources/vect_hunt est dans sys.path.
+    """
+    package_parent = os.path.dirname(_package_root())
+    if package_parent not in sys.path:
+        sys.path.insert(0, package_parent)
 
 
 def load_all_components(directories: list[str]) -> None:
@@ -73,7 +61,8 @@ def load_all_components(directories: list[str]) -> None:
         Liste des dossiers à scanner
         (ex: ['sources/vect_hunt/engine/components', 'sources/vect_hunt/game'])
     """
-    base_dir = os.path.dirname(os.path.dirname(__file__))  # sources/vect_hunt
+    _ensure_package_on_sys_path()
+    base_dir = _package_root()
     for directory in directories:
         abs_dir = (
             directory if os.path.isabs(directory) else os.path.join(base_dir, directory)
@@ -82,7 +71,7 @@ def load_all_components(directories: list[str]) -> None:
             continue
         for module_name, file_path in _find_py_files_recursively(abs_dir):
             try:
-                _import_module_from_path(module_name, file_path)
+                importlib.import_module(module_name)
             except Exception as e:
                 logger.warning(
                     f"Erreur lors de l'import du module {module_name} "

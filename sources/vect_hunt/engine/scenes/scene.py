@@ -1,6 +1,8 @@
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
-from vect_hunt.engine.objects import GameObject
+if TYPE_CHECKING:
+    from vect_hunt.engine.objects.game_object import GameObject
+    from vect_hunt.engine.components.component import Component
 
 
 class Scene:
@@ -11,6 +13,8 @@ class Scene:
     ----------
     game_objects : dict[int, GameObject]
         GameObjects présents dans la scène.
+    game_objects_by_component : dict[int, int]
+        Composants présents dans la scène, mappés à leur GameObject parent.
     units : dict
         Configuration des unités de la simulation (pixels/m, gravité...).
     """
@@ -19,7 +23,9 @@ class Scene:
         """
         Initialise une scène de jeu vide.
         """
-        self.game_objects: dict[int, GameObject] = {}
+        self.game_objects: dict[int, "GameObject"] = {}
+        self.game_objects_by_component: dict[int, int] = {}
+        self.components: dict[int, "Component"] = {}
         self.units = units
 
     @classmethod
@@ -47,7 +53,7 @@ class Scene:
         }
         return cls(units)
 
-    def add_game_object(self, game_object: GameObject) -> None:
+    def add_game_object(self, game_object: "GameObject") -> None:
         """
         Ajoute un GameObject à la scène.
 
@@ -57,10 +63,13 @@ class Scene:
             L'objet de jeu à ajouter.
         """
         game_object.name = self.validate_name(game_object.name)
-
         self.game_objects[game_object.id] = game_object
 
-    def remove_game_object(self, game_object: GameObject) -> None:
+        for component in game_object.get_all_components():
+            self.components[component.id] = component
+            self.game_objects_by_component[component.id] = game_object.id
+
+    def remove_game_object(self, game_object: "GameObject") -> None:
         """
         Retire un GameObject de la scène.
 
@@ -69,6 +78,12 @@ class Scene:
         game_object : GameObject
             L'objet de jeu à retirer.
         """
+        for component in game_object.get_all_components():
+            if component.id in self.game_objects_by_component:
+                del self.game_objects_by_component[component.id]
+            if component.id in self.components:
+                del self.components[component.id]
+
         if game_object.id in self.game_objects:
             del self.game_objects[game_object.id]
 

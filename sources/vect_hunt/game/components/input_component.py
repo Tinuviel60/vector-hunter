@@ -2,13 +2,14 @@
 Composant de gestion des inputs pour les entités contrôlées par le joueur.
 """
 
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, cast
 
 from vect_hunt.engine.components.component import Component
-from vect_hunt.engine.components.physic_body_component import PhysicBodyComponent
 
 if TYPE_CHECKING:
-    from vect_hunt.engine.input import InputSystem
+    from vect_hunt.engine.input.input_system import InputSystem
+    from vect_hunt.engine.components.physic_body_component import PhysicBodyComponent
+    from vect_hunt.game.components.attributes_component import AttributesComponent
 
 
 class InputComponent(Component):
@@ -75,21 +76,39 @@ class InputComponent(Component):
         delta_time : float
             Temps écoulé depuis la dernière frame (en secondes).
         """
-        assert (
-            self.game_object is not None
-        ), "InputComponent doit être attaché à un GameObject"
 
         move_vector = self.input_system.get_vector("move")
-
+        # TODO : Sortir les components requis dans l'init ou via système de dépendances
         # Récupérer le PhysicBodyComponent
-        physic_body = self.game_object.get_component(PhysicBodyComponent)
+        physic_body = cast("PhysicBodyComponent | None", self.parent.get_component("physic_body"))
         if not physic_body:
             return
 
-        if move_vector.magnitude() > 0.0:
-            # Calculer la vélocité à appliquer en utilisant la vitesse du corps physique
-            velocity = move_vector * physic_body.speed
-            physic_body.set_velocity(velocity)
-        else:
-            # Arrêter le mouvement si aucun input
-            pass  # physic_body.set_velocity(Vector2D(0, 0))
+        # Récupérer le PhysicBodyComponent
+        attributes = cast("AttributesComponent | None", self.parent.get_component("attributes"))
+        if not attributes:
+            return
+
+        # Versions plateforme
+        # if move_vector.x != 0:
+        #     # Calculer l'accélération à appliquer pour atteindre la vitesse désirée
+        #     desired_velocity_x = move_vector.x * physic_body.speed
+        #     delta_v_x = desired_velocity_x - physic_body.velocity.x
+        #     acceleration = Vector2D(delta_v_x, 0)
+
+        #     physic_body.add_acceleration(acceleration)
+
+        # if move_vector.y != 0:
+        #     # Calculer l'accélération verticale (saut)
+        #     desired_velocity_y = move_vector.y * physic_body.speed
+        #     delta_v_y = desired_velocity_y - physic_body.velocity.y
+        #     acceleration_y = Vector2D(0, delta_v_y)
+
+        #     physic_body.add_acceleration(acceleration_y)
+
+        # Versions vu du dessus
+        desired_velocity = move_vector * attributes.speed
+        acceleration = desired_velocity - physic_body.velocity
+        physic_body.add_acceleration(acceleration)
+
+        # physic_body.set_velocity(desired_velocity)

@@ -1,4 +1,5 @@
 from abc import abstractmethod
+
 from vect_hunt.engine.components.component import Component
 
 
@@ -40,16 +41,18 @@ class RenderComponent(Component):
         raise NotImplementedError
 
     @abstractmethod
-    def render(self, surface) -> None:
+    def render(self, surface, viewport=None) -> None:
         """
         Dessine l'objet sur la surface donnée.
 
-        Utilise self.game_object.transform pour obtenir la position,
+        Utilise self.parent.transform pour obtenir la position,
         rotation et échelle du GameObject.
 
         Parameters
         ----------
         surface
             Surface de rendu (ex: pygame.Surface).
+        viewport
+            Viewport optionnel pour convertir monde (Y-up) -> écran (Y-down).
         """
         raise NotImplementedError

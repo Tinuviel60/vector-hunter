@@ -1,9 +1,11 @@
 {
   "_comment": "Materiau elastique",
-  "friction": 0.9,
+  "static_friction": 0.8,
+  "dynamic_friction": 0.95,
   "restitution": 0.85,
   "linear_damping": 0.05,
+  "angular_damping": 0.1,
   "friction_mode": "MAX",
   "restitution_mode": "MAX",
-  "bounciness_threshold": 50.0
+  "bounce_velocity_threshold": 50.0
 }

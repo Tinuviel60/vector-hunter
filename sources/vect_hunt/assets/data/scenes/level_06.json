@@ -1,0 +1,26 @@
+{
+  "_comment": "Level 06 - Crate pyramid. Multi-contact stability, jitter, penetration correction.",
+  "scene": {
+    "units": {
+      "pixels_per_meter": 100.0,
+      "gravity_m_s2": 9.81
+    }
+  },
+  "game_objects": [
+    { "template_path": "player.json", "name": "Player", "transform": { "position": [200, 650], "rotation": 0.0 } },
+
+    { "template_path": "objects/standard.json", "name": "Wall_Standard", "transform": { "position": [600, 600], "rotation": 0.0 } },
+    { "template_path": "objects/standard.json", "name": "Wall_Standard", "transform": { "position": [600, 800], "rotation": 0.0 } },
+    { "template_path": "objects/standard.json", "name": "Wall_Standard", "transform": { "position": [50, 400], "rotation": 90.0 } },
+    { "template_path": "objects/standard.json", "name": "Wall_Standard", "transform": { "position": [1150, 400], "rotation": 90.0 } },
+
+    { "template_path": "objects/crate.json", "name": "Crate_A1", "transform": { "position": [650, 650], "rotation": 0.0 } },
+    { "template_path": "objects/crate.json", "name": "Crate_A2", "transform": { "position": [700, 650], "rotation": 0.0 } },
+    { "template_path": "objects/crate.json", "name": "Crate_A3", "transform": { "position": [750, 650], "rotation": 0.0 } },
+
+    { "template_path": "objects/crate.json", "name": "Crate_B1", "transform": { "position": [675, 690], "rotation": 2.0 } },
+    { "template_path": "objects/crate.json", "name": "Crate_B2", "transform": { "position": [725, 690], "rotation": -2.0 } },
+
+    { "template_path": "objects/crate.json", "name": "Crate_C1", "transform": { "position": [700, 730], "rotation": 1.0 } }
+  ]
+}

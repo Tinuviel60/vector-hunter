@@ -1,9 +1,11 @@
 {
   "_comment": "Materiau glissant",
-  "friction": 0.05,
+  "static_friction": 0.05,
+  "dynamic_friction": 0.06,
   "restitution": 0.1,
-  "linear_damping": 0.0,
+  "linear_damping": 0.05,
+  "angular_damping": 0.1,
   "friction_mode": "MIN",
   "restitution_mode": "MAX",
-  "bounciness_threshold": 100.0
+  "bounce_velocity_threshold": 100.0
 }

@@ -2,11 +2,14 @@
 Composant d'intelligence artificielle pour les ennemis.
 """
 
-from typing import Any
+from typing import Any, TYPE_CHECKING, cast
 
 from vect_hunt.engine.components.component import Component
-from vect_hunt.engine.components.physic_body_component import PhysicBodyComponent
-from vect_hunt.engine.core.math import Vector2D
+from vect_hunt.engine.core.math.vector import Vector2D
+
+if TYPE_CHECKING:
+    from vect_hunt.engine.components.physic_body_component import PhysicBodyComponent
+    from vect_hunt.game.components.attributes_component import AttributesComponent
 
 
 class IaComponent(Component):
@@ -82,10 +85,6 @@ class IaComponent(Component):
         delta_time : float
             Temps écoulé depuis la dernière frame (en secondes).
         """
-        assert (
-            self.game_object is not None
-        ), "IaComponent doit être attaché à un GameObject"
-
         self.make_decision(delta_time)
 
     def make_decision(self, delta_time: float) -> None:
@@ -110,42 +109,55 @@ class IaComponent(Component):
         delta_time : float
             Temps écoulé depuis la dernière frame (en secondes).
         """
-        assert self.game_object is not None
-
+        # TODO : Sortir les components requis dans l'init ou via système de dépendances
         # Récupérer le PhysicBodyComponent
-        physic_body = self.game_object.get_component(PhysicBodyComponent)
+        physic_body = cast("PhysicBodyComponent | None", self.parent.get_component("physic_body"))
         if not physic_body:
             return
 
+        # Récupérer le PhysicBodyComponent
+        attributes = cast("AttributesComponent | None", self.parent.get_component("attributes"))
+        if not attributes:
+            return
+
         # Récupérer la direction actuelle
-        direction = self.game_object.transform.forward()
+        direction = self.parent.transform.forward()
 
         # Calculer la vélocité en utilisant la vitesse du corps physique
-        velocity = direction * physic_body.speed
+        velocity = direction * attributes.speed
 
         # Vérifier si on va sortir des limites
-        future_position = self.game_object.transform.position + velocity * delta_time
+        future_position = self.parent.transform.position + velocity * delta_time
 
         collision_normal = None
 
         # Vérifier les limites et calculer la normale de collision
-        if future_position.x < self.top_left.x and direction.x < 0:
+        min_x = min(self.top_left.x, self.bottom_right.x)
+        max_x = max(self.top_left.x, self.bottom_right.x)
+        min_y = min(self.top_left.y, self.bottom_right.y)
+        max_y = max(self.top_left.y, self.bottom_right.y)
+
+        if future_position.x < min_x and direction.x < 0:
             collision_normal = Vector2D(1, 0)  # Normal pointant vers la droite
-        elif future_position.x > self.bottom_right.x and direction.x > 0:
+        elif future_position.x > max_x and direction.x > 0:
             collision_normal = Vector2D(-1, 0)  # Normal pointant vers la gauche
 
-        if future_position.y < self.top_left.y and direction.y < 0:
-            collision_normal = Vector2D(0, 1)  # Normal pointant vers le bas
-        elif future_position.y > self.bottom_right.y and direction.y > 0:
-            collision_normal = Vector2D(0, -1)  # Normal pointant vers le haut
+        if future_position.y < min_y and direction.y < 0:
+            collision_normal = Vector2D(0, 1)  # Normal pointant vers le haut
+        elif future_position.y > max_y and direction.y > 0:
+            collision_normal = Vector2D(0, -1)  # Normal pointant vers le bas
 
         # Si collision détectée, inverser la rotation
         if collision_normal is not None:
-            self.game_object.transform.rotation = (
-                self.game_object.transform.rotation.reflect(collision_normal)
+            self.parent.transform.rotation = self.parent.transform.rotation.reflect(
+                collision_normal
             )
-            direction = self.game_object.transform.forward()
-            velocity = direction * physic_body.speed
+            direction = self.parent.transform.forward()
+            velocity = direction * attributes.speed
+
+        desired_velocity = direction * attributes.speed
+        acceleration = desired_velocity - physic_body.velocity
+        physic_body.add_acceleration(acceleration)
 
         # Transmettre l'intention au PhysicBodyComponent
-        physic_body.set_velocity(velocity)
+        # physic_body.set_velocity(velocity)

@@ -1,30 +1,41 @@
-from abc import abstractmethod
-from typing import Optional
+from abc import ABC
 
 from vect_hunt.engine.components.component import Component
-from vect_hunt.engine.core.transform import Transform
+from vect_hunt.engine.core.geometries.shape import Shape
+from vect_hunt.engine.core.math.vector import Vector2D
+from vect_hunt.engine.core.transform.transform import Transform
 
 
-class ColliderComponent(Component):
+class ColliderComponent(Component, ABC):
     """
     Classe de base pour les colliders.
     Utilisee dans les systemes de collision pour definir des zones de collision.
+
+    Le collider porte :
+    - un Transform local (offset / rotation locale)
+    - une Shape (géométrie locale pure)
+    - un flag solid/trigger
+
+    La géométrie (coins, aire, aabb, etc.) est déléguée à la Shape.
 
     Attributes
     ----------
     game_object : GameObject | None
         GameObject parent du collider.
+    shape : Shape
+        Forme géométrique locale associée au collider.
     transform : Transform
         Transform local du collider.
     solid : bool
-        Indique si le collider est solide.
+        True = collision solide, False = trigger.
     """
 
     component_name = "collider"
 
     def __init__(
         self,
-        transform: Optional[Transform] = None,
+        shape: Shape,
+        transform: Transform,
         solid: bool = True,
     ):
         """
@@ -32,15 +43,23 @@ class ColliderComponent(Component):
 
         Parameters
         ----------
+        shape : Shape
+            La forme géométrique locale associée au collider.
         transform : Transform
-            Le transform associe au collider (offset et orientation locaux).
+            Le transform associe au collider (offset et orientation locale).
         solid : bool
-            Indique si le collider interagit avec d'autres colliders ou non.
+            Indique si le collider déclenche des collisions ou des triggers.
         """
         super().__init__()
-        self.transform = transform if transform is not None else Transform()
+        self.shape = shape
+        self.transform = transform
         self.solid = solid
         self.nb_collision = 0
+        self._aabb_version = -1
+        self._cached_world_aabb: tuple[Vector2D, Vector2D] = (
+            Vector2D(0, 0),
+            Vector2D(0, 0),
+        )
 
     def update(self, delta_time: float) -> None:
         """
@@ -53,12 +72,28 @@ class ColliderComponent(Component):
         """
         pass
 
-    @abstractmethod
-    def get_geometry(self) -> dict:
+    def get_scene_aabb(self) -> tuple[Vector2D, Vector2D]:
         """
-        Retourne la geometrie specifique du collider.
-        Doit etre implemente dans les sous-classes.
+        Calcule l'AABB mondiale du collider en combinant
+        le Transform du GameObject parent et le Transform local.
+
+        Returns
+        -------
+        tuple[Vector2D, Vector2D]
+            Les coins min et max de l'AABB mondiale.
         """
-        raise NotImplementedError(
-            "Cette methode doit etre implementee dans les sous-classes."
-        )
+
+        raise NotImplementedError("get_scene_aabb must be implemented in subclasses.")
+
+    def get_scene_transform(self) -> Transform:
+        """
+        Calcule la position mondiale du collider en combinant
+        le Transform du GameObject parent et le Transform local.
+
+        Returns
+        -------
+        Transform
+            Le transform mondiale du collider.
+        """
+        scene_transform = self.parent.transform.combine(self.transform)
+        return scene_transform

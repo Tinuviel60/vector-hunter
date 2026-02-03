@@ -1,1 +1,12 @@
-0
+sources/vect_hunt/engine/core/math/manifold.py:53:89: E501 line too long (94 > 88 characters)
+        # 1) Choisir l'arête de référence (celle dont la normale sortante est la plus alignée)
+                                                                                        ^
+sources/vect_hunt/engine/core/math/manifold.py:122:89: E501 line too long (92 > 88 characters)
+        # Normales de face unitaires de la box (4) calculées avec seulement 2 normalisations
+                                                                                        ^
+sources/vect_hunt/engine/physics/collision_tracker.py:4:1: F401 'vect_hunt.engine.core.collisions.collision_result.CollisionResult' imported but unused
+from vect_hunt.engine.core.collisions.collision_result import CollisionResult
+^
+2     E501 line too long (94 > 88 characters)
+1     F401 'vect_hunt.engine.core.collisions.collision_result.CollisionResult' imported but unused
+3

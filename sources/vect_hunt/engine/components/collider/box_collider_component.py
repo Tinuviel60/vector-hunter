@@ -1,8 +1,10 @@
 import math
 from typing import Any, Optional
 
-from vect_hunt.engine.core.math import Vector2D
-from vect_hunt.engine.core.transform import Transform
+from vect_hunt.engine.core.geometries.box_shape import BoxShape
+from vect_hunt.engine.core.math.geometry import Geometry
+from vect_hunt.engine.core.math.vector import Vector2D
+from vect_hunt.engine.core.transform.transform import Transform
 
 from .collider_component import ColliderComponent
 
@@ -16,10 +18,8 @@ class BoxColliderComponent(ColliderComponent):
     ----------
     game_object : GameObject | None
         GameObject parent du collider.
-    width : float
-        Largeur du rectangle.
-    height : float
-        Hauteur du rectangle.
+    shape : BoxShape
+        Forme box portée par le collider.
     center : Vector2D
         Centre du rectangle par rapport au GameObject parent.
     orientation : float
@@ -29,6 +29,7 @@ class BoxColliderComponent(ColliderComponent):
     """
 
     component_name = "box_collider"
+    shape: BoxShape
 
     def __init__(
         self,
@@ -55,19 +56,20 @@ class BoxColliderComponent(ColliderComponent):
         solid : bool
             Indique si le collider est solide.
         """
-        self.width = width
-        self.height = height
-
         if center is None:
             center = Vector2D(0, 0)
+
         transform = Transform(position=center, rotation=orientation)
+        shape = BoxShape(width=width, height=height)
+        super().__init__(shape=shape, transform=transform, solid=solid)
 
-        self.transform = transform
-        self.cos_orientation = math.cos(orientation)
-        self.sin_orientation = math.sin(orientation)
-        self.corners: list[Vector2D] = self.calculate_corners()
+        # Cache pour le coins en coordonnées scène
+        self._corner_version = -1
+        self._cached_scene_corners: list[Vector2D] = []
 
-        super().__init__(transform, solid)
+        # Axe en cache
+        self._cached_axis_u: Vector2D = Vector2D(1.0, 0.0)  # axe local X en scène
+        self._cached_axis_v: Vector2D = Vector2D(0.0, 1.0)  # axe local Y en scène
 
     @classmethod
     def from_data(
@@ -92,6 +94,7 @@ class BoxColliderComponent(ColliderComponent):
         position_data = transform_data.get("position", [0, 0])
         rotation = math.radians(transform_data.get("rotation", 0.0))
         center = Vector2D(position_data[0], position_data[1])
+
         return cls(
             width=data.get("width", 10.0),
             height=data.get("height", 10.0),
@@ -100,63 +103,66 @@ class BoxColliderComponent(ColliderComponent):
             solid=data.get("solid", True),
         )
 
-    def get_area(self):
+    def get_scene_aabb(self) -> tuple[Vector2D, Vector2D]:
         """
-        Calcule et retourne l'aire du rectangle.
+        Obtient l'AABB du rectangle dans le système de coordonnées de la scène.
+        Ne calcule pas les coins.
 
         Returns
         -------
-        float
-            Aire du rectangle.
+        tuple[Vector2D, Vector2D]
+            Coin inférieur gauche et coin supérieur droit de l'AABB mondiale.
         """
-        return self.width * self.height
+        parent_version = self.parent.transform._version
+        if self._aabb_version == parent_version:
+            return self._cached_world_aabb
 
-    def calculate_corners(self) -> list[Vector2D]:
+        # Transform scène complet (parent + local collider)
+        scene_transform = self.parent.transform.combine(self.transform)
+
+        # Centre scène
+        scene_center = scene_transform.position
+
+        # Axes unitaires scène : rotation appliquée aux axes locaux
+        axis_u = scene_transform.rotation.apply(Vector2D.right())
+        axis_v = scene_transform.rotation.apply(Vector2D.top())
+        # Note: adapte Vector2D.top() si ton "up" est (0, -1) vs (0, +1).
+
+        # Demi-extents (en local)
+        half_w = self.shape.width * 0.5
+        half_h = self.shape.height * 0.5
+
+        # Projection des demi-extents sur X/Y monde via valeurs absolues
+        ex = abs(axis_u.x) * half_w + abs(axis_v.x) * half_h
+        ey = abs(axis_u.y) * half_w + abs(axis_v.y) * half_h
+
+        min_point = Vector2D(scene_center.x - ex, scene_center.y - ey)
+        max_point = Vector2D(scene_center.x + ex, scene_center.y + ey)
+
+        self._cached_axis_u = axis_u
+        self._cached_axis_v = axis_v
+        self._cached_world_aabb = (min_point, max_point)
+        self._aabb_version = parent_version
+
+        return self._cached_world_aabb
+
+    def get_scene_corners(self) -> list[Vector2D]:
         """
-        Calcule les coins du rectangle en fonction de la position,
-        de la taille et de l'orientation.
+        Obtient les coins du rectangle dans le système de coordonnées de la scène.
 
         Returns
         -------
         list[Vector2D]
-            Liste des coins du rectangle dans l'ordre horaire.
+            Liste des coins du rectangle dans le système de coordonnées de la scène.
         """
-        half_width = self.width / 2
-        half_height = self.height / 2
+        if self._corner_version == self.parent.transform._version:
+            return self._cached_scene_corners
 
-        corners = [
-            Vector2D(-half_width, -half_height),
-            Vector2D(half_width, -half_height),
-            Vector2D(half_width, half_height),
-            Vector2D(-half_width, half_height),
-        ]
+        scene_tr = self.parent.transform.combine(self.transform)
+        self._cached_scene_corners = Geometry.get_scene_corners(
+            self.shape.local_vertices(), scene_tr
+        )
 
-        rotated_corners = []
-        cos_angle = self.cos_orientation
-        sin_angle = self.sin_orientation
+        self._corner_version = self.parent.transform._version
 
-        for corner in corners:
-            rotated_x = corner.x * cos_angle - corner.y * sin_angle
-            rotated_y = corner.x * sin_angle + corner.y * cos_angle
-            rotated_corners.append(
-                Vector2D(
-                    rotated_x + self.transform.position.x,
-                    rotated_y + self.transform.position.y,
-                )
-            )
-
-        return rotated_corners
-
-    def get_geometry(self) -> dict:
-        """
-        Retourne la geometrie specifique du collider.
-
-        Returns
-        -------
-        dict
-            Dictionnaire représentant la géométrie du rectangle.
-        """
-        return {
-            "type": "box",
-            "points": self.corners,
-        }
+        return self._cached_scene_corners

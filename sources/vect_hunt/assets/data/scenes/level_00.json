@@ -1,0 +1,51 @@
+{
+  "_comment": "Scene equivalent a game_main",
+  "scene": {
+    "units": {
+      "pixels_per_meter": 100.0,
+      "gravity_m_s2": 1.81
+    }
+  },
+  "game_objects": [
+    {
+      "template_path": "player.json",
+      "name": "Player",
+      "transform": {
+        "position": [100, 200],
+        "rotation": 0.0
+      }
+    },
+    {
+      "template_path": "objects/standard.json",
+      "name": "Wall_Standard",
+      "transform": {
+        "position": [600, 0],
+        "rotation": 0.0
+      }
+    },
+    {
+      "template_path": "objects/standard.json",
+      "name": "Wall_Standard",
+      "transform": {
+        "position": [600, 800],
+        "rotation": 0.0
+      }
+    },
+    {
+      "template_path": "objects/standard.json",
+      "name": "Wall_Standard",
+      "transform": {
+        "position": [50, 400],
+        "rotation": 90.0
+      }
+    },
+    {
+      "template_path": "objects/standard.json",
+      "name": "Wall_Standard",
+      "transform": {
+        "position": [1150, 400],
+        "rotation": 90.0
+      }
+    }
+  ]
+}

@@ -1,8 +1,5 @@
 import pytest
-
-from vect_hunt.engine.core import Tag
-from vect_hunt.engine.core import TagSystem
-from vect_hunt.engine.core import CAN_COLLIDE, CAN_DESTROY, CAN_PICKUP
+from vect_hunt.engine.core import CAN_COLLIDE, CAN_DESTROY, CAN_PICKUP, Tag, TagSystem
 
 
 def _expected_can_collide(tag1: Tag, tag2: Tag) -> bool:

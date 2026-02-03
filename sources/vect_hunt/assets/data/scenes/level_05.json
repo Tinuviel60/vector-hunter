@@ -1,0 +1,23 @@
+{
+  "_comment": "Level 05 - Double slopes (valley). Oscillation, energy loss, friction.",
+  "scene": {
+    "units": {
+      "pixels_per_meter": 100.0,
+      "gravity_m_s2": 7.0
+    }
+  },
+  "game_objects": [
+    { "template_path": "player.json", "name": "Player", "transform": { "position": [220, 250], "rotation": 0.0 } },
+
+    { "template_path": "objects/standard.json", "name": "Wall_Standard", "transform": { "position": [600, 0], "rotation": 0.0 } },
+    { "template_path": "objects/standard.json", "name": "Wall_Standard", "transform": { "position": [600, 800], "rotation": 0.0 } },
+    { "template_path": "objects/standard.json", "name": "Wall_Standard", "transform": { "position": [50, 400], "rotation": 90.0 } },
+    { "template_path": "objects/standard.json", "name": "Wall_Standard", "transform": { "position": [1150, 400], "rotation": 90.0 } },
+
+    { "template_path": "objects/standard.json", "name": "Ramp_Left", "transform": { "position": [520, 60], "rotation": 20.0 } },
+    { "template_path": "objects/standard.json", "name": "Ramp_Right", "transform": { "position": [780, 60], "rotation": -20.0 } },
+
+    { "template_path": "objects/big_ball.json", "name": "BigBall_1", "transform": { "position": [650, 350], "rotation": 0.0 } },
+    { "template_path": "objects/ball.json", "name": "Ball_1", "transform": { "position": [650, 300], "rotation": 0.0 } }
+  ]
+}

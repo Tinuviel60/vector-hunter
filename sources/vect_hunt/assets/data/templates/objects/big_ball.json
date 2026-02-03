@@ -1,0 +1,55 @@
+{
+  "_comment": "Caisse standard en bois",
+  "name": "Crate_Standard",
+  "tags": ["OBJECT"],
+  "transform": {
+    "position": [0, 0],
+    "rotation": 0.0
+  },
+  "components": [
+    {
+      "component": "physic_body",
+      "data": {
+        "speed": 0.0,
+        "is_kinematic": false,
+        "is_controlled": false,
+        "mass": 5.0,
+        "use_gravity": true,
+        "material": "default.json"
+      }
+    },
+    {
+      "component": "circle_collider",
+      "data": {
+        "radius": 40.0,
+        "solid": true,
+        "transform": {
+          "position": [0, 0],
+          "rotation": 0.0
+        }
+      }
+    },
+    {
+      "component": "circle_collider",
+      "data": {
+        "radius": 5.0,
+        "solid": true,
+        "transform": {
+          "position": [0, 30],
+          "rotation": 0.0
+        }
+      }
+    },
+    {
+      "component": "basic_shape",
+      "data": {
+        "type": "basic_shape",
+        "shape": "circle",
+        "color": "#FF0000",
+        "radius": 40.0,
+        "outline_color": "#3A0000",
+        "outline_width": 2
+      }
+    }
+  ]
+}

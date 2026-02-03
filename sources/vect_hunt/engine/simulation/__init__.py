@@ -2,7 +2,7 @@
 Module de gestion de la simulation.
 """
 
-from .simulation_scheduler import SimulationScheduler
 from .game_loop import GameLoop
+from .simulation_scheduler import SimulationScheduler
 
 __all__ = ["SimulationScheduler", "GameLoop"]

@@ -1,8 +1,8 @@
-import pytest
-from unittest.mock import Mock, MagicMock
+from unittest.mock import MagicMock, Mock
 
-from vect_hunt.engine.core import Vector2D
+import pytest
 from vect_hunt.engine.components.physic_body_component import PhysicBodyComponent
+from vect_hunt.engine.core import Vector2D
 
 
 # --------------------

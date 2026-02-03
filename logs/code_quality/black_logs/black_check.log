@@ -1,15 +1,507 @@
---- /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/engine/rendering/renderer.py	2026-01-18 22:43:52.033186+00:00
-+++ /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/engine/rendering/renderer.py	2026-01-18 22:43:56.638065+00:00
-@@ -214,11 +214,11 @@
-         Rend une frame complète du jeu.
+--- /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/engine/core/collisions/collision_info.py	2026-01-26 23:42:27.187866+00:00
++++ /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/engine/core/collisions/collision_info.py	2026-01-27 00:55:21.443325+00:00
+@@ -17,11 +17,11 @@
+         Profondeur de pénétration.
+     points : Optional[List[Vector2D]]
+         Points de contact de la collision. N'est pas initialisé pour
+         lors de la détection, sera calculé lors de la résolution si nécessaire.
+     reference_from_a : Optional[bool]
+-        Indique si la référence de collision est prise depuis A, pour 
++        Indique si la référence de collision est prise depuis A, pour
+         les manifolds (collisions box box).
+     """
+ 
+     normal: Vector2D
+     depth: float
+--- /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/engine/components/collider/box_collider_component.py	2026-01-26 22:28:59.506641+00:00
++++ /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/engine/components/collider/box_collider_component.py	2026-01-27 00:55:21.527537+00:00
+@@ -157,10 +157,12 @@
+         """
+         if self._corner_version == self.parent.transform._version:
+             return self._cached_scene_corners
+ 
+         scene_tr = self.parent.transform.combine(self.transform)
+-        self._cached_scene_corners = Geometry.get_scene_corners(self.shape.local_vertices(), scene_tr)
+-        
++        self._cached_scene_corners = Geometry.get_scene_corners(
++            self.shape.local_vertices(), scene_tr
++        )
++
+         self._corner_version = self.parent.transform._version
+ 
+         return self._cached_scene_corners
+--- /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/engine/components/component.py	2026-01-26 23:35:34.350806+00:00
++++ /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/engine/components/component.py	2026-01-27 00:55:21.537673+00:00
+@@ -105,11 +105,11 @@
+ 
+         Le GameObject sera assigné lors de l'appel à on_attach().
+         """
+         self.game_object: "GameObject | None" = None
+         self.active: bool = True
+-        
++
+         self.id = Component._next_id
+         Component._next_id += 1
+ 
+     def on_attach(self, game_object: "GameObject") -> None:
+         """
+--- /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/engine/physics/broad_phase.py	2026-01-27 00:55:20.859692+00:00
++++ /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/engine/physics/broad_phase.py	2026-01-27 00:55:21.554957+00:00
+@@ -53,11 +53,11 @@
+         self, colliders: List[ColliderComponent]
+     ) -> List[Tuple[ColliderComponent, ColliderComponent]]:
+         """
+         Produit la liste des paires candidates à tester en narrow phase.
+ 
+-        Utilisation d'un algorithme de balayage (sweep and prune) 
++        Utilisation d'un algorithme de balayage (sweep and prune)
+         sur l'axe X pour réduire le nombre de tests AABB.
  
          Parameters
          ----------
-         scene : Scene
--            L'état actuel de la scène du jeu, contenant les informations 
-+            L'état actuel de la scène du jeu, contenant les informations
-             des objets de jeu.
+         colliders : List[ColliderComponent]
+@@ -69,16 +69,16 @@
+             Paires candidates (id_a, id_b) avec id_a < id_b.
          """
-         self.draw_background()
-         self.draw_game_objects(scene.game_objects)
-         pygame.display.flip()
+         candidates: List[Tuple[ColliderComponent, ColliderComponent]] = []
+         count = len(colliders)
+ 
+-        aabbs:List[Tuple[Vector2D, Vector2D]] = [c.get_scene_aabb() for c in colliders]
++        aabbs: List[Tuple[Vector2D, Vector2D]] = [c.get_scene_aabb() for c in colliders]
+ 
+         indices = list(range(count))
+ 
+         # Trie des indices de colliders par min.x
+-        indices.sort(key=lambda i: aabbs[i][0].x) 
++        indices.sort(key=lambda i: aabbs[i][0].x)
+ 
+         active: List[int] = []
+ 
+         for i in indices:
+             min_x = aabbs[i][0].x
+--- /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/engine/physics/collider_detection.py	2026-01-26 23:38:23.191382+00:00
++++ /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/engine/physics/collider_detection.py	2026-01-27 00:55:21.594266+00:00
+@@ -55,21 +55,21 @@
+ 
+         collisions: Set[Tuple[int, int]] = set()
+         triggers: Set[Tuple[int, int]] = set()
+         collision_info: Dict[Tuple[int, int], CollisionInfo] = {}
+ 
+-        for collider_a, collider_b in candidates_can_collide:            
++        for collider_a, collider_b in candidates_can_collide:
+             parent_id_a = collider_a.parent.id
+             parent_id_b = collider_b.parent.id
+ 
+             if parent_id_a == parent_id_b:
+                 continue  # Ignorer les auto-collisions du même objet
+ 
+             info = self._narrow_phase.check_collision(collider_a, collider_b)
+             if info is None:
+                 continue
+-            
++
+             id_a = collider_a.id
+             id_b = collider_b.id
+             pair = (min(id_a, id_b), max(id_a, id_b))
+ 
+             if self._is_trigger_pair(collider_a, collider_b):
+--- /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/engine/core/math/manifold.py	2026-01-26 23:00:50.061452+00:00
++++ /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/engine/core/math/manifold.py	2026-01-27 00:55:21.610052+00:00
+@@ -180,11 +180,13 @@
+             best_i = 3
+ 
+         return best_i
+ 
+     @staticmethod
+-    def _box_face_normals(corners: List[Vector2D]) -> Tuple[Vector2D, Vector2D, Vector2D, Vector2D]:
++    def _box_face_normals(
++        corners: List[Vector2D],
++    ) -> Tuple[Vector2D, Vector2D, Vector2D, Vector2D]:
+         """
+         Calcule les 4 normales sortantes unitaires d'une box (coins CW).
+ 
+         Parameters
+         ----------
+@@ -202,14 +204,14 @@
+         u0 = e0.normalized()
+         u1 = e1.normalized()
+ 
+         # Pour des coins CW, la normale sortante de l'arête (v_i -> v_{i+1})
+         # est (-edge.normal()) avec ta convention normal() = (-y, x)
+-        n0 = (-u0.normal())  # edge 0
+-        n1 = (-u1.normal())  # edge 1
+-        n2 = -n0             # edge 2
+-        n3 = -n1             # edge 3
++        n0 = -u0.normal()  # edge 0
++        n1 = -u1.normal()  # edge 1
++        n2 = -n0  # edge 2
++        n3 = -n1  # edge 3
+         return n0, n1, n2, n3
+ 
+     @staticmethod
+     def _clip_segment_to_line_2pts(
+         p1: Vector2D,
+--- /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/engine/objects/game_object.py	2026-01-27 00:16:02.686327+00:00
++++ /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/engine/objects/game_object.py	2026-01-27 00:55:21.613860+00:00
+@@ -153,11 +153,11 @@
+         -------
+         List[int]
+             Liste des IDs des composants.
+         """
+         return [comp.id for comp in self.components]
+-    
++
+     def add_tag(self, tag: Tag) -> None:
+         """
+         Ajoute un tag à ce GameObject.
+ 
+         Parameters
+--- /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/engine/scenes/scene.py	2026-01-27 00:20:21.482259+00:00
++++ /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/engine/scenes/scene.py	2026-01-27 00:55:21.677268+00:00
+@@ -60,11 +60,11 @@
+         game_object : GameObject
+             L'objet de jeu à ajouter.
+         """
+         game_object.name = self.validate_name(game_object.name)
+         self.game_objects[game_object.id] = game_object
+-        
++
+         for id_component in game_object.get_all_components_id():
+             self.game_objects_by_component[id_component] = game_object.id
+ 
+     def remove_game_object(self, game_object: "GameObject") -> None:
+         """
+--- /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/engine/core/collisions/collision.py	2026-01-27 00:55:20.849357+00:00
++++ /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/engine/core/collisions/collision.py	2026-01-27 00:55:21.776046+00:00
+@@ -54,12 +54,12 @@
+         radius1: float,
+         pos2: Vector2D,
+         radius2: float,
+     ) -> "CollisionInfo | None":
+         """
+-        Détecte une collision entre deux cercles. 
+-        
++        Détecte une collision entre deux cercles.
++
+         Les points de contact ne sont pas calculés ici.
+ 
+         Parameters
+         ----------
+         pos1 : Vector2D
+@@ -117,16 +117,16 @@
+         corners_b : List[Vector2D]
+             Coins du rectangle b.
+         Returns
+         -------
+         dict | None
+-            Informations de collision (normal, depth). 
++            Informations de collision (normal, depth).
+             None si pas de collision.
+         """
+         if len(corners_a) != 4 or len(corners_b) != 4:
+             raise ValueError("sat_box_box_collision_info attend 4 coins par rectangle.")
+-        
++
+         # Deux axes uniques par rectangle (normales des deux premières arêtes)
+         edge_a0 = corners_a[1] - corners_a[0]
+         edge_a1 = corners_a[2] - corners_a[1]
+         axis_a0 = edge_a0.normal()
+         axis_a1 = edge_a1.normal()
+@@ -155,24 +155,26 @@
+                 smallest_axis = axis
+                 axis_from_a = from_a
+ 
+         if smallest_axis is None:
+             return None
+-        
++
+         # Calcul normale et pénétration en évitant une racine carrée inutile
+         axis_mag2 = smallest_axis.magnitude_squared()
+ 
+-        axis_len = axis_mag2 ** 0.5
++        axis_len = axis_mag2**0.5
+         inv_axis_len = 1.0 / axis_len
+ 
+         normal = smallest_axis * inv_axis_len
+         penetration = penetration * inv_axis_len
+ 
+         if penetration < Tolerence.COLLISION:
+             return None
+ 
+-        return CollisionInfo(normal=normal, depth=penetration, reference_from_a=axis_from_a)
++        return CollisionInfo(
++            normal=normal, depth=penetration, reference_from_a=axis_from_a
++        )
+ 
+     @staticmethod
+     def _project_4_points_on_axis(
+         corners: List[Vector2D],
+         axis: Vector2D,
+@@ -193,11 +195,11 @@
+             Intervalle [min, max] de projection.
+         """
+ 
+         values = [v.dot(axis) for v in corners]
+         return min(values), max(values)
+-    
++
+     @staticmethod
+     def circle_box_collision_info(
+         circle_pos: Vector2D,
+         circle_radius: float,
+         box_scene_tr: Transform,
+@@ -271,13 +273,13 @@
+         info: CollisionInfo,
+     ) -> List[Vector2D]:
+         """
+         Génère les points de contact pour une paire de colliders.
+ 
+-        Cette fonction est destinée à être appelée APRÈS que la détection 
+-        de collision ait déjà produit un CollisionInfo valide (normal + profondeur). 
+-        
++        Cette fonction est destinée à être appelée APRÈS que la détection
++        de collision ait déjà produit un CollisionInfo valide (normal + profondeur).
++
+         Parameters
+         ----------
+         col_a : ColliderComponent
+             Le premier collider.
+         col_b : ColliderComponent
+@@ -297,27 +299,33 @@
+         # Normal sécurisée
+         if info.normal.magnitude_squared() <= Tolerence.COLLISION * Tolerence.COLLISION:
+             return []
+ 
+         # --- Box / Box -> Manifold clipping ---
+-        if isinstance(col_a, BoxColliderComponent) and isinstance(col_b, BoxColliderComponent):
++        if isinstance(col_a, BoxColliderComponent) and isinstance(
++            col_b, BoxColliderComponent
++        ):
+             corners_a = col_a.get_scene_corners()
+             corners_b = col_b.get_scene_corners()
+ 
+             info.reference_from_a
+             if info.reference_from_a is None:
+-                raise ValueError("reference_from_a doit être défini pour les collisions box/box.")
++                raise ValueError(
++                    "reference_from_a doit être défini pour les collisions box/box."
++                )
+ 
+             return Manifold.build_contact_manifold(
+                 corners_a=corners_a,
+                 corners_b=corners_b,
+                 collision_normal=info.normal,
+                 reference_from_a=info.reference_from_a,
+             )
+ 
+         # --- Circle / Circle ---
+-        if isinstance(col_a, CircleColliderComponent) and isinstance(col_b, CircleColliderComponent):
++        if isinstance(col_a, CircleColliderComponent) and isinstance(
++            col_b, CircleColliderComponent
++        ):
+             # Contact point unique : sur la ligne des centres, côté A.
+             pos_a = col_a.get_scene_transform().position
+             pos_b = col_b.get_scene_transform().position
+ 
+             # Si centres confondus, on prend un point arbitraire stable
+@@ -327,21 +335,29 @@
+ 
+             # Point sur le cercle A dans la direction de B
+             return [pos_a + info.normal * col_a.shape.radius]
+ 
+         # --- Circle / Box (dans les deux sens) ---
+-        if isinstance(col_a, CircleColliderComponent) and isinstance(col_b, BoxColliderComponent):
+-            return Collision._contact_circle_box(circle=col_a, box=col_b, normal_ab=info.normal)
+-
+-        if isinstance(col_a, BoxColliderComponent) and isinstance(col_b, CircleColliderComponent):
+-            # normal est A->B, donc ici A=box, B=circle,  mais la routine 
++        if isinstance(col_a, CircleColliderComponent) and isinstance(
++            col_b, BoxColliderComponent
++        ):
++            return Collision._contact_circle_box(
++                circle=col_a, box=col_b, normal_ab=info.normal
++            )
++
++        if isinstance(col_a, BoxColliderComponent) and isinstance(
++            col_b, CircleColliderComponent
++        ):
++            # normal est A->B, donc ici A=box, B=circle,  mais la routine
+             # attend circle puis box, donc on inverse le sens de la normale.
+-            return Collision._contact_circle_box(circle=col_b, box=col_a, normal_ab=-info.normal)
++            return Collision._contact_circle_box(
++                circle=col_b, box=col_a, normal_ab=-info.normal
++            )
+ 
+         # Pas géré : pas de points
+         return []
+-    
++
+     @staticmethod
+     def _contact_circle_box(
+         circle: CircleColliderComponent,
+         box: BoxColliderComponent,
+         normal_ab: Vector2D,
+@@ -361,11 +377,11 @@
+         Returns
+         -------
+         List[Vector2D]
+             Liste de points de contact en coordonnées monde.
+         """
+-        # Point le plus proche sur la box, en monde 
++        # Point le plus proche sur la box, en monde
+         box_tr = box.get_scene_transform()
+         circle_pos = circle.get_scene_transform().position
+ 
+         local_point = box_tr.to_local_point(circle_pos)
+         closest_local = box.shape.closest_point_local(local_point)
+@@ -373,9 +389,11 @@
+ 
+         # Contact point côté cercle : centre - normal * radius (normal circle->box)
+         contact = circle_pos - normal_ab.normalized() * circle.shape.radius
+ 
+         # Si le cercle est profondément dedans, closest_world peut être plus stable
+-        if (closest_world - contact).magnitude_squared() <= (Tolerence.COLLISION * Tolerence.COLLISION):
++        if (closest_world - contact).magnitude_squared() <= (
++            Tolerence.COLLISION * Tolerence.COLLISION
++        ):
+             return [closest_world]
+ 
+-        return [contact]
+\ No newline at end of file
++        return [contact]
+--- /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/engine/physics/collision_tracker.py	2026-01-27 00:35:17.057178+00:00
++++ /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/engine/physics/collision_tracker.py	2026-01-27 00:55:21.829850+00:00
+@@ -3,12 +3,13 @@
+ from vect_hunt.engine.core.collisions.collision_info import CollisionInfo
+ from vect_hunt.engine.core.collisions.collision_result import CollisionResult
+ 
+ """Module de tracking des collisions entre objets du jeu."""
+ 
++
+ # TODO : Ne plus travailler en object mais en collider? (mieux pour le système de tags)
+-# WARNING : Si un objet possèdent un trigger, le moidre colllider de l'objet 
++# WARNING : Si un objet possèdent un trigger, le moidre colllider de l'objet
+ # déclenchera le trigger pour tout l'objet.
+ class CollisionTracker:
+     """
+     Gestionnaire de suivi des collisions entre objets.
+ 
+@@ -53,11 +54,16 @@
+         Tuple[int, int]
+             Paire d'IDs ordonnée
+         """
+         return (min(obj1_id, obj2_id), max(obj1_id, obj2_id))
+ 
+-    def update(self, collisions: Set[Tuple[int, int]], triggers: Set[Tuple[int, int]], delta_time: float):
++    def update(
++        self,
++        collisions: Set[Tuple[int, int]],
++        triggers: Set[Tuple[int, int]],
++        delta_time: float,
++    ):
+         """
+         Met à jour le tracking des collisions pour la frame courante.
+ 
+         Parameters
+         ----------
+@@ -78,13 +84,11 @@
+ 
+         for pair in collisions:
+             norm_pair = self._normalize_pair(*pair)
+             normalized_collisions.add(norm_pair)
+ 
+-        normalized_triggers = {
+-            self._normalize_pair(*pair) for pair in triggers
+-        }
++        normalized_triggers = {self._normalize_pair(*pair) for pair in triggers}
+         # Traiter les collisions
+         self._update_category(
+             normalized_collisions,
+             self._active_collisions,
+             delta_time,
+--- /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/engine/simulation/simulation_scheduler.py	2026-01-27 00:30:36.424525+00:00
++++ /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/engine/simulation/simulation_scheduler.py	2026-01-27 00:55:21.835096+00:00
+@@ -131,12 +131,13 @@
+         """
+         for game_object in self.scene.game_objects.values():
+             if game_object.active:
+                 game_object.update(delta_time)
+ 
+-
+-    def _collider_pairs_to_object_pairs(self, pairs: Set[Tuple[int, int]]) -> Set[Tuple[int, int]]:
++    def _collider_pairs_to_object_pairs(
++        self, pairs: Set[Tuple[int, int]]
++    ) -> Set[Tuple[int, int]]:
+         """
+         convertit des paires de collider ids en paires d'object ids.
+ 
+         Parameters
+         ----------
+@@ -152,11 +153,11 @@
+         for col_a, col_b in pairs:
+             p = self._collider_pair_to_object_pair(col_a, col_b)
+             if p is not None:
+                 out.add(p)
+         return out
+-    
++
+     def update_collisions(self, delta_time: float) -> None:
+         """
+         Met a jour le systeme de collisions et triggers pour cette frame.
+ 
+         Parameters
+@@ -223,11 +224,13 @@
+             "impulse passes performed.",
+             j + 1,
+             "position correction passes performed.",
+         )
+ 
+-    def _collider_pair_to_object_pair(self, col_a: int, col_b: int) -> Tuple[int, int] | None:
++    def _collider_pair_to_object_pair(
++        self, col_a: int, col_b: int
++    ) -> Tuple[int, int] | None:
+         """
+         Convertit une paire de collider ids en une paire d'object ids.
+ 
+         Parameters
+         ----------
+@@ -246,11 +249,11 @@
+ 
+         if obj_a is None or obj_b is None:
+             return None
+         if obj_a == obj_b:
+             return None
+-        
++
+         return (min(obj_a, obj_b), max(obj_a, obj_b))
+ 
+     def _handle_enters(self) -> None:
+         """
+         Gère les événements d'entrée de collision et de trigger.
+--- /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/engine/physics/collision_resolution_system.py	2026-01-27 00:55:20.534701+00:00
++++ /home/Tinuviel60/Documents/Development/Python/vector-hunter/sources/vect_hunt/engine/physics/collision_resolution_system.py	2026-01-27 00:55:21.894281+00:00
+@@ -333,11 +333,11 @@
+             context = self._get_collision_context(id_obj_a, id_obj_b)
+             if context is None:
+                 continue
+ 
+             game_object_a, game_object_b, body_a, body_b = context
+-    
++
+             # Résoudre la normale et la profondeur de collision
+             info_collision = self._resolve_collision_info(
+                 info_collision,
+                 game_object_a.transform.position,
+                 game_object_b.transform.position,
+@@ -346,11 +346,10 @@
+             if info_collision.points is None or len(info_collision.points) == 0:
+                 info_collision.points = Collision.generate_contact_points(
+                     game_object_a.transform,
+                     game_object_b.transform,
+                     info_collision,
+-
+                 )
+             if info_collision.points is None or len(info_collision.points) == 0:
+                 continue
+ 
+             impulsion = self._apply_velocity_response(
